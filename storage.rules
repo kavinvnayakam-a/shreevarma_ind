@@ -14,27 +14,9 @@ service firebase.storage {
       return request.auth != null && request.auth.token.email in ['healthcare@shreevarma.org'];
     }
 
-    // Admins can read, create, update, and delete any files in the 'media' folder.
-    // Anyone (including unauthenticated users) can read files from this folder.
-    match /media/{allPaths=**} {
-      allow read: if true;
-      allow write: if isSuperAdmin() || isHealthcareAdmin();
-    }
-    
-    // New rule for site assets: Anyone can read, only admins can write.
-    match /site_assets/{allPaths=**} {
-      allow read: if true;
-      allow write: if isSuperAdmin() || isHealthcareAdmin();
-    }
-
-    // Admins can read, create, update, and delete any files in the 'product_media' and 'product_banners' folders.
-    // Anyone (including unauthenticated users) can read files from this folder.
-    match /product_media/{allPaths=**} {
-      allow read: if true;
-      allow write: if isSuperAdmin() || isHealthcareAdmin();
-    }
-    
-    match /product_banners/{allPaths=**} {
+    // Allow public read access to all files.
+    // Allow authenticated admins to write to any file.
+    match /{allPaths=**} {
       allow read: if true;
       allow write: if isSuperAdmin() || isHealthcareAdmin();
     }

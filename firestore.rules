@@ -47,7 +47,7 @@ service cloud.firestore {
     match /consultations/{consultationId} {
         // PRIVACY SHIELD: Only the patient, the doctor, or admins can see the video room details
         allow read: if isSuperAdmin() || isHealthcareAdmin() || 
-                     (isSignedIn() && (request.auth.uid == resource.data.patientId || request.auth.uid == resource.data.doctorId));
+                     (isSignedIn() && (resource.data.patientId == request.auth.uid || resource.data.doctorId == request.auth.uid));
         
         // Ensure patientId matches your frontend field name
         allow create: if isSignedIn() && request.resource.data.patientId == request.auth.uid;
