@@ -1,0 +1,669 @@
+
+{
+  "entities": {
+    "Product": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Product",
+      "type": "object",
+      "description": "Represents an ayurvedic product available on the e-commerce platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the product."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the product."
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the product."
+        },
+        "ingredients": {
+          "type": "string",
+          "description": "List of ingredients in the product."
+        },
+        "directionOfUse": {
+          "type": "string",
+          "description": "Directions on how to use the product."
+        },
+        "brand": {
+          "type": "string",
+          "description": "Brand of the product."
+        },
+        "imageUrls": {
+          "type": "array",
+          "description": "URLs of the product images.",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "sellingPrice": {
+          "type": "number",
+          "description": "The price at which the product is sold."
+        },
+        "comparedAtPrice": {
+          "type": "number",
+          "description": "The original price of the product, for showing discounts."
+        },
+        "category": {
+          "type": "string",
+          "description": "Category of the product."
+        },
+        "tags": {
+          "type": "array",
+          "description": "Tags for filtering and searching products.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "inventoryQuantity": {
+          "type": "number",
+          "description": "The number of items in stock."
+        },
+        "sku": {
+          "type": "string",
+          "description": "The Stock Keeping Unit or barcode for the product."
+        },
+        "gtin": {
+          "type": "string",
+          "description": "Global Trade Item Number (e.g., UPC, EAN, JAN)."
+        },
+        "productType": {
+          "type": "string",
+          "description": "The type of product (e.g., Supplement, Oil, etc.)."
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the product.",
+          "enum": [
+            "active",
+            "draft"
+          ]
+        },
+        "continueSellingWhenOutOfStock": {
+          "type": "boolean",
+          "description": "Whether to continue selling the product when it is out of stock."
+        }
+      },
+      "required": [
+        "name",
+        "description",
+        "brand",
+        "sellingPrice",
+        "category",
+        "status"
+      ]
+    },
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the e-commerce platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "First name of the user."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "Last name of the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user.",
+          "format": "email"
+        },
+        "shippingAddresses": {
+          "type": "array",
+          "description": "A list of the user's shipping addresses.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "address": {
+                "type": "string"
+              },
+              "city": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              },
+              "zip": {
+                "type": "string"
+              },
+              "phone": {
+                "type": "string"
+              },
+              "tag": {
+                "type": "string",
+                "enum": [
+                  "Home",
+                  "Office",
+                  "Other"
+                ]
+              }
+            },
+            "required": [
+              "name",
+              "address",
+              "city",
+              "state",
+              "zip",
+              "phone",
+              "tag"
+            ]
+          }
+        },
+        "phone": {
+          "type": "string",
+          "description": "Phone number of the user."
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "email"
+      ]
+    },
+    "Order": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Order",
+      "type": "object",
+      "description": "Represents an order placed by a user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the order."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Order)"
+        },
+        "orderDate": {
+          "type": "string",
+          "description": "Date when the order was placed.",
+          "format": "date-time"
+        },
+        "totalAmount": {
+          "type": "number",
+          "description": "Total amount of the order."
+        },
+        "shippingAddress": {
+          "type": "object",
+          "description": "Shipping address for the order.",
+           "properties": {
+            "name": {"type": "string"},
+            "address": {"type": "string"},
+            "city": {"type": "string"},
+            "state": {"type": "string"},
+            "zip": {"type": "string"},
+            "phone": {"type": "string"}
+          }
+        },
+        "status": {
+          "type": "string",
+          "description": "Current status of the order (e.g., placed, shipped, delivered)."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "orderDate",
+        "totalAmount",
+        "shippingAddress",
+        "status"
+      ]
+    },
+    "OrderItem": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "OrderItem",
+      "type": "object",
+      "description": "Represents an item within an order.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the order item."
+        },
+        "orderId": {
+          "type": "string",
+          "description": "Reference to Order. (Relationship: Order 1:N OrderItem)"
+        },
+        "productId": {
+          "type": "string",
+          "description": "Reference to Product. (Relationship: Product 1:N OrderItem)"
+        },
+        "quantity": {
+          "type": "number",
+          "description": "Quantity of the product in the order item."
+        },
+        "itemPrice": {
+          "type": "number",
+          "description": "Price of the item at the time of the order."
+        }
+      },
+      "required": [
+        "id",
+        "orderId",
+        "productId",
+        "quantity",
+        "itemPrice"
+      ]
+    },
+    "Consultation": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Consultation",
+      "type": "object",
+      "description": "Represents a video consultation between a user and a practitioner.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the consultation."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Consultation)"
+        },
+        "practitionerId": {
+          "type": "string",
+          "description": "Reference to Practitioner. (Relationship: Practitioner 1:N Consultation)"
+        },
+        "consultationDate": {
+          "type": "string",
+          "description": "Date and time of the consultation.",
+          "format": "date-time"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Notes from the practitioner about the consultation."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "practitionerId",
+        "consultationDate"
+      ]
+    },
+    "Practitioner": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Practitioner",
+      "type": "object",
+      "description": "Represents an ayurvedic practitioner.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the practitioner."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the practitioner."
+        },
+        "specialty": {
+          "type": "string",
+          "description": "Specialty of the practitioner."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL of the practitioner's image.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "specialty"
+      ]
+    },
+    "Doctor": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Doctor",
+      "type": "object",
+      "description": "Represents an enrolled doctor or practitioner.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the doctor (matches their auth UID)."
+        },
+        "name": {
+          "type": "string",
+          "description": "Full name of the doctor."
+        },
+        "specialty": {
+          "type": "string",
+          "description": "The doctor's medical specialty (e.g., Ayurveda, Siddha)."
+        },
+        "email": {
+          "type": "string",
+          "description": "The doctor's email address, used for notifications and lookup.",
+          "format": "email"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "specialty",
+        "email"
+      ]
+    },
+    "Prescription": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Prescription",
+      "type": "object",
+      "description": "Represents a prescription generated after a consultation.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the prescription."
+        },
+        "consultationId": {
+          "type": "string",
+          "description": "Reference to Consultation. (Relationship: Consultation 1:1 Prescription)"
+        },
+        "prescriptionText": {
+          "type": "string",
+          "description": "Text content of the prescription."
+        },
+        "dateIssued": {
+          "type": "string",
+          "description": "Date when the prescription was issued.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "consultationId",
+        "prescriptionText",
+        "dateIssued"
+      ]
+    },
+    "Review": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Review",
+      "type": "object",
+      "description": "Represents a customer review for a product.",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The ID of the user who wrote the review."
+        },
+        "userName": {
+          "type": "string",
+          "description": "The name of the user."
+        },
+        "userImage": {
+            "type": "string",
+            "format": "uri",
+            "description": "The profile image URL of the user."
+        },
+        "productId": {
+          "type": "string",
+          "description": "The ID of the product being reviewed."
+        },
+        "rating": {
+          "type": "number",
+          "description": "The star rating given by the user, from 1 to 5.",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "comment": {
+          "type": "string",
+          "description": "The text content of the review."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the review was submitted."
+        }
+      },
+      "required": [
+        "userId",
+        "userName",
+        "productId",
+        "rating",
+        "comment",
+        "createdAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "google"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/products/{productId}",
+        "definition": {
+          "entityName": "Product",
+          "schema": {
+            "$ref": "#/backend/entities/Product"
+          },
+          "description": "Stores product information. Publicly readable.",
+          "params": [
+            {
+              "name": "productId",
+              "description": "The unique identifier for the product."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/products/{productId}/reviews/{reviewId}",
+        "definition": {
+          "entityName": "Review",
+          "schema": {
+            "$ref": "#/backend/entities/Review"
+          },
+          "description": "Stores customer reviews for a specific product. Publicly readable, writable by authenticated users.",
+          "params": [
+            {
+              "name": "productId",
+              "description": "The unique identifier for the product."
+            },
+            {
+              "name": "reviewId",
+              "description": "The unique identifier for the review."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profile information.  Accessible only by the user.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/orders/{orderId}",
+        "definition": {
+          "entityName": "Order",
+          "schema": {
+            "$ref": "#/backend/entities/Order"
+          },
+          "description": "Stores order information for each user. Accessible only by the user.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "orderId",
+              "description": "The unique identifier for the order."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/orders/{orderId}/orderItems/{orderItemId}",
+        "definition": {
+          "entityName": "OrderItem",
+          "schema": {
+            "$ref": "#/backend/entities/OrderItem"
+          },
+          "description": "Stores items within each order.  Accessible only by the user who owns the order.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "orderId",
+              "description": "The unique identifier for the order."
+            },
+            {
+              "name": "orderItemId",
+              "description": "The unique identifier for the order item."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/consultations/{consultationId}",
+        "definition": {
+            "entityName": "Consultation",
+            "schema": { "$ref": "#/backend/entities/Consultation" },
+            "description": "Top-level collection for all consultations, used by doctors/admins and patients. Patients can only access their own appointments within this collection.",
+            "params": [{
+                "name": "consultationId",
+                "description": "The unique identifier for the consultation."
+            }]
+        }
+      },
+      {
+        "path": "/consultations/{consultationId}/prescriptions/{prescriptionId}",
+        "definition": {
+          "entityName": "Prescription",
+          "schema": {
+            "$ref": "#/backend/entities/Prescription"
+          },
+          "description": "Stores prescriptions associated with each consultation. Accessible only by the user and the practitioner who created it.",
+          "params": [
+            {
+              "name": "consultationId",
+              "description": "The unique identifier for the consultation."
+            },
+            {
+              "name": "prescriptionId",
+              "description": "The unique identifier for the prescription."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/doctors/{doctorId}",
+        "definition": {
+          "entityName": "Doctor",
+          "schema": {
+            "$ref": "#/backend/entities/Doctor"
+          },
+          "description": "Stores doctor profiles. Publicly readable, writable only by super admins.",
+          "params": [
+            {
+              "name": "doctorId",
+              "description": "The unique identifier for the doctor."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/practitioners/{practitionerId}",
+        "definition": {
+          "entityName": "Practitioner",
+          "schema": {
+            "$ref": "#/backend/entities/Practitioner"
+          },
+          "description": "Stores practitioner information. Publicly readable.",
+          "params": [
+            {
+              "name": "practitionerId",
+              "description": "The unique identifier for the practitioner."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_admin/{userId}",
+        "definition": {
+          "entityName": "role",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Used for DBAC.  If a document exists at this path, the user is an admin.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/mail/{mailId}",
+        "definition": {
+            "entityName": "Mail",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "to": { "type": "array", "items": { "type": "string" } },
+                    "message": {
+                        "type": "object",
+                        "properties": {
+                            "subject": { "type": "string" },
+                            "text": { "type": "string" },
+                            "html": { "type": "string" }
+                        },
+                        "required": ["subject"]
+                    }
+                },
+                "required": ["to", "message"]
+            },
+            "description": "Triggers an email to be sent. Creating a document in this collection will send an email. For use with the 'Trigger Email' Firebase Extension.",
+            "params": [{
+                "name": "mailId",
+                "description": "The unique identifier for the email document."
+            }]
+        }
+      },
+      {
+        "path": "/counters/{counterId}",
+        "definition": {
+            "entityName": "Counter",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "current": { "type": "number" }
+                },
+                "required": ["current"]
+            },
+            "description": "Stores atomic counters for generating sequential IDs.",
+            "params": [{
+                "name": "counterId",
+                "description": "The unique identifier for the counter (e.g., 'orders')."
+            }]
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure has been refactored to use a single top-level `/consultations` collection as the authoritative source for all video consultations. This replaces the previous `/appointments` collection and removes the nested `/users/{userId}/consultations` path to eliminate data duplication and potential inconsistencies. Patients will now query the `/consultations` collection for documents where the `userId` field matches their own ID, a process governed by security rules."
+  }
+}

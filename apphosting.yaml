@@ -1,0 +1,67 @@
+# Defines the configuration for a Firebase App Hosting backend.
+# See https://firebase.google.com/docs/app-hosting/configure-backend
+runConfig:
+  # The maximum number of server instances that can be running at the same time.
+  # If you want to allow more instances to be spun up in response to traffic,
+  # increase this value.
+  maxInstances: 1
+  # Environment variables accessible by your backend server.
+  env:
+    # The public URL of your application. This is needed for creating redirect links.
+    - variable: NEXT_PUBLIC_APP_URL
+      value: https://shreevarma.org
+    # The environment for Cashfree (sandbox or production).
+    - variable: CASHFREE_ENV
+      value: production
+    # The Google Cloud Project ID is needed by the Secret Manager client.
+    # __FIREBASE_PROJECT_ID__ is a special variable replaced at build time.
+    - variable: GCLOUD_PROJECT
+      value: __FIREBASE_PROJECT_ID__
+    # Your Cashfree App ID. This is a secret value.
+    # It must be created in Google Cloud Secret Manager with the name CASHFREE_APP_ID.
+    - variable: CASHFREE_APP_ID
+      secret: CASHFREE_APP_ID
+    # Your Cashfree Secret Key. This is a secret value.
+    # It must be created in Google Cloud Secret Manager with the name CASHFREE_SECRET_KEY.
+    - variable: CASHFREE_SECRET_KEY
+      secret: CASHFREE_SECRET_KEY
+    # ===============================================================
+    # IMPORTANT: ZEGOCLOUD SECRETS FOR PRODUCTION
+    # For your live website, you MUST create these secrets in Google
+    # Cloud Secret Manager for video calls to work.
+    # ===============================================================
+    # Your ZEGOCLOUD App ID.
+    # 1. Go to Google Cloud Console > Secret Manager.
+    # 2. Create a new secret with the name 'ZEGO_APP_ID'.
+    # 3. Add a new version with your numeric App ID as the value.
+    - variable: ZEGO_APP_ID
+      secret: ZEGO_APP_ID
+    # Your ZEGOCLOUD Server Secret.
+    # 1. Go to Google Cloud Console > Secret Manager.
+    # 2. Create a new secret with the name 'ZEGO_SERVER_SECRET'.
+    # 3. Add a new version with your Server Secret string as the value.
+    - variable: ZEGO_SERVER_SECRET
+      secret: ZEGO_SERVER_SECRET
+    - variable: NEXT_PUBLIC_ZEGO_APP_ID
+      secret: NEXT_PUBLIC_ZEGO_APP_ID
+
+# Grant the service account the Secret Manager Secret Accessor role
+# to allow it to read secrets.
+requiredAPIs:
+  - id: secretmanager.googleapis.com
+    reason: Required to access secrets for payment gateway and video services.
+  - id: firestore.googleapis.com
+    reason: Required for the Admin SDK to access Firestore from server actions.
+  - id: storage.googleapis.com
+    reason: Required for the server to upload images to Firebase Storage.
+  - id: iam.googleapis.com
+    reason: Required for the server to authenticate and generate access tokens.
+
+# Add IAM roles to the service account
+iam:
+  - role: roles/secretmanager.secretAccessor
+    reason: Required to access secrets for payment gateway and video services.
+  - role: roles/datastore.user
+    reason: Required for the server to write to Firestore using the Admin SDK.
+  - role: roles/storage.objectAdmin
+    reason: Required for the server action to upload theme images to Firebase Storage.

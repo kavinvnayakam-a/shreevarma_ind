@@ -1,0 +1,378 @@
+{
+  "placeholderImages": [
+    {
+      "id": "hero-1",
+      "description": "A serene arrangement of Ayurvedic herbs and ingredients on a rustic wooden table.",
+      "imageUrl": "https://images.unsplash.com/photo-1654133536179-88066c7a16a0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxheXVydmVkYSUyMGhlcmJzfGVufDB8fHx8MTc2MjMxNjAzMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "ayurveda herbs"
+    },
+    {
+      "id": "hero-2",
+      "description": "A doctor and a nurse with a mortar and pestle with herbs.",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/hero-image.png?alt=media&token=e1f70c53-e29e-4dcb-9df1-3a133b3135f7",
+      "imageHint": "doctor herbs"
+    },
+    {
+      "id": "product-1",
+      "description": "An aesthetic bottle of Triphala Churna, an Ayurvedic herbal powder.",
+      "imageUrl": "https://images.unsplash.com/photo-1662058595162-10e024b1a907?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxheXVydmVkYSUyMGJvdHRsZXxlbnwwfHx8fDE3NjIzMTYwMzF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "ayurveda bottle"
+    },
+    {
+      "id": "product-2",
+      "description": "A jar of Chyawanprash, a traditional Ayurvedic health supplement.",
+      "imageUrl": "https://images.unsplash.com/photo-1609150990057-f13c984a12f6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxoZWFsdGglMjBzdXBwbGVtZW50fGVufDB8fHx8MTc2MjIzMDEwOHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "health supplement"
+    },
+    {
+      "id": "product-3",
+      "description": "A bottle of Ashwagandha tablets, known for their adaptogenic properties.",
+      "imageUrl": "https://images.unsplash.com/photo-1579476549678-f31de2ea0699?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxoZXJiYWwlMjB0YWJsZXRzfGVufDB8fHx8MTc2MjMxNjAzMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "herbal tablets"
+    },
+    {
+      "id": "product-4",
+      "description": "A bottle of Ayurvedic hair oil with herbs.",
+      "imageUrl": "https://images.unsplash.com/photo-1515377905703-c4788e51af15?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxoYWlyJTIwb2lsfGVufDB8fHx8MTc2MjI1Mjk2NHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "hair oil"
+    },
+    {
+      "id": "product-5",
+      "description": "A package of Brahmi powder, used to support cognitive function.",
+      "imageUrl": "https://images.unsplash.com/photo-1677599082447-6549af4c5454?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxoZXJiYWwlMjBwb3dkZXJ8ZW58MHx8fHwxNzYyMzE2MDMxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "herbal powder"
+    },
+    {
+      "id": "product-6",
+      "description": "A set of Ayurvedic soaps with natural ingredients.",
+      "imageUrl": "https://images.unsplash.com/photo-1630942046599-12bb78bce814?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxuYXR1cmFsJTIwc29hcHxlbnwwfHx8fDE3NjIyNzk0NzN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "natural soap"
+    },
+    {
+      "id": "consultation-1",
+      "description": "A friendly and professional Ayurvedic practitioner.",
+      "imageUrl": "https://images.unsplash.com/photo-1730597842283-943c7986ee2c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxkb2N0b3IlMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjIyMjAwMTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "doctor portrait"
+    },
+    {
+      "id": "user-avatar-1",
+      "description": "A profile picture of a user.",
+      "imageUrl": "https://images.unsplash.com/photo-1693039537350-3bba6975add7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwZXJzb24lMjBmYWNlfGVufDB8fHx8MTc2MjMwNDgwMnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person face"
+    },
+    {
+      "id": "service-1",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/online-consulation.png?alt=media&token=5dcd215b-3b5f-47d9-bdf2-81f536201cf1",
+      "hint": "online consultation"
+    },
+    {
+      "id": "service-2",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/clinic-visit.png?alt=media&token=8d06d4c1-8777-4425-a358-6bda7d4e14ab",
+      "hint": "clinic consultation"
+    },
+    {
+      "id": "service-3",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/speacialist-Doctors.png?alt=media&token=cdabd6a4-68f2-4754-bf46-dff671313895",
+      "hint": "medicine delivery"
+    },
+    {
+      "id": "service-4",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Buy-products.png?alt=media&token=bfe2bc74-0385-4205-8eac-24832385994b",
+      "hint": "ayurveda therapy"
+    },
+    {
+      "id": "service-5",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Theraphy.png?alt=media&token=d360ab9f-81c4-49a1-bda5-2ffe505b6c83",
+      "hint": "wellness products"
+    },
+    {
+      "id": "why-choose-1",
+      "imageUrl": "https://images.unsplash.com/photo-1511766836919-bc10e68e2d1e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx3b21hbiUyMHJlbGF4aW5nfGVufDB8fHx8MTc2MjMxNjIzMHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman relaxing"
+    },
+    {
+      "id": "why-choose-2",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Group%201000001862.png?alt=media&token=a652b76b-4d59-4021-9677-183bc0586c51",
+      "imageHint": "ayurvedic elements"
+    },
+    {
+      "id": "video-thumbnail-1",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Shreevarma%20Sir.jpg?alt=media&token=6aff5e39-4609-4a6c-96fa-4e9eaa424389",
+      "imageHint": "man portrait"
+    },
+    {
+      "id": "specialist-shreevarma",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2Fshreevarma.jpg?alt=media&token=0bb80ce2-3b38-4ad7-9a2b-5ca5d1b9ccd5",
+      "hint": "doctor portrait"
+    },
+    {
+      "id": "specialist-gowthaman",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FGowtham.jpg?alt=media&token=415614d1-5d73-488c-b027-47ecd6e2ca8e",
+      "hint": "doctor portrait"
+    },
+    {
+      "id": "specialist-jayaroopa",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDoctors%20Image%2Fjayaroopa.jpg?alt=media&token=c57e64f3-d2d6-4b94-aa06-560480c71207",
+      "hint": "doctor portrait"
+    },
+    {
+      "id": "specialist-shabina",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDoctors%20Image%2FDr.Shabina.jpg?alt=media&token=af1ab53e-f48a-422e-8c07-c042620d9cb0",
+      "hint": "doctor portrait"
+    },
+    {
+      "id": "specialist-hemala",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDoctors%20Image%2FDr.Hemala.jpg?alt=media&token=4425ee08-71ed-4b0a-800f-cb1251619288",
+      "hint": "doctor portrait"
+    },
+    {
+      "id": "specialist-malathi",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDoctors%20Image%2FDr.Malathi.jpg?alt=media&token=89e1c28f-1931-4265-becb-be46873e98d3",
+      "hint": "doctor portrait"
+    },
+    {
+      "id": "specialist-saraswathi",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDoctors%20Image%2FDr.saraswathi.jpg?alt=media&token=ebfa5687-8cc5-41ea-93a6-db868dec75d2",
+      "hint": "doctor portrait"
+    },
+    {
+      "id": "specialist-surya",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDoctors%20Image%2FDr.Surya%20bharathi.jpg?alt=media&token=efaacd31-42d5-4a20-80ed-c2243447e777",
+      "hint": "doctor portrait"
+    },
+    {
+      "id": "specialist-sonali",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDoctors%20Image%2FDr.Sonali.jpg?alt=media&token=099d947b-94a0-403d-95a2-10d94ccdd73c",
+      "hint": "doctor portrait"
+    },
+    {
+      "id": "specialist-jebashin",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2Fjebashin.jpg?alt=media&token=dad9c8ab-609d-4de8-99b1-7f420b87ebe0",
+      "hint": "doctor portrait"
+    },
+    {
+      "id": "specialist-priyadharshani",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDoctors%20Image%2FDr.Priadharshini%20(1).jpg?alt=media&token=c4d8257f-44d5-4c52-ad33-aff060ddf657",
+      "hint": "doctor portrait"
+    },
+    {
+      "id": "specialist-guna",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDoctors%20Image%2FDr.Guna%20apsala.jpg?alt=media&token=0ed839c4-caa7-431a-ad6e-25a4bec427a1",
+      "hint": "doctor portrait"
+    },
+    {
+      "id": "specialist-anish",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/WEBP%2FDoctors%20Images%2FDr.Anish%20Fathima.webp?alt=media&token=e77cff7d-0b94-4e31-a103-cd3b34e8980b",
+      "hint": "doctor portrait"
+    },
+    {
+      "id": "specialist-megala",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDoctors%20Image%2FDr.Megala.jpg?alt=media&token=8197be57-1843-494e-8f08-b8731219f0f8",
+      "hint": "doctor portrait"
+    },
+    {
+      "id": "specialist-abina",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDr.Mobisha.jpg?alt=media&token=67feaa2a-2ff0-419c-a923-0753f64644b1",
+      "hint": "doctor portrait"
+    },
+    {
+      "id": "specialist-anitha",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/WEBP%2FDoctors%20Images%2Fanitha.webp?alt=media&token=f328f683-8ae6-46fe-82e0-9e5041d97436",
+      "hint": "doctor portrait"
+    },
+    {
+      "id": "discovery-1",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Group%201000001875.png?alt=media&token=b8082a9a-b5df-4c8e-814b-daf407ff2d12",
+      "imageHint": "ayurveda therapy"
+    },
+    {
+      "id": "testimonial-1",
+      "imageUrl": "https://images.unsplash.com/photo-1592621385612-4d7129426394?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2MjI0NDMxOHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman portrait"
+    },
+    {
+      "id": "testimonial-2",
+      "imageUrl": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjIyMjQ5MzB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man portrait"
+    },
+    {
+      "id": "testimonial-3",
+      "imageUrl": "https://images.unsplash.com/photo-1711645169736-53327e726205?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3b21hbiUyMHNtaWxpbmd8ZW58MHx8fHwxNzYyMjk1NjI2fDA&ixlibrb-4.1.0&q=80&w=1080",
+      "imageHint": "woman smiling"
+    },
+    {
+      "id": "health-1",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fdigestive.png?alt=media&token=0c7351d3-01be-4bad-bc81-8f9b38e5ab3a",
+      "description": "Image for Digestive Care",
+      "imageHint": "digestive system"
+    },
+    {
+      "id": "health-2",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fblood-disorders.png?alt=media&token=c504834d-e8d7-4e66-bb88-d09457bef53c",
+      "description": "Image for Blood Disorders",
+      "imageHint": "blood cells"
+    },
+    {
+      "id": "health-3",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fobesity.png?alt=media&token=ef49b60c-5058-4b5f-97c6-887a164ccb3c",
+      "description": "Image for Obesity",
+      "imageHint": "obesity concept"
+    },
+    {
+      "id": "health-4",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fskin-diseases.png?alt=media&token=fa3865ce-597f-4e11-b868-a1c799f4d42c",
+      "description": "Image for Skin Diseases",
+      "imageHint": "skin problems"
+    },
+    {
+      "id": "health-5",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fbone-and-joint.png?alt=media&token=a2afd5d5-83d4-4cfe-a199-0469beb7902d",
+      "description": "Image for Bone and Joint",
+      "imageHint": "bone joint"
+    },
+    {
+      "id": "health-6",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fnervous-disorders.png?alt=media&token=36ee1576-8a3c-45df-a8da-ec56eb9e4a9a",
+      "description": "Image for Nervous Disorders",
+      "imageHint": "nervous system"
+    },
+    {
+      "id": "health-7",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fimmunity.png?alt=media&token=920474ff-c1b3-4a43-9907-f25d42167f2a",
+      "description": "Image for Immunity",
+      "imageHint": "immune system"
+    },
+    {
+      "id": "health-8",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fpiles-fissure-fistula.png?alt=media&token=f9bad20e-cbc1-47eb-b490-4bec8575841b",
+      "description": "Image for Piles, Fissure, Fistula",
+      "imageHint": "digestive system"
+    },
+    {
+      "id": "health-9",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fmale-health.png?alt=media&token=8349590a-6cd2-4fd3-92c4-40e7334065b0",
+      "description": "Image for Male Health",
+      "imageHint": "male health"
+    },
+    {
+      "id": "health-10",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fwomen-health.png?alt=media&token=7a29218d-fc57-4b89-a7ea-3edac2c138de",
+      "description": "Image for Women Health",
+      "imageHint": "women health"
+    },
+    {
+      "id": "health-11",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fkidney-disease.png?alt=media&token=dc3aa69e-b9b2-4168-903c-b0403c570d43",
+      "description": "Image for Kidney Disease",
+      "imageHint": "kidney anatomy"
+    },
+    {
+      "id": "health-12",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fdiabetes.png?alt=media&token=154e3350-33f0-435e-b4eb-c69b07242d6b",
+      "description": "Image for Diabetes",
+      "imageHint": "glucose meter"
+    },
+    {
+      "id": "health-13",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Frespiratory-care.png?alt=media&token=fd265b39-d121-4f6f-9e4f-a27cf6a55cf5",
+      "description": "Image for Respiratory Care",
+      "imageHint": "respiratory system"
+    },
+    {
+      "id": "health-14",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fliver-disease.png?alt=media&token=59b65c8c-3105-4e08-952c-bad573df6bf6",
+      "description": "Image for Liver Disease",
+      "imageHint": "liver anatomy"
+    },
+    {
+      "id": "health-15",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fheart-disease.png?alt=media&token=28b566f0-150c-40d5-bfc6-6a31ae09474d",
+      "description": "Image for Heart Disease",
+      "imageHint": "heart anatomy"
+    },
+    {
+      "id": "health-16",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Flung-disorders.png?alt=media&token=b3f979e2-32b9-4cb8-83cd-58cd878cfee4",
+      "description": "Image for Lung Disorders",
+      "imageHint": "lung anatomy"
+    },
+    {
+      "id": "health-17",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fthyroid.png?alt=media&token=213fc560-25e2-4c76-89d1-52fa6cc3c8b8",
+      "description": "Image for Thyroid",
+      "imageHint": "thyroid gland"
+    },
+    {
+      "id": "health-18",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2FENT.png?alt=media&token=2bcd5995-56ed-4e92-86d4-3a98f75ac525",
+      "description": "Image for ENT",
+      "imageHint": "ear nose throat"
+    },
+    {
+      "id": "health-19",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fmental-health.png?alt=media&token=fd14487a-9e55-47be-980f-c828abcf07d2",
+      "description": "Image for Mental Health",
+      "imageHint": "mental health"
+    },
+    {
+      "id": "therapy-hero-1",
+      "description": "A woman receiving a Shirodhara Ayurvedic treatment.",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FTherapy%20Hero%20Image.png?alt=media&token=3ae4e7b3-5d14-45cf-9542-fc7fa09f4000",
+      "imageHint": "shirodhara treatment"
+    },
+    {
+      "id": "therapy-1",
+      "description": "A person receiving a Podi Kizhi (herbal pouch) massage.",
+      "imageUrl": "https://images.unsplash.com/photo-1629984164142-21c2039de926?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxoZXJiYWwlMjBwb3VjaCUyMG1hc3NhZ2V8ZW58MHx8fHwxNzYyMzQ1Mzk3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "herbal pouch massage"
+    },
+    {
+      "id": "therapy-2",
+      "description": "A person receiving an Abhyangam (Ayurvedic oil) massage.",
+      "imageUrl": "https://images.unsplash.com/photo-1683232741186-f562f9e159d9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxvaWwlMjBtYXNzYWdlJTIwdGhlcmFweXxlbnwwfHx8fDE3NjIzNDUzOTd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "oil massage therapy"
+    },
+    {
+      "id": "therapy-3",
+      "description": "A Greeva Vasti treatment for neck pain.",
+      "imageUrl": "https://images.unsplash.com/photo-1599817878414-43ef36677cf0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxuZWNrJTIwb2lsJTIwdHJlYXRtZW50fGVufDB8fHx8MTc2MjM0NTM5N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "neck oil treatment"
+    },
+    {
+      "id": "therapy-4",
+      "description": "A Kati Vasti treatment for lower back pain.",
+      "imageUrl": "https://images.unsplash.com/photo-1560521166-117ca72366bd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YmFjayUyMG9pbCUyMHRyZWF0bWVudHxlbnwwfHx8fDE3NjIzNDUzOTd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "back oil treatment"
+    },
+    {
+      "id": "therapy-5",
+      "description": "A person receiving a Shirodhara treatment.",
+      "imageUrl": "https://images.unsplash.com/photo-1588661839237-75f2e987de1c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxmb3JlaGVhZCUyMG9pbCUyMHRoZXJhcHl8ZW58MHx8fHwxNzYyMzQ1Mzk3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "forehead oil therapy"
+    },
+    {
+      "id": "therapy-6",
+      "description": "An Udwartana (herbal powder) massage.",
+      "imageUrl": "https://images.unsplash.com/photo-1640791416299-25645e72d186?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxoZXJiYWwlMjBwb3dkZXIlMjBtYXNzYWdlfGVufDB8fHx8MTc2MjM0NTM5N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "herbal powder massage"
+    },
+    {
+      "id": "therapy-7",
+      "description": "Pichu therapy with an oil-soaked cotton pad.",
+      "imageUrl": "https://images.unsplash.com/photo-1643556320608-5257b0c71460?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxvaWwlMjBzb2FrZWQlMjBjb3R0b258ZW58MHx8fHwxNzYyMzQ1Mzk4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "oil soaked cotton"
+    },
+    {
+      "id": "therapy-8",
+      "description": "Nadi Sweda (steam therapy) being administered.",
+      "imageUrl": "https://images.unsplash.com/photo-1761470575018-135c213340eb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxzdGVhbSUyMHRoZXJhcHl8ZW58MHx8fHwxNzYyMzQ1Mzk3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "steam therapy"
+    },
+    {
+      "id": "therapy-9",
+      "description": "Jaloukavacharanam (leech therapy).",
+      "imageUrl": "https://images.unsplash.com/photo-1631596666755-3c2ea356e617?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxsZWVjaCUyMHRoZXJhcHl8ZW58MHx8fHwxNzYyMzQ1Mzk3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "leech therapy"
+    }
+  ]
+}
