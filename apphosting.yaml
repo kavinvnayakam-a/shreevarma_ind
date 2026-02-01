@@ -11,16 +11,18 @@ runConfig:
     - variable: NEXT_PUBLIC_APP_URL
       value: https://app.shreevarma.org
     - variable: NEXT_PUBLIC_CASHFREE_ENV
-      value: production # We renamed this to include NEXT_PUBLIC_ so your frontend can see it
+      value: production
 
     # --- Firebase/Google Internal ---
     - variable: GCLOUD_PROJECT
       value: __FIREBASE_PROJECT_ID__
 
-# --- Secrets: Cashfree ---
-    - variable: NEXT_PUBLIC_CASHFREE_APP_ID  # Added NEXT_PUBLIC_
+    # --- Secrets: Cashfree ---
+    - variable: NEXT_PUBLIC_CASHFREE_APP_ID
       secret: CASHFREE_APP_ID
-    - variable: CASHFREE_SECRET_KEY         # Keep this private (no prefix)
+    - variable: CASHFREE_APP_ID             # ADD THIS: For your server action logic
+      secret: CASHFREE_APP_ID
+    - variable: CASHFREE_SECRET_KEY
       secret: CASHFREE_SECRET_KEY
 
     # --- Secrets: ZEGOCLOUD ---
@@ -29,12 +31,8 @@ runConfig:
     - variable: ZEGO_SERVER_SECRET
       secret: ZEGO_SERVER_SECRET
     - variable: NEXT_PUBLIC_ZEGO_APP_ID
-      secret: ZEGO_APP_ID # Maps the same secret to a public variable for the frontend
+      secret: ZEGO_APP_ID
 
-    # --- Secrets: Gemini (From your previous requirement) ---
+    # --- Secrets: Gemini ---
     - variable: GEMINI_API_KEY
       secret: GEMINI_API_KEY
-
-# Important Note: While 'iam' and 'requiredAPIs' are great for documentation, 
-# you should still manually verify these in Google Cloud IAM for the 
-# service account: firebase-app-hosting-compute@PROJECT_ID.iam.gserviceaccount.com
