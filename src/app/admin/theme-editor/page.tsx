@@ -8,9 +8,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, UploadCloud, RefreshCcw, ImageIcon, LayoutDashboard } from 'lucide-react';
+import { Loader2, UploadCloud, RefreshCcw, ImageIcon, LayoutDashboard, Globe } from 'lucide-react';
 
-// Sub-component for individual image cards
 function ImageEditCard({ label, description, currentImageUrl, storagePath }: { label: string, description: string, currentImageUrl: string, storagePath: string }) {
   const { register, handleSubmit, watch, formState: { isSubmitting, errors }, reset } = useForm<{file: FileList}>();
   const { toast } = useToast();
@@ -47,11 +46,11 @@ function ImageEditCard({ label, description, currentImageUrl, storagePath }: { l
 
   return (
     <Card className="overflow-hidden border-2 transition-all hover:shadow-md">
-      <CardHeader className="p-4 bg-muted/30">
+      <CardHeader className="p-4 bg-muted/30 text-primary">
         <CardTitle className="text-sm font-bold flex items-center gap-2">
-          <ImageIcon className="h-4 w-4 text-primary" /> {label}
+          <ImageIcon className="h-4 w-4" /> {label}
         </CardTitle>
-        <CardDescription className="text-[10px] truncate">{storagePath}</CardDescription>
+        <CardDescription className="text-[10px] truncate font-mono text-muted-foreground">{storagePath}</CardDescription>
       </CardHeader>
       <CardContent className="p-4">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -68,7 +67,7 @@ function ImageEditCard({ label, description, currentImageUrl, storagePath }: { l
             <Input type="file" className="text-xs h-9" accept="image/*" {...register('file', { required: true })} />
             <Button type="submit" disabled={isSubmitting} size="sm" className="w-full">
               {isSubmitting ? <Loader2 className="mr-2 h-3 w-3 animate-spin" /> : <UploadCloud className="mr-2 h-3 w-3" />}
-              Update
+              {isSubmitting ? 'Uploading...' : 'Update Asset'}
             </Button>
           </div>
         </form>
@@ -81,63 +80,87 @@ const BUCKET = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'shreevarma-in
 const baseUrl = `https://firebasestorage.googleapis.com/v0/b/${BUCKET}/o/`;
 const urlSuffix = `?alt=media`;
 
-// --- COMPREHENSIVE ASSET MAP ---
 const themeImages = {
-    brand: [
-        { label: 'Main Logo', description: 'Header & Footer', storagePath: 'site_assets/brand/LOGO.png' },
-        { label: 'Favicon', description: 'Browser Icon', storagePath: 'site_assets/brand/favicon.png' },
+    brand_identity: [
+        { label: 'Main Logo', description: 'Appears in Header/Footer', storagePath: 'site_assets/brand/LOGO.png' },
+        { label: 'Favicon', description: 'Browser Tab Icon', storagePath: 'site_assets/brand/favicon.png' },
     ],
-    homepage: [
-        { label: 'Hero 1 (Desktop)', description: '1400x368 WebP', storagePath: 'site_assets/homepage/hero_desktop_1.webp' },
-        { label: 'Hero 1 (Mobile)', description: '1080x1080 WebP', storagePath: 'site_assets/homepage/hero_mobile_1.webp' },
-        { label: 'Hero 2 (Desktop)', description: '1400x368 WebP', storagePath: 'site_assets/homepage/hero_desktop_2.webp' },
-        { label: 'Hero 2 (Mobile)', description: '1080x1080 WebP', storagePath: 'site_assets/homepage/hero_mobile_2.webp' },
-        { label: 'Award Banner', description: 'Static Trendsetters Banner', storagePath: 'site_assets/homepage/trendsetters_award.webp' },
+    homepage_hero: [
+        { label: 'Hero 1 (Desktop)', description: 'Banner 1 - 1400x368', storagePath: 'site_assets/homepage/hero_desktop_1.webp' },
+        { label: 'Hero 1 (Mobile)', description: 'Banner 1 - 1080x1080', storagePath: 'site_assets/homepage/hero_mobile_1.webp' },
+        { label: 'Hero 2 (Desktop)', description: 'Banner 2 - 1400x368', storagePath: 'site_assets/homepage/hero_desktop_2.webp' },
+        { label: 'Hero 2 (Mobile)', description: 'Banner 2 - 1080x1080', storagePath: 'site_assets/homepage/hero_mobile_2.webp' },
+        { label: 'Hero 3 (Desktop)', description: 'Banner 3 - 1400x368', storagePath: 'site_assets/homepage/hero_desktop_3.webp' },
+        { label: 'Hero 3 (Mobile)', description: 'Banner 3 - 1080x1080', storagePath: 'site_assets/homepage/hero_mobile_3.webp' },
     ],
-    categories: [
-        { label: 'Health Care', description: 'Homepage Card', storagePath: 'site_assets/homepage/category_health.webp' },
-        { label: 'Men\'s Wellness', description: 'Homepage Card', storagePath: 'site_assets/homepage/category_mens.webp' },
-        { label: 'Women\'s Wellness', description: 'Homepage Card', storagePath: 'site_assets/homepage/category_womens.webp' },
-        { label: 'Hair Care', description: 'Homepage Card', storagePath: 'site_assets/homepage/category_hair.webp' },
-        { label: 'Skin Care', description: 'Homepage Card', storagePath: 'site_assets/homepage/category_skin.webp' },
-        { label: 'Kids Care', description: 'Homepage Card', storagePath: 'site_assets/homepage/category_kids.webp' },
+    homepage_categories: [
+        { label: 'Health Care', description: 'Category Circle/Card', storagePath: 'site_assets/homepage/category_health.webp' },
+        { label: 'Men\'s Wellness', description: 'Category Circle/Card', storagePath: 'site_assets/homepage/category_mens.webp' },
+        { label: 'Women\'s Wellness', description: 'Category Circle/Card', storagePath: 'site_assets/homepage/category_womens.webp' },
+        { label: 'Hair Care', description: 'Category Circle/Card', storagePath: 'site_assets/homepage/category_hair.webp' },
+        { label: 'Skin Care', description: 'Category Circle/Card', storagePath: 'site_assets/homepage/category_skin.webp' },
+        { label: 'Kids Care', description: 'Category Circle/Card', storagePath: 'site_assets/homepage/category_kids.webp' },
     ],
-    about_organization: [
-        { label: 'About Us Hero', description: 'Top Banner', storagePath: 'site_assets/about/hero.png' },
-        { label: 'Dr. Shreevarma', description: 'Founder Image', storagePath: 'site_assets/about/dr_shreevarma.png' },
-        { label: 'Org Hero Desktop', description: 'Organisation Page', storagePath: 'site_assets/organisation/hero_desktop.png' },
-        { label: 'Org Hero Mobile', description: 'Organisation Page', storagePath: 'site_assets/organisation/hero_mobile.png' },
+    homepage_marketing: [
+        { label: 'Maharaja Combo', description: 'Offer Section Banner', storagePath: 'site_assets/homepage/maharaja-combo.webp' },
+        { label: 'Vajee Care Combo', description: 'Offer Section Banner', storagePath: 'site_assets/homepage/vajee-care-combo.webp' },
+        { label: 'Shree Care Combo', description: 'Offer Section Banner', storagePath: 'site_assets/homepage/shreecare-combo.webp' },
+        { label: 'Orthocure Combo', description: 'Offer Section Banner', storagePath: 'site_assets/homepage/orthocure-combo.webp' },
+        { label: 'Hair Care Combo', description: 'Offer Section Banner', storagePath: 'site_assets/homepage/hair-care-combo.webp' },
+        { label: 'Award Banner', description: 'Trendsetters Award Image', storagePath: 'site_assets/homepage/trendsetters_award.webp' },
     ],
-    services: [
-        { label: 'Consultation Hero', description: 'Booking Page Banner', storagePath: 'site_assets/consultation/hero_desktop.png' },
-        { label: 'Therapy Hero', description: 'Therapy Page Banner', storagePath: 'site_assets/therapy/hero.png' },
-        { label: 'Diseases Hero', description: 'Main Diseases Page', storagePath: 'site_assets/diseases/hero.png' },
+    internal_pages_hero: [
+        { label: 'About Us Hero', description: 'Main Banner', storagePath: 'site_assets/about/hero.png' },
+        { label: 'Organisation Hero (Desktop)', description: 'Main Banner', storagePath: 'site_assets/organisation/hero_desktop.png' },
+        { label: 'Organisation Hero (Mobile)', description: 'Main Banner', storagePath: 'site_assets/organisation/hero_mobile.png' },
+        { label: 'Consultation Hero', description: 'Main Banner', storagePath: 'site_assets/consultation/hero_desktop.png' },
+        { label: 'Therapy Hero', description: 'Main Banner', storagePath: 'site_assets/therapy/hero.png' },
+        { label: 'Diseases Hero', description: 'Main Banner', storagePath: 'site_assets/diseases/hero.png' },
+        { label: 'Contact Hero', description: 'Main Banner', storagePath: 'site_assets/contact/main.png' },
     ],
-    support: [
-        { label: 'Contact Us Banner', description: 'Contact Page Hero', storagePath: 'site_assets/contact/main.png' },
+    internal_content: [
+        { label: 'Dr. Shreevarma Profile', description: 'About Page Bio Image', storagePath: 'site_assets/about/dr_shreevarma.png' },
+        { label: 'Discovery Image', description: 'Organisation Page Discovery', storagePath: 'site_assets/organisation/discovery.png' },
+        { label: 'Why Choose Docs', description: 'Consultation Page Content', storagePath: 'site_assets/consultation/why_choose_docs.png' },
+        { label: 'Certification Banner', description: 'Global Trust Banner', storagePath: 'site_assets/homepage/cert_gmp.png' },
+    ],
+    spotlight_media: [
+        { label: 'Spotlight 1', description: 'Carousel Item', storagePath: 'site_assets/homepage/spotlight_1.webp' },
+        { label: 'Spotlight 2', description: 'Carousel Item', storagePath: 'site_assets/homepage/spotlight_2.webp' },
+        { label: 'Spotlight 3', description: 'Carousel Item', storagePath: 'site_assets/homepage/spotlight_3.webp' },
+        { label: 'Spotlight 4', description: 'Carousel Item', storagePath: 'site_assets/homepage/spotlight_4.webp' },
+        { label: 'Spotlight 5', description: 'Carousel Item', storagePath: 'site_assets/homepage/spotlight_5.webp' },
     ]
 };
 
 export default function ThemeEditorPage() {
     return (
-        <div className="max-w-[1600px] mx-auto py-10 px-6 space-y-12">
-            <div className="flex justify-between items-center border-b pb-8">
-                <div>
-                    <h1 className="text-4xl font-black text-primary font-headline uppercase flex items-center gap-3">
-                        <LayoutDashboard className="h-10 w-10" /> Theme Portal
-                    </h1>
-                    <p className="text-muted-foreground font-medium">Global Site Image Management</p>
+        <div className="max-w-[1600px] mx-auto py-10 px-6 space-y-12 bg-background min-h-screen">
+            <header className="flex justify-between items-center border-b pb-8 bg-card p-6 rounded-xl shadow-sm">
+                <div className="flex items-center gap-4">
+                    <div className="p-3 bg-primary/10 rounded-lg">
+                        <LayoutDashboard className="h-10 w-10 text-primary" />
+                    </div>
+                    <div>
+                        <h1 className="text-4xl font-black text-primary font-headline uppercase tracking-tighter">Theme Portal</h1>
+                        <p className="text-muted-foreground font-medium flex items-center gap-2">
+                           <Globe className="h-4 w-4" /> Global Website Asset Manager
+                        </p>
+                    </div>
                 </div>
-                <Button variant="outline" onClick={() => window.location.reload()}>
-                    <RefreshCcw className="mr-2 h-4 w-4" /> Hard Reload
+                <Button variant="outline" size="lg" className="font-bold" onClick={() => window.location.reload()}>
+                    <RefreshCcw className="mr-2 h-4 w-4" /> Sync All
                 </Button>
-            </div>
+            </header>
             
             {Object.entries(themeImages).map(([section, images]) => (
                 <section key={section} className="space-y-6">
-                    <h2 className="text-2xl font-bold uppercase tracking-widest text-foreground/70 border-l-4 border-primary pl-4">
-                        {section.replace('_', ' & ')}
-                    </h2>
+                    <div className="flex items-center gap-4">
+                        <h2 className="text-2xl font-bold uppercase tracking-widest text-primary/80 border-l-4 border-primary pl-4">
+                            {section.replace('_', ' ')}
+                        </h2>
+                        <div className="flex-1 h-[1px] bg-border" />
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {images.map(img => (
                             <ImageEditCard 
@@ -149,6 +172,10 @@ export default function ThemeEditorPage() {
                     </div>
                 </section>
             ))}
+
+            <footer className="text-center py-12 border-t text-muted-foreground text-sm uppercase tracking-[0.2em] font-medium opacity-50">
+                Shreevarma Internal Content Management
+            </footer>
         </div>
     );
 }
