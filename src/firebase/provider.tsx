@@ -75,8 +75,9 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
 
   // Effect to subscribe to Firebase auth state changes
   useEffect(() => {
-    if (!auth) { // If no Auth service instance, we are effectively still loading auth state.
-      setUserAuthState({ user: null, isUserLoading: true, userError: null });
+    if (!auth) {
+      // If auth service is not available, we are not loading user and there is no user.
+      setUserAuthState({ user: null, isUserLoading: false, userError: null });
       return;
     }
 
@@ -96,15 +97,15 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
 
   // Memoize the context value
   const contextValue = useMemo((): FirebaseContextState => {
-    const servicesAvailable = !!(firebaseApp && firestore && auth && storage);
+    const areServicesAvailable = !!(firebaseApp && firestore && auth && storage);
     return {
-      areServicesAvailable: servicesAvailable,
+      areServicesAvailable: areServicesAvailable,
       firebaseApp: firebaseApp,
       firestore: firestore,
       auth: auth,
       storage: storage,
       user: userAuthState.user,
-      isUserLoading: !servicesAvailable || userAuthState.isUserLoading,
+      isUserLoading: !areServicesAvailable || userAuthState.isUserLoading,
       userError: userAuthState.userError,
     };
   }, [firebaseApp, firestore, auth, storage, userAuthState]);
