@@ -1,13 +1,15 @@
-# apphosting.yaml
-# Complete and Corrected for Shreevarma Next.js App
-
+# apphosting.yaml - Root Directory
 runConfig:
   cpu: 1
   memoryMiB: 512
   maxInstances: 1
   
   env:
-    # --- Public URLs & Environments ---
+    # --- System Config ---
+    - variable: FIREBASE_WEBAPP_CONFIG
+      availability: [BUILD, RUNTIME]
+
+    # --- Public Environment ---
     - variable: NEXT_PUBLIC_APP_URL
       value: https://app.shreevarma.org
       availability: [BUILD, RUNTIME]
@@ -15,12 +17,8 @@ runConfig:
       value: production
       availability: [BUILD, RUNTIME]
 
-    # --- Firebase/Google Internal ---
-    - variable: GCLOUD_PROJECT
-      value: __FIREBASE_PROJECT_ID__
-      availability: [BUILD, RUNTIME]
-    
-    # --- Firebase Public Config (CRITICAL FOR CLIENT-SIDE LOAD) ---
+    # --- Firebase Client Secrets ---
+    # These must match the secret names you set in the terminal
     - variable: NEXT_PUBLIC_FIREBASE_API_KEY
       secret: NEXT_PUBLIC_FIREBASE_API_KEY
       availability: [BUILD, RUNTIME]
@@ -40,24 +38,19 @@ runConfig:
       secret: NEXT_PUBLIC_FIREBASE_APP_ID
       availability: [BUILD, RUNTIME]
 
-    # --- Cashfree Secrets ---
+    # --- Payment & Video Secrets ---
+    - variable: CASHFREE_APP_ID
+      secret: CASHFREE_APP_ID
+      availability: [RUNTIME]
     - variable: NEXT_PUBLIC_CASHFREE_APP_ID
       secret: CASHFREE_APP_ID
       availability: [BUILD, RUNTIME]
-    - variable: CASHFREE_APP_ID             
-      secret: CASHFREE_APP_ID
-      availability: [RUNTIME]
     - variable: CASHFREE_SECRET_KEY
       secret: CASHFREE_SECRET_KEY
       availability: [RUNTIME]
-
-    # --- ZEGOCLOUD & Gemini ---
     - variable: ZEGO_APP_ID
       secret: ZEGO_APP_ID
-      availability: [BUILD, RUNTIME]
-    - variable: NEXT_PUBLIC_ZEGO_APP_ID
-      secret: ZEGO_APP_ID
-      availability: [BUILD, RUNTIME]
+      availability: [RUNTIME]
     - variable: ZEGO_SERVER_SECRET
       secret: ZEGO_SERVER_SECRET
       availability: [RUNTIME]
