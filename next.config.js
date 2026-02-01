@@ -1,13 +1,19 @@
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // 1. Force the system variable to be available during build
+  env: {
+    FIREBASE_WEBAPP_CONFIG: process.env.FIREBASE_WEBAPP_CONFIG,
+  },
+
   typescript: {
+    // Keeps the build moving even with minor type mismatches
     ignoreBuildErrors: true,
   },
+
   async headers() {
     return [
       {
-        // Apply a more lenient policy globally for services like Google Sign-In.
+        // Global policy for Cashfree and Google Sign-In
         source: '/:path*',
         headers: [
           {
@@ -21,8 +27,7 @@ const nextConfig = {
         ],
       },
       {
-        // Apply stricter headers ONLY to the video call session page.
-        // This block needs to repeat the COOP header.
+        // Strict headers for Video Consultations (ZEGOCLOUD requirement)
         source: '/consultation/session/:path*',
         headers: [
           {
@@ -37,38 +42,40 @@ const nextConfig = {
       },
     ];
   },
+
   images: {
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'placehold.co',
-        port: '',
         pathname: '/**',
       },
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
-        port: '',
         pathname: '/**',
       },
       {
-        protocol: 'https' ,
+        protocol: 'https',
         hostname: 'picsum.photos',
-        port: '',
         pathname: '/**',
       },
       {
         protocol: 'https',
         hostname: 'storage.googleapis.com',
-        port: '',
         pathname: '/**',
       },
       {
         protocol: 'https',
         hostname: 'firebasestorage.googleapis.com',
-        port: '',
         pathname: '/**',
-      }
+      },
+      // Added the new Firebase Storage domain format
+      {
+        protocol: 'https',
+        hostname: 'shreevarma-india-location.firebasestorage.app',
+        pathname: '/**',
+      },
     ],
   },
 };

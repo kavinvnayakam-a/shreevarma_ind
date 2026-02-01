@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, type ReactNode } from 'react';
@@ -9,34 +8,31 @@ import { Auth } from 'firebase/auth';
 import { Firestore } from 'firebase/firestore';
 import { FirebaseStorage } from 'firebase/storage';
 
-interface FirebaseClientProviderProps {
-  children: ReactNode;
-}
-
-interface FirebaseServices {
-    firebaseApp: FirebaseApp;
-    auth: Auth;
-    firestore: Firestore;
-    storage: FirebaseStorage;
-}
-
-export function FirebaseClientProvider({ children }: FirebaseClientProviderProps) {
-  const [firebaseServices, setFirebaseServices] = useState<FirebaseServices | null>(null);
+export function FirebaseClientProvider({ children }: { children: ReactNode }) {
+  const [services, setServices] = useState<{
+    firebaseApp: FirebaseApp | null;
+    auth: Auth | null;
+    firestore: Firestore | null;
+    storage: FirebaseStorage | null;
+  }>({
+    firebaseApp: null,
+    auth: null,
+    firestore: null,
+    storage: null,
+  });
 
   useEffect(() => {
-    // This ensures Firebase is only initialized on the client side.
-    const services = initializeFirebase();
-    if(services.firebaseApp) {
-        setFirebaseServices(services as FirebaseServices);
-    }
+    // This executes only on the client side after the page loads
+    const initialized = initializeFirebase();
+    setServices(initialized);
   }, []); 
 
   return (
     <FirebaseProvider
-      firebaseApp={firebaseServices?.firebaseApp ?? null}
-      auth={firebaseServices?.auth ?? null}
-      firestore={firebaseServices?.firestore ?? null}
-      storage={firebaseServices?.storage ?? null}
+      firebaseApp={services.firebaseApp}
+      auth={services.auth}
+      firestore={services.firestore}
+      storage={services.storage}
     >
       {children}
     </FirebaseProvider>
