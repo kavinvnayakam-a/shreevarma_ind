@@ -123,7 +123,7 @@ function generateOrderConfirmationEmail(orderData: any): string {
     <body>
       <div class="container">
         <div class="header">
-          <img src="https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/white-logo.png?alt=media&token=c2768564-99b3-42e7-9c4c-3543666b6964" alt="Shreevarma's Wellness">
+          <img src="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0249163472.firebasestorage.app/o/white-logo.png?alt=media&token=c2768564-99b3-42e7-9c4c-3543666b6964" alt="Shreevarma's Wellness">
         </div>
         <div class="content">
           <h1 style="color: #72392F; text-align: center; font-size: 24px;">Thank You for Your Order!</h1>
@@ -156,7 +156,7 @@ function generateOrderConfirmationEmail(orderData: any): string {
             ${orderData.shippingAddress.city}, ${orderData.shippingAddress.state} ${orderData.shippingAddress.zip}
           </p>
           <div style="text-align: center; margin-top: 30px;">
-            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://shreevarma.org/'}/profile/orders/${orderData.internalId}" class="button">View Order Details</a>
+            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://app.shreevarma.org/'}/profile/orders/${orderData.internalId}" class="button">View Order Details</a>
           </div>
         </div>
         <div class="footer">

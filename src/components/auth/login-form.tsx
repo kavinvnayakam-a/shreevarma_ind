@@ -103,7 +103,7 @@ export function LoginForm() {
           break;
         case 'auth/unauthorized-domain':
           title = 'Domain Not Authorized';
-          description = `This domain is not authorized for sign-in. Please add 'shreevarma.org' to the authorized domains in your Firebase project's Authentication settings.`;
+          description = `This domain is not authorized for sign-in. Please add 'app.shreevarma.org' to the authorized domains in your Firebase project's Authentication settings.`;
           break;
         default:
           title = error.code;

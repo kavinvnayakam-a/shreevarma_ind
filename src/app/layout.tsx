@@ -37,7 +37,7 @@ export const metadata: Metadata = {
       },
     ],
     type: 'website',
-    url: 'https://shreevarma.org',
+    url: 'https://app.shreevarma.org',
     siteName: "Shreevarma's Wellness",
   },
   twitter: {

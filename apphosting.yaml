@@ -9,7 +9,7 @@ runConfig:
   env:
     # The public URL of your application. This is needed for creating redirect links.
     - variable: NEXT_PUBLIC_APP_URL
-      value: https://shreevarma.org
+      value: https://app.shreevarma.org
     # The environment for Cashfree (sandbox or production).
     - variable: CASHFREE_ENV
       value: production

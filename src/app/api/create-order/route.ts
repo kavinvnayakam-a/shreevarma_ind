@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Missing order data.' }, { status: 400 });
     }
 
-    let appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://shreevarma.org/';
+    let appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.shreevarma.org/';
     appUrl = appUrl.endsWith('/') ? appUrl.slice(0, -1) : appUrl;
 
     const orderDocId = uuidv4();

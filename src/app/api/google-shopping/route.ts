@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://shreevarma.org/';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.shreevarma.org/';
 
     const xmlItems = productsSnapshot.docs.map(doc => {
       const product = doc.data();
