@@ -51,7 +51,7 @@ interface UserProfile extends DocumentData {
 export default function CheckoutPageClient() {
   const router = useRouter();
   const { toast } = useToast();
-  const { cartItems, cartTotal, clearCart } = useCart();
+  const { cartItems, cartTotal } = useCart();
   const { user, isUserLoading } = useUser();
   const { firestore } = useFirebase();
 
@@ -136,8 +136,6 @@ export default function CheckoutPageClient() {
       if (!response.success || !response.payment_session_id) {
         throw new Error(response.error || 'Failed to initiate payment session');
       }
-      
-      clearCart();
 
       const cashfree = window.Cashfree({
         mode: process.env.NEXT_PUBLIC_CASHFREE_ENV === 'sandbox' ? 'sandbox' : 'production',
@@ -145,7 +143,6 @@ export default function CheckoutPageClient() {
 
       await cashfree.checkout({
         paymentSessionId: response.payment_session_id,
-        redirectTarget: "_self", 
       });
 
     } catch (err: any) {
@@ -248,10 +245,17 @@ export default function CheckoutPageClient() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4 max-h-[40vh] overflow-auto pr-2 mb-4 scrollbar-hide">
-                {cartItems.map(item => (
+                {cartItems.map((item, index) => (
                   <div key={item.id} className="flex gap-4 items-center">
                     <div className="relative h-14 w-14 border rounded-lg bg-muted flex-shrink-0 overflow-hidden">
-                        <Image src={item.imageUrls?.[0] || 'https://placehold.co/100'} alt={item.name} fill className="object-cover" />
+                        <Image
+                          src={item.imageUrls?.[0] || 'https://placehold.co/100'}
+                          alt={item.name}
+                          fill
+                          className="object-cover"
+                          sizes="56px"
+                          priority={index === 0}
+                        />
                     </div>
                     <div className="flex-1 text-sm">
                         <p className="font-bold line-clamp-1">{item.name}</p>
