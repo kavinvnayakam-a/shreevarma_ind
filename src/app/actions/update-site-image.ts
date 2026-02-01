@@ -1,10 +1,9 @@
-
 'use server';
 
 import { revalidatePath } from 'next/cache';
 import * as admin from 'firebase-admin';
 
-// In App Hosting, the Admin SDK can often auto-initialize.
+// Initialize Admin SDK safely
 if (!admin.apps.length) {
   try {
     admin.initializeApp();
@@ -13,8 +12,8 @@ if (!admin.apps.length) {
   }
 }
 
-// Explicitly define the correct bucket name for the Admin SDK.
-const BUCKET_NAME = "shreevarma-india-location.appspot.com";
+// FIX: Use the modern .firebasestorage.app domain or an environment variable
+const BUCKET_NAME = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "shreevarma-india-location.firebasestorage.app";
 
 export async function updateSiteImage(formData: FormData) {
   const file = formData.get('file') as File;
@@ -25,7 +24,6 @@ export async function updateSiteImage(formData: FormData) {
   }
 
   try {
-    // Explicitly get the bucket by name. This is the most reliable method.
     const bucket = admin.storage().bucket(BUCKET_NAME);
     const blob = bucket.file(storagePath);
 
@@ -35,19 +33,24 @@ export async function updateSiteImage(formData: FormData) {
     await blob.save(buffer, {
       metadata: {
         contentType: file.type,
+        // Ensure the browser caches the new image correctly
         cacheControl: 'public, max-age=31536000',
       },
       resumable: false,
     });
 
-    await blob.makePublic();
+    // Optional: If you want the image to be publicly accessible via storage.googleapis.com
+    try {
+        await blob.makePublic();
+    } catch (e) {
+        console.warn("Could not make blob public, check fine-grained access settings.");
+    }
 
     revalidatePath('/', 'layout');
 
     return {
       success: true,
       message: 'Image updated successfully.',
-      // The public URL format
       url: `https://storage.googleapis.com/${bucket.name}/${storagePath}`
     };
 
@@ -55,11 +58,10 @@ export async function updateSiteImage(formData: FormData) {
     console.error('Detailed Storage Error:', error);
     
     let message = 'Server upload failed.';
-    // Check for specific error codes to provide better feedback.
     if (error.code === 404 || error.message.includes("does not exist")) {
-      message = `Bucket '${BUCKET_NAME}' not found. Please ensure this is the correct bucket name in your server action.`;
-    } else if (error.code === 403 || error.code === 'storage/unauthorized') {
-        message = 'Server is not authorized to upload. Check IAM permissions for the App Hosting service account.'
+      message = `Bucket '${BUCKET_NAME}' not found. Verify the bucket name in Firebase Console > Storage.`;
+    } else if (error.code === 403) {
+        message = 'Permission Denied. Ensure the App Hosting service account has "Storage Admin" role.';
     }
     
     return { success: false, error: `${message} (${error.message})` };
