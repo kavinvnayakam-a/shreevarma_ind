@@ -24,7 +24,7 @@ service cloud.firestore {
     // --- RULES ---
 
     match /products/{productId} {
-      allow read: if true;
+      allow read, list: if true;
       allow write: if isSuperAdmin() || isHealthcareAdmin();
 
       match /reviews/{reviewId} {
