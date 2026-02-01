@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -200,8 +199,8 @@ export default function HomePage() {
               ))}
             </CarouselContent>
           </Carousel>
-          <div className="mt-12 flex justify-center">
-            <div className="relative w-full max-w-4xl aspect-[900/450]">
+          <div className="flex justify-center">
+            <div className="relative w-full max-w-4xl aspect-[3750/710]">
               <Image src={getImageUrl('site_assets/homepage/trendsetters_award.webp')} alt="Award" fill className="object-contain rounded-xl" unoptimized />
             </div>
           </div>
