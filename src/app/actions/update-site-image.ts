@@ -1,19 +1,22 @@
-
 'use server';
 
 import { revalidatePath } from 'next/cache';
 import * as admin from 'firebase-admin';
 
-// Initialize Firebase Admin SDK if not already initialized
+// Initialize Firebase Admin with explicit credentials to avoid 404/Permission errors
 if (!admin.apps.length) {
   try {
-    // Explicitly provide the storage bucket for the Admin SDK.
-    // This helps both local development and deployed environments find the bucket.
     admin.initializeApp({
-        storageBucket: 'shreevarma-india-location.appspot.com'
+      credential: admin.credential.cert({
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        // The replace handles newline characters in deployment environments
+        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      }),
+      storageBucket: 'shreevarma-india-location.appspot.com',
     });
   } catch (error: any) {
-    console.error("Firebase Admin initialization error:", error.message);
+    console.error('Firebase Admin initialization error:', error.message);
   }
 }
 
@@ -21,44 +24,54 @@ export async function updateSiteImage(formData: FormData) {
   const file = formData.get('file') as File;
   const storagePath = formData.get('storagePath') as string;
 
+  // 1. Validation
   if (!file || !storagePath) {
     return { success: false, error: 'Missing file or storage path.' };
   }
 
   try {
-    // Now that the app is initialized with a default bucket, 
-    // we can get the default bucket directly.
-    const bucket = admin.storage().bucket(); 
-    const fileBuffer = Buffer.from(await file.arrayBuffer());
-    
+    // 2. Explicitly reference the bucket name to bypass auto-discovery issues
+    const bucket = admin.storage().bucket('shreevarma-india-location.appspot.com');
     const blob = bucket.file(storagePath);
 
-    // Upload the new file, overwriting the old one
-    await blob.save(fileBuffer, {
-        metadata: {
-            contentType: file.type,
-            cacheControl: 'public, max-age=31536000',
-        },
+    // 3. Convert File to Buffer for Node.js environment
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // 4. Upload and Overwrite
+    // We use .save() which is the standard way to write buffers in Admin SDK
+    await blob.save(buffer, {
+      metadata: {
+        contentType: file.type,
+        cacheControl: 'public, max-age=31536000', // One year cache
+      },
+      resumable: false, // Better for small files/Server Actions
     });
-    
-    // Make the file publicly readable
+
+    // 5. Set Permissions
+    // Note: Ensure "Fine-grained" access is enabled in Firebase Storage settings
     await blob.makePublic();
 
-    // Revalidate the entire site to ensure the new image is shown everywhere
+    // 6. Refresh the Next.js Cache
     revalidatePath('/', 'layout');
 
-    return { success: true, message: 'Image updated successfully.' };
+    return { 
+      success: true, 
+      message: 'Image updated successfully.',
+      url: `https://storage.googleapis.com/${bucket.name}/${storagePath}`
+    };
+
   } catch (error: any) {
-    console.error('Image upload failed:', error);
-    // Provide a more specific error message if available
-    let errorMessage = `An unexpected server error occurred.`;
-    if (error.code === 404 || (error.message && error.message.includes('not exist'))) {
-        errorMessage = `The storage bucket was not found. Please ensure the bucket name is correct in the server action.`;
-    } else if (error.code === 403 || (error.errors && error.errors[0].reason === 'forbidden')) {
-        errorMessage = 'Permission denied. The server does not have the required permissions to upload files. Please check server IAM roles.';
-    } else if (error.message) {
-        errorMessage += ` (${error.message})`;
-    }
-    return { success: false, error: errorMessage };
+    console.error('Firebase Storage Error:', error);
+
+    // Refined Error Handling
+    let message = 'An unexpected error occurred.';
+    if (error.code === 404) message = 'Bucket not found. Check your bucket name.';
+    if (error.code === 403) message = 'Permission denied. Check Service Account roles.';
+    
+    return { 
+      success: false, 
+      error: `${message} (${error.message})` 
+    };
   }
 }
