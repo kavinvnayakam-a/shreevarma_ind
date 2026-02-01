@@ -1,9 +1,7 @@
-# apphosting.yaml - Root Directory
 runConfig:
   cpu: 1
   memoryMiB: 512
   maxInstances: 1
-  
   env:
     # --- System Config ---
     - variable: FIREBASE_WEBAPP_CONFIG
@@ -17,8 +15,7 @@ runConfig:
       value: production
       availability: [BUILD, RUNTIME]
 
-    # --- Firebase Client Secrets ---
-    # These must match the secret names you set in the terminal
+    # --- Firebase Client Config ---
     - variable: NEXT_PUBLIC_FIREBASE_API_KEY
       secret: NEXT_PUBLIC_FIREBASE_API_KEY
       availability: [BUILD, RUNTIME]
@@ -29,8 +26,9 @@ runConfig:
       secret: NEXT_PUBLIC_FIREBASE_PROJECT_ID
       availability: [BUILD, RUNTIME]
     - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-  value: "shreevarma-india-location.firebasestorage.app"
-  availability: [BUILD, RUNTIME]
+      value: shreevarma-india-location.firebasestorage.app
+      availability: [BUILD, RUNTIME]
+    - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
       secret: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
       availability: [BUILD, RUNTIME]
     - variable: NEXT_PUBLIC_FIREBASE_APP_ID
