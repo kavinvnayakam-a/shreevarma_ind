@@ -17,10 +17,10 @@ runConfig:
     - variable: GCLOUD_PROJECT
       value: __FIREBASE_PROJECT_ID__
 
-    # --- Secrets: Cashfree ---
-    - variable: CASHFREE_APP_ID
+# --- Secrets: Cashfree ---
+    - variable: NEXT_PUBLIC_CASHFREE_APP_ID  # Added NEXT_PUBLIC_
       secret: CASHFREE_APP_ID
-    - variable: CASHFREE_SECRET_KEY
+    - variable: CASHFREE_SECRET_KEY         # Keep this private (no prefix)
       secret: CASHFREE_SECRET_KEY
 
     # --- Secrets: ZEGOCLOUD ---
