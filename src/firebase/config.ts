@@ -1,6 +1,4 @@
-
-// This file was previously missing, causing a build error.
-// It reads the Firebase credentials from environment variables provided by App Hosting.
+// This file reads the Firebase credentials from environment variables.
 export const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
