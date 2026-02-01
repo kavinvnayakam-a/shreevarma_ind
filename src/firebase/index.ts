@@ -17,19 +17,20 @@ const firebaseConfig = {
 
 export function initializeFirebase() {
   let firebaseApp: FirebaseApp;
-
-  if (getApps().length === 0) {
-    try {
+  
+  // This function might be called on the server during build, where env vars are not available.
+  // We check for apiKey to ensure we only initialize when config is valid.
+  if (firebaseConfig.apiKey) {
+    if (getApps().length === 0) {
       firebaseApp = initializeApp(firebaseConfig);
-    } catch (e) {
-      console.error('Firebase initialization error:', e);
+    } else {
       firebaseApp = getApp();
     }
-  } else {
-    firebaseApp = getApp();
+    return getSdks(firebaseApp);
   }
 
-  return getSdks(firebaseApp);
+  // Return a shell object if Firebase can't be initialized.
+  return { firebaseApp: null, auth: null, firestore: null, storage: null };
 }
 
 export function getSdks(firebaseApp: FirebaseApp) {
