@@ -4,18 +4,17 @@
 import { revalidatePath } from 'next/cache';
 import * as admin from 'firebase-admin';
 
-// Correct initialization for App Hosting environment
+// In App Hosting, the Admin SDK can often auto-initialize.
 if (!admin.apps.length) {
   try {
-    // The Admin SDK will automatically use Application Default Credentials
-    // on App Hosting. We just need to tell it which bucket to use.
-    admin.initializeApp({
-      storageBucket: 'shreevarma-india-location.appspot.com',
-    });
+    admin.initializeApp();
   } catch (error: any) {
     console.error('Firebase Admin initialization error:', error.message);
   }
 }
+
+// Explicitly define the correct bucket name for the Admin SDK.
+const BUCKET_NAME = "shreevarma-india-location.appspot.com";
 
 export async function updateSiteImage(formData: FormData) {
   const file = formData.get('file') as File;
@@ -26,8 +25,8 @@ export async function updateSiteImage(formData: FormData) {
   }
 
   try {
-    // Get the default bucket specified during initialization.
-    const bucket = admin.storage().bucket();
+    // Explicitly get the bucket by name. This is the most reliable method.
+    const bucket = admin.storage().bucket(BUCKET_NAME);
     const blob = bucket.file(storagePath);
 
     const arrayBuffer = await file.arrayBuffer();
@@ -56,9 +55,10 @@ export async function updateSiteImage(formData: FormData) {
     console.error('Detailed Storage Error:', error);
     
     let message = 'Server upload failed.';
-    if (error.code === 404) {
-      message = 'Bucket not found. Ensure bucket name is correct in the server action.';
-    } else if (error.code === 'storage/unauthorized') {
+    // Check for specific error codes to provide better feedback.
+    if (error.code === 404 || error.message.includes("does not exist")) {
+      message = `Bucket '${BUCKET_NAME}' not found. Please ensure this is the correct bucket name in your server action.`;
+    } else if (error.code === 403 || error.code === 'storage/unauthorized') {
         message = 'Server is not authorized to upload. Check IAM permissions for the App Hosting service account.'
     }
     
