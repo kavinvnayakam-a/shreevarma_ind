@@ -1,3 +1,4 @@
+
 runConfig:
   cpu: 1
   memoryMiB: 512
@@ -39,10 +40,10 @@ runConfig:
     # Used by the server-side API (route.ts)
     - variable: CASHFREE_APP_ID
       secret: CASHFREE_APP_ID
-      availability: [RUNTIME]
+      availability: [BUILD, RUNTIME]
     - variable: CASHFREE_SECRET_KEY
       secret: CASHFREE_SECRET_KEY
-      availability: [RUNTIME]
+      availability: [BUILD, RUNTIME]
       
     # Used by the client-side SDK (CheckoutPageClient.tsx)
     - variable: NEXT_PUBLIC_CASHFREE_APP_ID
