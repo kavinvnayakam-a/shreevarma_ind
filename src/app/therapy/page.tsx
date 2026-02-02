@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -6,44 +7,15 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Search, CheckCircle2, Sparkles, MapPin, ShoppingBag, Video } from 'lucide-react';
-
-const therapies = [
-    { id: 't19', name: 'Vamana', slug: 'vamana', description: 'Therapeutic vomiting for cleansing Kapha dosha.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2FVamana.webp?alt=media&token=02731b7f-71b8-48e1-8d2b-a3668dafc7a6' },
-    { id: 't2', name: 'Abhyangam', slug: 'abhyangam', description: 'Classic full-body synchronized massage with medicated oils.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fabhyangam.webp?alt=media&token=e64e1510-c56b-4088-9b17-9c36603d59ac' },
-    { id: 't20', name: 'Acupuncture', slug: 'acupuncture', description: 'Ancient Chinese therapy using fine needles to balance energy.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Facupuncture.webp?alt=media&token=0fdeeb3d-b4a9-4089-866b-78f5fca3c12e' },
-    { id: 't21', name: 'Basti', slug: 'basti', description: 'Medicated enema therapy, a cornerstone of Panchakarma.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fbasti.webp?alt=media&token=a369202c-d9d3-41d0-ad41-7ef689a964d6' },
-    { id: 't17', name: 'Elakizhi', slug: 'elakizhi', description: 'Fresh herbal leaf bolus massage for chronic pain.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Felakizhi.webp?alt=media&token=8724c1cf-65b6-4ee0-ac25-83a01b1bfc78' },
-    { id: 't3', name: 'Greeva Vasti', slug: 'greeva-vasti', description: 'Targeted oil pooling for neck and cervical spine care.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fgreeva-basti.webp?alt=media&token=7aa1ffa6-6210-44a9-8735-5a477b72e999' },
-    { id: 't7', name: 'Janu Vasti', slug: 'janu-vasti', description: 'Specialized therapy for knee joint strengthening.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fjanu-basti.webp?alt=media&token=6adc1450-86c0-4e1b-80df-e08fbb10bc92' },
-    { id: 't22', name: 'Karnapooranam', slug: 'karnapooranam', description: 'Ear therapy with warm medicated oil for ear health.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fkarnapooranam.webp?alt=media&token=eff0f270-48df-4f1c-952f-1bbaa493f1df' },
-    { id: 't4', name: 'Kati Vasti', slug: 'kati-vasti', description: 'Warm oil treatment for lower back and sciatica relief.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fkati-vasti.webp?alt=media&token=faa9c3e3-bf2f-4eb9-95a3-4ebe030f9808' },
-    { id: 't23', name: 'Lepam', slug: 'lepam', description: 'Application of herbal paste for skin conditions and pain.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Flepam.webp?alt=media&token=4054e610-6f95-453e-86f4-3a579fe2ce57' },
-    { id: 't24', name: 'Mukha Lepam', slug: 'mukha-lepam', description: 'Ayurvedic facial treatment with herbal pastes.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fmukha-lepam.webp?alt=media&token=609a0a38-6ddb-4558-a1af-0a99ddb1cd7b' },
-    { id: 't13', name: 'Nasyam', slug: 'nasyam', description: 'Nasal administration of oils for sinus and head clarity.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fnasyam.webp?alt=media&token=2bdf5c29-cedb-4ff9-9705-e3626020c6cd' },
-    { id: 't9', name: 'Navarakizhi', slug: 'navarakizhi', description: 'Medicated rice bolus massage for muscle nourishment.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fnavarakizhi.webp?alt=media&token=a37586c5-0ff6-44d1-a685-a752fdd47b13' },
-    { id: 't12', name: 'Netra Tarpanam', slug: 'netra-tarpanam', description: 'Nourishing oil pooling for eye health and strain.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fnetra-tarpanam.webp?alt=media&token=01e02346-f68a-425a-9e6f-cec65bf5239e' },
-    { id: 't25', name: 'Pada Abhyangam', slug: 'pada-abhyangam', description: 'Soothing Ayurvedic foot massage to balance doshas.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fpada-abhyangam.webp?alt=media&token=14b27e01-7a86-45c1-adc7-b99990aeeb13' },
-    { id: 't14', name: 'Pichu', slug: 'pichu', description: 'Medicated oil padding for localized inflammation.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fpichu.webp?alt=media&token=e75d6674-5b2c-49f5-91b6-3a7f95d09ff8' },
-    { id: 't8', name: 'Pizhichil', slug: 'pizhichil', description: 'Royal oil bath combining massage and heat therapy.', imageUrl: 'http://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fpizhichil.webp?alt=media&token=89bc2874-5427-4bff-a78d-a647d176f14a' },
-    { id: 't1', name: 'Podikizhi', slug: 'podikizhi', description: 'Herbal powder bolus massage for joint pain and stiffness.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fpodikizhi.webp?alt=media&token=01b91345-f424-4d54-bdea-22b24ddca91f' },
-    { id: 't18', name: 'Raktamokshana', slug: 'raktamokshana', description: 'Traditional bloodletting therapy for purification.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fraktamokshana.webp?alt=media&token=71c35cc9-f70e-442d-84ef-0a0ca9a7cbe1' },
-    { id: 't26', name: 'Shiro Abhyangam', slug: 'shiro-abhyangam', description: 'Traditional Indian head massage to relieve stress.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fshiro-abhyangam.webp?alt=media&token=7e7d8052-787e-438c-938b-059308b23ceb' },
-    { id: 't5', name: 'Shirodhara', slug: 'shirodhara', description: 'Continuous oil stream on forehead for stress and sleep.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fshirodhara.webp?alt=media&token=3eae7a87-b9aa-4c45-ae33-14be8931d376' },
-    { id: 't10', name: 'Swedana', slug: 'swedana', description: 'Localized steam therapy to open pores and reduce pain.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fswedana.webp?alt=media&token=d0ec91b3-263d-4b67-8c47-2af24aa1ffeb' },
-    { id: 't11', name: 'Takradhara', slug: 'takradhara', description: 'Cooling buttermilk stream for skin and mental calm.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Ftakradhara.webp?alt=media&token=1e5ec8bc-f37c-4375-966e-58fcbd31658e' },
-    { id: 't6', name: 'Udvarthanam', slug: 'udvarthanam', description: 'Dry herbal powder massage for weight loss and detox.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fudvarthanam.webp?alt=media&token=db1f0dc0-152b-4518-99a5-2593e55ab430' },
-    { id: 't27', name: 'Valuka Swedana', slug: 'valuka-swedana', description: 'Fomentation therapy using heated sand-filled boluses.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fvaluka-swedana.webp?alt=media&token=73adb783-4e3f-4bf0-8bda-d47267236475' },
-    { id: 't28', name: 'Varma', slug: 'varma', description: 'Pressure point therapy to stimulate vital energy points.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fvarma.webp?alt=media&token=2490d84a-8827-4b15-a82b-d484d59229c4' },
-    { id: 't29', name: 'Virechana', slug: 'virechana', description: 'Therapeutic purgation for cleansing Pitta dosha.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fvirechana.webp?alt=media&token=d9a78447-300f-4012-8315-b7c3c865dd83' },
-];
+import { Search, Sparkles, MapPin, ShoppingBag, Video } from 'lucide-react';
+import { therapiesData } from './therapy-data';
 
 
 export default function TherapyPage() {
     const [searchQuery, setSearchQuery] = useState('');
 
     const filteredTherapies = useMemo(() => {
-        return therapies.filter(t => t.name.toLowerCase().includes(searchQuery.toLowerCase()));
+        return therapiesData.filter(t => t.name.toLowerCase().includes(searchQuery.toLowerCase()));
     }, [searchQuery]);
 
     return (
@@ -125,11 +97,11 @@ export default function TherapyPage() {
                                     <CardTitle className="font-black text-2xl text-primary uppercase tracking-tight">{therapy.name}</CardTitle>
                                 </CardHeader>
                                 <CardContent className="min-h-[80px]">
-                                    <p className="text-muted-foreground text-sm leading-relaxed">{therapy.description}</p>
+                                    <p className="text-muted-foreground text-sm leading-relaxed">{therapy.what.split('.').slice(0, 2).join('.') + '.'}</p>
                                 </CardContent>
                                 <CardFooter className="pb-8">
-                                    <Button className="w-full rounded-2xl py-6 font-bold uppercase tracking-widest border-primary text-primary hover:bg-primary hover:text-white transition-colors" variant="outline">
-                                        View Details
+                                    <Button asChild className="w-full rounded-2xl py-6 font-bold uppercase tracking-widest border-primary text-primary hover:bg-primary hover:text-white transition-colors" variant="outline">
+                                        <Link href={`/therapy/${therapy.slug}`}>View Details</Link>
                                     </Button>
                                 </CardFooter>
                             </Card>
