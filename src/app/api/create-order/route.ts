@@ -5,9 +5,11 @@ import * as admin from 'firebase-admin';
 
 // Initialize Firebase Admin SDK
 if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.applicationDefault(),
-  });
+  try {
+    admin.initializeApp();
+  } catch (error: any) {
+    console.error('Firebase Admin init error:', error.message);
+  }
 }
 const db = admin.firestore();
 
@@ -21,7 +23,8 @@ async function getCashfreeApiHeaders() {
   const secretKey = process.env.CASHFREE_SECRET_KEY;
 
   if (!appId || !secretKey) {
-    throw new Error('Cashfree credentials not configured on the server.');
+    console.error('CRITICAL: Cashfree credentials (CASHFREE_APP_ID, CASHFREE_SECRET_KEY) are not set in the App Hosting environment.');
+    throw new Error('Cashfree credentials not configured.');
   }
 
   return {
@@ -55,25 +58,30 @@ export async function POST(req: NextRequest) {
     const pendingOrderRef = db.collection('pending_orders').doc(orderDocId);
     const userOrderRef = db.collection('users').doc(userId).collection('orders').doc(orderDocId);
 
+
     const orderData = {
-        userId,
-        orderStatus: 'pending',
-        paymentStatus: 'PENDING',
-        totalAmount: cartTotal,
-        customer: { name: customerName, email: customerEmail, phone: customerPhone },
-        shippingAddress,
-        items: cartItems,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        internalId: orderDocId,
+      userId,
+      orderStatus: 'pending',
+      paymentStatus: 'PENDING',
+      totalAmount: cartTotal,
+      customer: {
+        name: customerName,
+        email: customerEmail,
+        phone: customerPhone,
+      },
+      shippingAddress,
+      items: cartItems,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      internalId: orderDocId,
     };
 
-    // Store a pending order in both locations
+    // Store pending order details in both locations
     await Promise.all([
       pendingOrderRef.set(orderData),
       userOrderRef.set(orderData)
     ]);
 
-    const returnUrl = `${appUrl}/order/success/{order_id}`;
+    const returnUrl = `${appUrl}/order/success/${orderDocId}`;
     const notifyUrl = "https://cashfreewebhook-iklfboedvq-uc.a.run.app";
 
     const response = await fetch(`${getCashfreeApiUrl()}/orders`, {
@@ -93,7 +101,7 @@ export async function POST(req: NextRequest) {
           return_url: returnUrl,
           notify_url: notifyUrl,
         },
-        order_note: 'Shreevarma Wellness Order',
+        order_note: 'SVW Online Store Purchase',
       }),
     });
 
