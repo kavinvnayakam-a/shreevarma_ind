@@ -1,8 +1,9 @@
+
 'use client';
 
 import Link from 'next/link';
 import { Logo } from '../icons/logo';
-import { Twitter, Facebook, Youtube, Instagram, MapPin, Phone, Mail } from 'lucide-react';
+import { Facebook, Youtube, Instagram, MapPin, Phone, Mail } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -24,7 +25,6 @@ export function Footer() {
             <div className="flex gap-5">
               {[
                 { icon: Facebook, href: "https://www.facebook.com/shreevarmaindia/" },
-                { icon: Twitter, href: "https://x.com/shreevarmaindia" },
                 { icon: Instagram, href: "https://www.instagram.com/shreevarma_tamil" },
                 { icon: Youtube, href: "https://www.youtube.com/@SHREEVARMA_TV" }
               ].map((social, i) => (
@@ -47,10 +47,15 @@ export function Footer() {
                 Quick Links
               </h3>
               <ul className="space-y-4">
-                {['About Us', 'Contact Us', 'Book an Appointment', 'Wellness Blog'].map((item) => (
-                  <li key={item}>
-                    <Link href={`/${item.toLowerCase().replace(/ /g, '-')}`} className="text-sm text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">
-                      {item}
+                {[
+                  { label: 'About Us', href: '/about' },
+                  { label: 'Contact Us', href: '/contact-us' },
+                  { label: 'Book an Appointment', href: '/consultation' },
+                  { label: 'Organisation', href: '/organisation' }
+                ].map((item) => (
+                  <li key={item.label}>
+                    <Link href={item.href} className="text-sm text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">
+                      {item.label}
                     </Link>
                   </li>
                 ))}
@@ -63,8 +68,8 @@ export function Footer() {
               <ul className="space-y-4">
                 {['Privacy Policy', 'Terms & Conditions', 'Refunds & Cancellations', 'Shipping & Returns'].map((item) => (
                   <li key={item}>
-                    <Link href={`/${item.toLowerCase().replace(/& /g, '').replace(/ /g, '-')}`} className="text-sm text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">
-                      {item}
+                    <Link href={`/${item.toLowerCase().replace(/ & /g, '').replace(/ /g, '-')}`} className="text-sm text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">
+                      {item.replace(' & ', ' and ')}
                     </Link>
                   </li>
                 ))}
