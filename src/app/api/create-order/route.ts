@@ -1,3 +1,4 @@
+
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import * as admin from 'firebase-admin';
@@ -24,7 +25,7 @@ async function getCashfreeApiHeaders() {
   const appId = process.env.CASHFREE_APP_ID;
   const secretKey = process.env.CASHFREE_SECRET_KEY;
 
-  // --- Start of my diagnostic block from last turn ---
+  // --- Start of my diagnostic block ---
   console.log('--- [DIAGNOSTIC] Cashfree Runtime Secret Check ---');
   if (appId) {
     console.log('[DIAGNOSTIC] CASHFREE_APP_ID: FOUND (length: ' + appId.length + ')');
