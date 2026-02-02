@@ -1,10 +1,8 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { SubHeader } from '@/components/layout/sub-header';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { PlayCircle, Phone, MapPin, ArrowRight, Stethoscope, User, Droplets, Leaf } from 'lucide-react';
+import { PlayCircle, Phone, MapPin, Stethoscope, User, Droplets, Leaf } from 'lucide-react';
 
 const philosophyPoints = [
     { icon: Leaf, text: 'Authentic Ayurveda Treatments', description: 'Rooted in centuries-old practices' },
@@ -20,34 +18,29 @@ const whyChooseReasons = [
   { text: 'Holistic Wellness', description: 'Focus on body, mind, and spiritual balance' },
 ];
 
-const baseUrl = `https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}/o/`;
-const urlSuffix = `?alt=media`;
-
-const getImageUrl = (path: string) => `${baseUrl}${encodeURIComponent(path)}${urlSuffix}`;
-
 export default function AboutUsPage() {
     const heroImage = { 
-        imageUrl: getImageUrl('site_assets/about/hero.png'), 
+        imageUrl: "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/aboutpage%2FAbout%20us%20hero.webp?alt=media&token=1b4f7724-0960-4a80-b122-0bc80144c829",
         imageHint: 'ayurvedic products collage' 
     };
     const aboutImage1 = { 
-        imageUrl: getImageUrl('site_assets/about/about_section.png'),
+        imageUrl: "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/aboutpage%2FAbout%20us%20page%20image.webp?alt=media&token=601c6870-cc3c-4973-b5c9-d565b159f928",
         imageHint: 'ayurvedic ingredients'
     };
     const drShreevarmaImage = {
-        imageUrl: getImageUrl('site_assets/about/dr_shreevarma.png'),
+        imageUrl: "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/aboutpage%2FAbout%20us%20shreevarma.webp?alt=media&token=3f504a76-790a-494f-9303-5a9182cfb8e8",
         imageHint: 'Dr. Shreevarma'
     };
     const whyChooseImage = {
-        imageUrl: getImageUrl('site_assets/about/why_choose.png'),
+        imageUrl: "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/aboutpage%2FWhy%20Choose%20Us.webp?alt=media&token=a4e39fc6-b144-493e-a1de-f018e735299c",
         imageHint: 'ayurvedic ingredients tray'
     };
     const ctaImage = {
-        imageUrl: getImageUrl('site_assets/about/cta.png'),
+        imageUrl: "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/aboutpage%2FJournery%20Today.webp?alt=media&token=b00bc6e0-8b6b-483d-97c3-66d56e22f3bf",
         imageHint: 'ayurvedic therapy'
     };
     const philosophyImage = { 
-        imageUrl: getImageUrl('site_assets/about/philosophy.png'),
+        imageUrl: "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/aboutpage%2FOur%20Philoshopy.webp?alt=media&token=c1f6979d-f551-4347-bfcc-1868f80eac76",
         imageHint: 'doctor with patient'
     };
 
