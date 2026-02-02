@@ -12,18 +12,12 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
-/**
- * Generates static paths for all therapies at build time.
- */
 export async function generateStaticParams() {
   return therapiesData.map((therapy) => ({
     slug: therapy.slug,
   }));
 }
 
-/**
- * Dynamic Metadata generation with awaited params.
- */
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
@@ -48,9 +42,6 @@ export async function generateMetadata(
   };
 }
 
-/**
- * Reusable Section Component
- */
 function Section({ title, content, icon }: { title: string, content: string, icon: React.ReactNode }) {
     if (!content) return null;
     return (
@@ -68,9 +59,6 @@ function Section({ title, content, icon }: { title: string, content: string, ico
     )
 }
 
-/**
- * Main Therapy Detail Page
- */
 export default async function TherapyDetailPage({ params }: Props) {
   const { slug } = await params;
   const therapy = therapiesData.find((t) => t.slug === slug);
@@ -81,20 +69,23 @@ export default async function TherapyDetailPage({ params }: Props) {
 
   return (
     <div className="bg-background min-h-screen">
-      {/* Hero Section 
-          Edited for 1712x776 aspect ratio. 
-          Aspect ratio is ~2.2:1. On mobile we use 16:9 for better visibility.
-      */}
-      <section className="relative w-full aspect-[16/9] md:aspect-[1712/776] max-h-[70vh] overflow-hidden">
+      {/* Hero Section - Optimized for 1712x776 ratio */}
+      <section className="relative w-full aspect-[16/9] md:aspect-[1712/776] max-h-[70vh] overflow-hidden bg-slate-100">
         <Image 
           src={therapy.imageUrl} 
           alt={therapy.name} 
           fill 
           className="object-cover object-center" 
-          priority 
-          sizes="100vw"
+          
+          // --- PERFORMANCE OPTIMIZATIONS ---
+          priority={true}           // Highest priority: Preloads the image
+          loading="eager"           // Tells browser to download immediately
+          fetchPriority="high"      // Hint for modern browsers (LCP optimization)
+          sizes="100vw"             // Ensures proper resolution selection
+          quality={90}              // Slight bump in quality for wide headers
+          // ---------------------------------
         />
-        {/* Dark overlay for text readability */}
+        
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
         
         <div className="absolute bottom-0 left-0 w-full p-6 md:p-12">
@@ -106,11 +97,9 @@ export default async function TherapyDetailPage({ params }: Props) {
         </div>
       </section>
 
-      {/* Main Content */}
       <main className="container mx-auto px-6 py-16">
         <div className="grid lg:grid-cols-3 gap-16 items-start">
           
-          {/* Left Content Column */}
           <div className="lg:col-span-2 space-y-16">
             <Section 
                 title="What is it?" 
@@ -129,7 +118,6 @@ export default async function TherapyDetailPage({ params }: Props) {
             />
           </div>
           
-          {/* Right Sticky Sidebar Card */}
           <aside className="lg:sticky top-28">
             <Card className="shadow-xl border-primary/10 overflow-hidden">
                 <div className="h-2 bg-primary" />
@@ -137,7 +125,6 @@ export default async function TherapyDetailPage({ params }: Props) {
                     <CardTitle className="font-headline text-2xl">Therapy Details</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-8">
-                    {/* Benefits */}
                     <div>
                         <h3 className="font-bold text-primary mb-3 flex items-center gap-2">
                             <CheckCircle className="w-5 h-5"/> Key Benefits
@@ -153,7 +140,6 @@ export default async function TherapyDetailPage({ params }: Props) {
                     </div>
 
                     <div className="space-y-6 pt-4 border-t border-border">
-                        {/* Targeted Areas */}
                         <div className="flex gap-4">
                             <Target className="w-6 h-6 text-primary shrink-0" />
                             <div>
@@ -162,7 +148,6 @@ export default async function TherapyDetailPage({ params }: Props) {
                             </div>
                         </div>
 
-                        {/* Duration */}
                         <div className="flex gap-4">
                             <Clock className="w-6 h-6 text-primary shrink-0" />
                             <div>

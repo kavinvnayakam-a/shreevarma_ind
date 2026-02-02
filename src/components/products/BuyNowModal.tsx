@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -7,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/hooks/use-cart';
 import { useFirebase, useCollection } from '@/firebase';
-import { collection, query, where, limit } from 'firebase/firestore';
+import { collection, query, limit } from 'firebase/firestore'; // Removed where to keep logic flexible
 import type { Product } from '@/lib/placeholder-data';
 import Image from 'next/image';
 import { Loader2 } from 'lucide-react';
@@ -19,7 +18,7 @@ interface BuyNowModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-// List of product family keywords
+// Verified product family keywords
 const productFamilies = [
     'Vajee care', 'Shreecare', 'Sarasbrahmi', 'Keshya amruth hair', 'Charmatejas', 'Psoraxit', 'Kumkumadi', 'Amruthuls', 
     'Arshocare', 'Brih-G', 'Hruthcare', 'Maharaja', 'Orthocure', 'Manasa', 'Mehnil', 'Reknown', 'Respokalp', 'Rakkshak', 
@@ -33,11 +32,11 @@ export function BuyNowModal({ product, open, onOpenChange }: BuyNowModalProps) {
   const { firestore } = useFirebase();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
-  // Use all products to find suggestions
+  // OPTIMIZATION: Limit total fetch to 50 items to find family matches faster without taxing the browser
   const allProductsQuery = useMemo(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'products'));
-  }, [firestore]);
+    if (!firestore || !open) return null; // Only fetch when modal actually opens
+    return query(collection(firestore, 'products'), limit(50));
+  }, [firestore, open]);
 
   const { data: allProducts, isLoading } = useCollection<Product>(allProductsQuery);
 
@@ -46,27 +45,27 @@ export function BuyNowModal({ product, open, onOpenChange }: BuyNowModalProps) {
 
     const productId = product.__docId || product.id;
     
-    // Find which family the main product belongs to
     const mainProductFamily = productFamilies.find(family => 
         product.name.toLowerCase().includes(family.toLowerCase())
     );
 
     if (!mainProductFamily) {
-        // Fallback: If no family, suggest from the same category
         return allProducts
-            .filter(p => (p as any).__docId !== productId && p.category === product.category && !cartItems.some(item => item.id === (p as any).__docId))
+            .filter(p => {
+                const pId = (p as any).__docId;
+                return pId !== productId && p.category === product.category && !cartItems.some(item => item.id === pId);
+            })
             .slice(0, 4);
     }
     
-    // Find other products in the same family
     const familySuggestions = allProducts.filter(p => {
         const pId = (p as any).__docId;
-        return pId !== productId && // Not the same product
-               p.name.toLowerCase().includes(mainProductFamily.toLowerCase()) && // Belongs to the same family
-               !cartItems.some(item => item.id === pId); // Not already in cart
+        return pId !== productId && 
+               p.name.toLowerCase().includes(mainProductFamily.toLowerCase()) && 
+               !cartItems.some(item => item.id === pId);
     });
     
-    return familySuggestions.slice(0, 4); // Limit to 4 suggestions
+    return familySuggestions.length > 0 ? familySuggestions.slice(0, 4) : allProducts.slice(0, 4);
 
   }, [allProducts, product, cartItems]);
   
@@ -88,37 +87,48 @@ export function BuyNowModal({ product, open, onOpenChange }: BuyNowModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md bg-white rounded-[2rem] border-none shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="font-headline text-2xl">Frequently Bought Together</DialogTitle>
-          <DialogDescription>Customers who bought {product.name} also bought:</DialogDescription>
+          <DialogTitle className="font-black text-2xl text-primary uppercase tracking-tighter">Frequently Bought Together</DialogTitle>
+          <DialogDescription className="text-muted-foreground font-medium italic">
+            Complete your {product.name.split(' ')[0]} wellness routine
+          </DialogDescription>
         </DialogHeader>
+        
         <div className="py-4">
           {isLoading ? (
-            <div className="flex justify-center items-center h-40">
-              <Loader2 className="h-8 w-8 animate-spin" />
+            <div className="flex flex-col justify-center items-center h-40 gap-4">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="text-xs font-bold text-primary/40 uppercase tracking-widest">Finding matches...</p>
             </div>
           ) : suggestedProducts.length > 0 ? (
-            <ScrollArea className="h-[300px] pr-4">
-                <div className="space-y-4">
+            <ScrollArea className="h-[320px] pr-4">
+                <div className="space-y-3">
                 {suggestedProducts.map((p) => {
                     const id = (p as any).__docId;
                     return (
-                    <div key={id} className="flex items-center gap-4 p-2 border rounded-lg">
-                        <div className="relative w-16 h-16 rounded-md overflow-hidden bg-muted">
+                    <div key={id} className="flex items-center gap-4 p-3 border border-slate-50 rounded-2xl bg-white hover:border-primary/20 transition-colors group">
+                        <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-white shrink-0">
                             <Image
-                                src={p.imageUrls?.[0] || 'https://placehold.co/100x100'}
+                                src={p.imageUrls?.[0] || 'https://placehold.co/200x200/FFFFFF/72392F?text=Product'}
                                 alt={p.name}
                                 fill
-                                sizes="64px"
-                                className="object-contain"
+                                sizes="80px"
+                                className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                priority // Eager load these as they are small and critical for conversion
+                                quality={75}
                             />
                         </div>
-                        <div className="flex-grow">
-                            <p className="font-semibold text-sm">{p.name}</p>
-                            <p className="text-sm text-muted-foreground">₹{Math.round(p.sellingPrice)}</p>
+                        <div className="flex-grow space-y-1">
+                            <p className="font-black text-primary text-xs uppercase leading-tight line-clamp-2">{p.name}</p>
+                            <p className="font-bold text-sm text-primary">₹{Math.round(p.sellingPrice)}</p>
                         </div>
-                        <Button size="sm" variant="outline" onClick={() => handleAddToCart(p)}>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="rounded-full border-primary text-primary font-bold hover:bg-primary hover:text-white"
+                          onClick={() => handleAddToCart(p)}
+                        >
                             Add
                         </Button>
                     </div>
@@ -126,21 +136,31 @@ export function BuyNowModal({ product, open, onOpenChange }: BuyNowModalProps) {
                 </div>
             </ScrollArea>
           ) : (
-            <div className="text-center text-muted-foreground h-40 flex items-center justify-center">
-                <p>No specific recommendations at this time.</p>
+            <div className="text-center text-muted-foreground h-40 flex items-center justify-center bg-slate-50/50 rounded-2xl">
+                <p className="text-sm font-medium italic">Tailoring personalized recommendations for you...</p>
             </div>
           )}
         </div>
-        <DialogFooter>
-            <div className="w-full flex flex-col gap-2">
-                <Button onClick={handleCheckout} className="w-full" disabled={isCheckingOut}>
-                    {isCheckingOut && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {isCheckingOut ? 'Proceeding...' : `Checkout (${cartItems.length} items)`}
-                </Button>
-                 <Button onClick={() => onOpenChange(false)} className="w-full" variant="ghost">
-                    Continue Shopping
-                </Button>
-            </div>
+
+        <DialogFooter className="sm:flex-col gap-3">
+            <Button 
+                onClick={handleCheckout} 
+                className="w-full py-7 rounded-2xl font-black uppercase tracking-widest shadow-lg" 
+                disabled={isCheckingOut}
+            >
+                {isCheckingOut ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                    `Checkout — ₹${cartItems.reduce((acc, item) => acc + item.sellingPrice, 0)}`
+                )}
+            </Button>
+            <Button 
+                onClick={() => onOpenChange(false)} 
+                className="w-full text-primary font-bold hover:bg-primary/5 uppercase tracking-widest text-xs" 
+                variant="ghost"
+            >
+                Continue Shopping
+            </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

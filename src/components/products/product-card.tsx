@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -6,18 +5,19 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/hooks/use-cart';
 import type { Product } from '@/lib/placeholder-data';
-import { Star, ShoppingCart } from 'lucide-react';
+import { Star } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product & { __docId?: string };
+  priority?: boolean;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, priority = false }: ProductCardProps) {
   const { addToCart } = useCart();
   
   const imageUrl = product.imageUrls && product.imageUrls.length > 0
     ? product.imageUrls[0]
-    : 'https://placehold.co/400x400/F9F5F1/72392F?text=No+Image';
+    : 'https://placehold.co/600x600/FFFFFF/72392F?text=No+Image';
 
   const productId = product.__docId || product.id;
 
@@ -33,49 +33,60 @@ export function ProductCard({ product }: ProductCardProps) {
   const isSoldOut = (product.inventoryQuantity !== undefined && product.inventoryQuantity <= 0) && !product.continueSellingWhenOutOfStock;
 
   return (
-    <div className="group flex flex-col text-center items-center gap-2 transition-all bg-white p-4 rounded-lg border shadow-sm hover:shadow-xl h-full">
+    <div className="group flex flex-col text-center items-center gap-0 transition-all bg-white rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl h-full overflow-hidden">
         <Link href={`/products/${productId}`} className="block w-full">
-            <div className="aspect-square relative w-full bg-transparent rounded-lg overflow-hidden">
+            <div className="aspect-[4/5] relative w-full bg-white overflow-hidden">
                 <Image
                     src={imageUrl}
                     alt={product.name}
                     fill
-                    className="object-contain group-hover:scale-105 transition-transform duration-300"
-                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                    data-ai-hint={product.name}
-                    loading="lazy"
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                    priority={priority}
+                    loading={priority ? "eager" : "lazy"}
+                    fetchPriority={priority ? "high" : "auto"}
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    quality={85}
                 />
+                
+                {hasDiscount && !isSoldOut && (
+                  <div className="absolute top-4 left-4 bg-red-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg z-10 uppercase tracking-tighter">
+                    {discountPercentage}% OFF
+                  </div>
+                )}
             </div>
         </Link>
-        <div className="flex flex-col items-center gap-1 mt-2 flex-grow w-full">
-             <h3 className="font-semibold text-sm h-10 flex items-center justify-center leading-tight">
-                <Link href={`/products/${productId}`} className="hover:text-primary">{product.name}</Link>
+
+        <div className="flex flex-col items-center gap-1 p-6 pt-4 flex-grow w-full">
+             <h3 className="font-black text-sm h-10 flex items-center justify-center leading-tight text-primary uppercase tracking-tighter">
+                <Link href={`/products/${productId}`} className="hover:opacity-70 transition-opacity">
+                    {product.name}
+                </Link>
              </h3>
-             <div className="flex-grow"></div>
-             <div className="flex text-yellow-400 my-1">
-                <Star className="w-4 h-4 fill-current"/>
-                <Star className="w-4 h-4 fill-current"/>
-                <Star className="w-4 h-4 fill-current"/>
-                <Star className="w-4 h-4 fill-current"/>
-                <Star className="w-4 h-4 fill-current"/>
+             
+             <div className="flex text-yellow-400 my-2">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-3 h-3 fill-current"/>
+                ))}
             </div>
-             <div className="flex items-baseline justify-center gap-2 mb-2">
-                <p className="text-lg font-bold text-primary">
+
+             <div className="flex items-baseline justify-center gap-2 mb-4">
+                <p className="text-xl font-black text-primary">
                     ₹{Math.round(product.sellingPrice)}
                 </p>
                 {hasDiscount && (
-                    <p className="text-sm text-muted-foreground line-through">
+                    <p className="text-xs text-muted-foreground line-through opacity-50 font-medium">
                         ₹{product.comparedAtPrice ? Math.round(product.comparedAtPrice) : ''}
                     </p>
                 )}
             </div>
-            <Button onClick={handleAddToCart} size="sm" className="w-full" disabled={isSoldOut}>
-                 {isSoldOut ? 'Sold Out' : (
-                    <>
-                        <ShoppingCart className="mr-2 h-4 w-4" />
-                        Add to Cart
-                    </>
-                )}
+
+            <Button 
+              onClick={handleAddToCart} 
+              size="lg" 
+              className="w-full rounded-2xl font-black uppercase tracking-widest text-[11px] py-6 shadow-md" 
+              disabled={isSoldOut}
+            >
+                 {isSoldOut ? 'Sold Out' : 'Add to Cart'}
             </Button>
         </div>
     </div>

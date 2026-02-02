@@ -6,51 +6,22 @@ const nextConfig = {
   },
 
   typescript: {
-    // Keeps the build moving even with minor type mismatches
     ignoreBuildErrors: true,
   },
 
-  // NEW: Increased limit for image uploads via Server Actions
   experimental: {
     serverActions: {
       bodySizeLimit: '4mb',
     },
   },
 
-  async headers() {
-    return [
-      {
-        // Global policy for Cashfree and Google Sign-In
-        source: '/:path*',
-        headers: [
-          {
-            key: 'Permissions-Policy',
-            value: 'payment=(self "https://sdk.cashfree.com" "https://api.cashfree.com" "https://sandbox.cashfree.com")',
-          },
-          {
-            key: 'Cross-Origin-Opener-Policy',
-            value: 'same-origin-allow-popups',
-          },
-        ],
-      },
-      {
-        // Strict headers for Video Consultations (ZEGOCLOUD requirement)
-        source: '/consultation/session/:path*',
-        headers: [
-          {
-            key: 'Cross-Origin-Opener-Policy',
-            value: 'same-origin-allow-popups',
-          },
-          {
-            key: 'Cross-Origin-Embedder-Policy',
-            value: 'require-corp',
-          },
-        ],
-      },
-    ];
-  },
-
   images: {
+    minimumCacheTTL: 31536000,
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
+    
+    // FIX: Explicitly allow the 85 and 90 qualities used in your components
+    qualities: [75, 85, 90],
+
     remotePatterns: [
       {
         protocol: 'https',
@@ -83,6 +54,37 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
+  },
+
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Permissions-Policy',
+            value: 'payment=(self "https://sdk.cashfree.com" "https://api.cashfree.com" "https://sandbox.cashfree.com")',
+          },
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin-allow-popups',
+          },
+        ],
+      },
+      {
+        source: '/consultation/session/:path*',
+        headers: [
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin-allow-popups',
+          },
+          {
+            key: 'Cross-Origin-Embedder-Policy',
+            value: 'require-corp',
+          },
+        ],
+      },
+    ];
   },
 };
 

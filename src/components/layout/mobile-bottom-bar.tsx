@@ -18,7 +18,6 @@ import { useUser } from '@/firebase';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { useState, useEffect } from 'react';
 
-
 const navItems = [
   { href: '/consultation', icon: Video, label: 'Consult' },
   { href: '/products', icon: ShoppingBag, label: 'Shop' },
@@ -43,25 +42,32 @@ export function MobileBottomBar() {
         <ul className="flex justify-around items-center h-full">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
+
+            // 1. CENTER LOGO BUTTON
             if (item.isLogo) {
               return (
                 <li key={item.href} className="relative">
                   <Link href={item.href} className="block">
-                    <div className="relative -top-6 flex items-center justify-center h-16 w-16 bg-background rounded-full shadow-md border">
-                       <Image src="https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Homepage%2FLOGO%20(2).webp?alt=media&token=d5eb0f25-93b7-4cff-b3aa-fea48263bf92" alt="Logo" width={50} height={50} className="object-contain" />
+                    <div className="relative -top-6 flex items-center justify-center h-16 w-16 bg-background rounded-full shadow-md border border-border/40">
+                       <Image 
+                        src="https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Homepage%2FLOGO%20(2).webp?alt=media&token=d5eb0f25-93b7-4cff-b3aa-fea48263bf92" 
+                        alt="Logo" 
+                        width={50} 
+                        height={50} 
+                        className="object-contain" 
+                       />
                     </div>
                   </Link>
                 </li>
               );
             }
+
+            // 2. CART TRIGGER ITEM
             if (item.isCart) {
                 return (
                     <li key={item.href} className="flex-1">
                         {!isClient ? (
-                             <div className={cn(
-                                'flex flex-col items-center justify-center text-center gap-1 transition-colors w-full',
-                                'text-muted-foreground'
-                            )}>
+                             <div className="flex flex-col items-center justify-center text-center gap-1 text-muted-foreground">
                                 <div className="relative">
                                     <ShoppingCart className="h-6 w-6" />
                                 </div>
@@ -70,20 +76,20 @@ export function MobileBottomBar() {
                         ) : (
                             <Sheet open={isCartOpen} onOpenChange={setCartOpen}>
                                 <SheetTrigger asChild>
-                                    <div className={cn(
+                                    <button className={cn(
                                         'flex flex-col items-center justify-center text-center gap-1 transition-colors w-full',
-                                        'text-muted-foreground hover:text-primary'
+                                        isCartOpen ? 'text-primary' : 'text-muted-foreground hover:text-primary'
                                     )}>
                                         <div className="relative">
                                           <ShoppingCart className="h-6 w-6" />
                                           {cartCount > 0 && (
-                                            <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold">
+                                            <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold">
                                               {cartCount}
                                             </span>
                                           )}
                                         </div>
                                         <span className="text-xs font-medium">{item.label}</span>
-                                    </div>
+                                    </button>
                                 </SheetTrigger>
                                 <CartDrawer />
                             </Sheet>
@@ -91,6 +97,8 @@ export function MobileBottomBar() {
                     </li>
                 )
             }
+
+            // 3. REGULAR NAVIGATION ITEMS (CONSULT, SHOP, ACCOUNT)
             return (
               <li key={item.href} className="flex-1">
                 <Link
@@ -104,7 +112,7 @@ export function MobileBottomBar() {
                     {item.href === '/profile' && user ? (
                         <Avatar className="h-6 w-6">
                             <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
-                            <AvatarFallback className="text-xs">
+                            <AvatarFallback className="text-[10px] bg-primary text-primary-foreground">
                                 {user.displayName?.charAt(0) || user.email?.charAt(0)}
                             </AvatarFallback>
                         </Avatar>

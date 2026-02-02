@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -12,23 +11,24 @@ import {
 } from '@/components/ui/sheet';
 import {
   ShoppingCart,
+  Minus,
+  Plus,
+  Trash2,
+  ChevronRight,
+  Loader2,
+  X
 } from 'lucide-react';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from '@/components/ui/carousel';
-import { Separator } from '../ui/separator';
 import { SheetBody, SheetFooter, SheetPanel } from './cart-sheet';
 import { Product } from '@/lib/placeholder-data';
 import { useCollection, useFirebase } from '@/firebase';
-import { collection, query } from 'firebase/firestore';
+import { collection, query, limit } from 'firebase/firestore';
 import { useMemo } from 'react';
 import { Card } from '../ui/card';
-import { Loader2 } from 'lucide-react';
-
 
 const productFamilies = [
     'Vajee care', 'Shreecare', 'Sarasbrahmi', 'Keshya amruth hair', 'Charmatejas', 'Psoraxit', 'Kumkumadi', 'Amruthuls', 
@@ -41,9 +41,10 @@ export function CartDrawer() {
   const { cartItems, updateQuantity, removeFromCart, cartTotal, addToCart } = useCart();
   const { firestore } = useFirebase();
 
+  // Speed Optimization: limit suggestions fetch to 40 items
   const allProductsQuery = useMemo(() => {
     if (!firestore) return null;
-    return query(collection(firestore, 'products'));
+    return query(collection(firestore, 'products'), limit(40));
   }, [firestore]);
 
   const { data: allProducts, isLoading } = useCollection<Product>(allProductsQuery);
@@ -51,114 +52,109 @@ export function CartDrawer() {
   const suggestedProducts = useMemo(() => {
     if (!allProducts || cartItems.length === 0) return [];
     
-    // Find all families present in the cart
     const familiesInCart = new Set<string>();
     cartItems.forEach(item => {
         const family = productFamilies.find(f => item.name.toLowerCase().includes(f.toLowerCase()));
-        if (family) {
-            familiesInCart.add(family);
-        }
+        if (family) familiesInCart.add(family);
     });
 
-    if (familiesInCart.size === 0) return []; // No families found in cart
-
-    // Find other products in those families
     const suggestions = allProducts.filter(p => {
         const pId = (p as any).__docId;
-        const isInCart = cartItems.some(item => item.id === pId);
-        if (isInCart) return false;
-
-        const belongsToFamily = Array.from(familiesInCart).some(family => p.name.toLowerCase().includes(family.toLowerCase()));
-        return belongsToFamily;
+        if (cartItems.some(item => item.id === pId)) return false;
+        return Array.from(familiesInCart).some(family => p.name.toLowerCase().includes(family.toLowerCase()));
     });
 
-    return suggestions.slice(0, 5); // Limit suggestions
-
+    return suggestions.slice(0, 5);
   }, [allProducts, cartItems]);
 
-
   return (
-    <SheetPanel>
-      <SheetHeader className="p-4 border-b text-center">
-        <SheetTitle>Shopping Cart</SheetTitle>
+    <SheetPanel className="w-[80%] sm:max-w-md bg-white border-l border-slate-100 p-0 flex flex-col h-full shadow-2xl">
+      {/* Header with Custom Close Icon (Default Shadcn Close hidden in SheetPanel) */}
+      <SheetHeader className="p-6 flex flex-row items-center justify-between border-b border-slate-50 shrink-0">
+        <SheetTitle className="text-xl font-black uppercase tracking-tighter text-primary">
+            Wellness Cart
+        </SheetTitle>
+        <SheetClose className="rounded-full p-2 hover:bg-slate-50 transition-all focus-visible:outline-none active:scale-90">
+          <X className="w-5 h-5 text-primary" />
+          <span className="sr-only">Close</span>
+        </SheetClose>
       </SheetHeader>
 
       {cartItems.length === 0 ? (
-        <div className="flex-1 flex flex-col items-center justify-center text-center gap-4 p-6">
-          <ShoppingCart className="w-24 h-24 text-muted-foreground" />
-          <h3 className="text-xl font-semibold">Your cart is empty</h3>
+        <div className="flex-1 flex flex-col items-center justify-center text-center gap-6 p-10 bg-white">
+          <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center">
+            <ShoppingCart className="w-8 h-8 text-primary/10" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="text-lg font-black uppercase tracking-tight text-primary">Your cart is empty</h3>
+            <p className="text-xs text-muted-foreground font-medium italic">Begin your journey to wellness.</p>
+          </div>
           <SheetClose asChild>
-            <Button asChild>
-              <Link href="/products">Continue Shopping</Link>
+            <Button asChild className="rounded-2xl px-8 py-6 font-bold uppercase tracking-widest text-[10px] shadow-sm">
+              <Link href="/products">Shop Products</Link>
             </Button>
           </SheetClose>
         </div>
       ) : (
         <>
-          <SheetBody>
-            <div className="p-4 space-y-4">
+          <SheetBody className="flex-1 overflow-y-auto bg-white scrollbar-hide">
+            <div className="p-6 space-y-6">
               {cartItems.map((item) => {
-                const imageUrl = item.imageUrls && item.imageUrls.length > 0
-                  ? item.imageUrls[0]
-                  : 'https://placehold.co/100x100/F5F5DC/333333?text=No+Image';
+                const imageUrl = item.imageUrls?.[0] || 'https://placehold.co/200x200/FFFFFF/72392F?text=Product';
                 return (
-                  <div key={item.id} className="flex items-start gap-4">
-                    <div className="relative aspect-square w-20 rounded-md overflow-hidden bg-muted">
+                  <div key={item.id} className="flex items-center gap-4 group">
+                    <div className="relative aspect-square w-20 rounded-2xl overflow-hidden border border-slate-50 bg-white shrink-0 shadow-sm">
                         <Image
                           src={imageUrl}
                           alt={item.name}
                           fill
-                          className="object-cover"
-                          data-ai-hint={item.name}
+                          className="object-cover group-hover:scale-110 transition-transform duration-500"
+                          sizes="80px"
+                          quality={85}
                         />
                     </div>
-                    <div className="flex-grow">
+                    <div className="flex-grow space-y-1">
                       <SheetClose asChild>
                         <Link
                           href={`/products/${item.id}`}
-                          className="font-semibold text-sm hover:underline"
+                          className="font-black text-[11px] uppercase tracking-tight text-primary hover:opacity-70 transition-opacity block leading-tight line-clamp-2"
                         >
                           {item.name}
                         </Link>
                       </SheetClose>
-                      <p className="text-sm text-muted-foreground">
-                        by {item.brand}
-                      </p>
-                      <p className="font-bold text-sm my-1">
+                      <p className="font-bold text-sm text-primary">
                         ₹{Math.round(item.sellingPrice)}
                       </p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <div className="flex items-center border rounded-md">
+                      
+                      <div className="flex items-center justify-between gap-2 pt-2">
+                        <div className="flex items-center border border-slate-100 rounded-xl bg-white p-0.5 shadow-sm">
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
-                            onClick={() =>
-                              updateQuantity(item.id, item.quantity - 1)
-                            }
+                            className="h-8 w-8 hover:bg-slate-50 transition-colors"
+                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
                           >
-                            -
+                            <Minus className="w-3 h-3" />
                           </Button>
-                          <span className="w-8 text-center text-sm">
+                          <span className="w-8 text-center text-xs font-black">
                             {item.quantity}
                           </span>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
-                            onClick={() =>
-                              updateQuantity(item.id, item.quantity + 1)
-                            }
+                            className="h-8 w-8 hover:bg-slate-50 transition-colors"
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
                           >
-                            +
+                            <Plus className="w-3 h-3" />
                           </Button>
                         </div>
                         <Button
-                          variant="link"
-                          className="text-muted-foreground text-xs p-0 h-auto"
+                          variant="ghost"
+                          size="icon"
+                          className="text-muted-foreground/30 hover:text-red-500 h-8 w-8 transition-colors"
                           onClick={() => removeFromCart(item.id)}
                         >
-                          Remove
+                          <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>
@@ -167,72 +163,55 @@ export function CartDrawer() {
               })}
             </div>
 
-            <Separator />
-            
-            <div className="p-4">
-              <h4 className="font-semibold mb-4 text-center">
-                Frequently Bought Together
+            {/* Recommendations Section */}
+            <div className="px-6 py-8 bg-slate-50/50">
+              <h4 className="font-black text-[10px] uppercase tracking-[0.2em] text-primary/40 mb-4 flex items-center gap-2">
+                <ChevronRight className="w-3 h-3" /> Frequently Bought Together
               </h4>
                 {isLoading ? (
-                    <div className="flex justify-center items-center py-4">
-                        <Loader2 className="h-6 w-6 animate-spin"/>
-                    </div>
+                    <div className="flex justify-center py-4"><Loader2 className="h-6 w-6 animate-spin text-primary"/></div>
                 ) : suggestedProducts.length > 0 ? (
-                    <Carousel
-                        opts={{ align: 'start', loop: false }}
-                        className="w-full"
-                    >
+                    <Carousel opts={{ align: 'start', loop: false }} className="w-full">
                         <CarouselContent>
-                        {suggestedProducts.map((p: Product) => {
-                            const imageUrl = p.imageUrls && p.imageUrls.length > 0
-                            ? p.imageUrls[0]
-                            : 'https://placehold.co/100x100/F5F5DC/333333?text=No+Image';
-                            return (
+                        {suggestedProducts.map((p: Product) => (
                             <CarouselItem key={(p as any).__docId} className="basis-full">
-                                <div className="p-1">
-                                    <Card className="p-2 flex items-center gap-2">
+                                <Card className="p-3 flex items-center gap-4 rounded-2xl border-none bg-white shadow-sm mx-1">
+                                    <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white shrink-0">
                                         <Image
-                                            src={imageUrl}
+                                            src={p.imageUrls?.[0] || 'https://placehold.co/200x200/FFFFFF/72392F?text=Product'}
                                             alt={p.name}
-                                            width={64}
-                                            height={64}
-                                            className="rounded"
+                                            fill
+                                            className="object-cover"
+                                            sizes="64px"
+                                            quality={75}
                                         />
-                                        <div className="flex-grow">
-                                            <p className="text-sm font-medium leading-tight">{p.name}</p>
-                                            <p className="text-xs text-muted-foreground">₹ {Math.round(p.sellingPrice)}</p>
-                                        </div>
-                                        <Button size="sm" onClick={() => addToCart({...p, id: (p as any).__docId})}>Add</Button>
-                                    </Card>
-                                </div>
+                                    </div>
+                                    <div className="flex-grow">
+                                        <p className="text-[10px] font-black uppercase text-primary leading-tight line-clamp-1">{p.name}</p>
+                                        <p className="text-xs font-bold text-primary">₹{Math.round(p.sellingPrice)}</p>
+                                    </div>
+                                    <Button size="sm" variant="outline" className="rounded-full border-primary text-primary text-[10px] font-bold hover:bg-primary hover:text-white transition-all" onClick={() => addToCart({...p, id: (p as any).__docId})}>Add</Button>
+                                </Card>
                             </CarouselItem>
-                            );
-                        })}
+                        ))}
                         </CarouselContent>
-                        {suggestedProducts.length > 1 && (
-                            <div className="flex justify-center items-center gap-4 mt-4">
-                                <CarouselPrevious className="relative -left-0 top-0 translate-y-0" />
-                                <CarouselNext className="relative -right-0 top-0 translate-y-0" />
-                            </div>
-                        )}
                     </Carousel>
                 ) : (
-                    <p className="text-center text-xs text-muted-foreground">No recommendations for now.</p>
+                    <p className="text-center text-[10px] font-bold text-muted-foreground/30 uppercase tracking-widest italic">Personalizing recommendations...</p>
                 )}
             </div>
-
           </SheetBody>
 
-          <SheetFooter>
-              <div className="flex justify-between font-bold text-lg">
-                  <span>Subtotal</span>
-                  <span>₹{Math.round(cartTotal)}</span>
+          <SheetFooter className="p-6 bg-white border-t border-slate-50 shrink-0 shadow-[0_-15px_40px_rgba(0,0,0,0.04)]">
+              <div className="flex justify-between items-center w-full mb-6">
+                  <span className="font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Grand Total</span>
+                  <span className="font-black text-2xl text-primary tracking-tighter">₹{Math.round(cartTotal)}</span>
               </div>
                <SheetClose asChild>
-                  <Button asChild size="lg" className="w-full">
-                      <Link href="/checkout">Proceed to Checkout</Link>
+                  <Button asChild size="lg" className="w-full h-16 rounded-2xl bg-primary hover:opacity-95 font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/10 transition-transform active:scale-[0.98]">
+                      <Link href="/checkout">Secure Checkout</Link>
                   </Button>
-              </SheetClose>
+               </SheetClose>
           </SheetFooter>
         </>
       )}
