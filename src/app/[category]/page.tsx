@@ -60,6 +60,7 @@ export default function CategoryPage() {
             className="object-cover md:hidden"
             data-ai-hint={categoryHeroInfo.hint}
             priority
+            sizes="100vw"
         />
         <Image
             src={categoryHeroInfo.desktop}
@@ -68,6 +69,7 @@ export default function CategoryPage() {
             className="object-cover hidden md:block"
             data-ai-hint={categoryHeroInfo.hint}
             priority
+            sizes="100vw"
         />
       </section>
 

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { categories } from '@/components/products/category-data';
 
 type Props = {
-  params: { category: string };
+  params: Promise<{ category: string }>;
 };
 
 // Predefined metadata for each category to improve SEO
@@ -34,7 +34,7 @@ const metadataStore: { [key: string]: Metadata } = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const categorySlug = params.category;
+  const { category: categorySlug } = await params;
   const categoryInfo = categories.find((c) => c.slug === categorySlug);
   const categoryName = categoryInfo ? categoryInfo.name : 'Products';
 
