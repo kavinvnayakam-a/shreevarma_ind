@@ -1,6 +1,4 @@
 
-'use client'
-
 import { notFound } from 'next/navigation';
 import { therapiesData } from '../therapy-data';
 import Image from 'next/image';
