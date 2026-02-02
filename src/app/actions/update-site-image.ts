@@ -4,10 +4,10 @@
 import { revalidatePath } from 'next/cache';
 import * as admin from 'firebase-admin';
 
-// 1. Correct bucket name for Admin SDK. It should be project-id.appspot.com
-const BUCKET_NAME = "shreevarma-india-location.appspot.com";
+// Use the exact bucket name as provided
+const BUCKET_NAME = "shreevarma-india-location.firebasestorage.app";
 
-// 2. Standard initialization for App Hosting environment
+// Standard initialization for App Hosting environment
 if (!admin.apps.length) {
   try {
     // This uses Application Default Credentials automatically
