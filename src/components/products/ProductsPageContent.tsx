@@ -94,7 +94,7 @@ function FilterContent({
 
 export default function ProductsPageContent() {
     const heroImage = {
-        imageUrl: "https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0249163472.firebasestorage.app/o/ShreeVarma%2FHero%20Image%20Product%2Fshreevarma_3.webp?alt=media&token=88f57ce3-9698-4659-9698-0cd603e89a03",
+        imageUrl: "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/product%20pages%2Fproduct%20page.webp?alt=media&token=edd0547c-221b-4d9d-9d47-b241d6a75bc4",
         description: "Ayurvedic products displayed on a shelf.",
         imageHint: "ayurvedic products family"
     };

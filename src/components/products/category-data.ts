@@ -22,33 +22,33 @@ type HeroImages = {
 // This object provides hero images for specific known categories.
 export const categoryHeros: { [key: string]: HeroImages } = {
     'Health': { 
-        desktop: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Category%20Hero%20Banner%20Desktop%2FHealth%20Category%20%20Banner.png?alt=media&token=cd995f4f-f023-47c1-86aa-6a55ccbf8bbe',
-        mobile: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Category%20Hero%20Image%20Mobile%20view%2FHealth%20Category%20%20Banner%201080%20_1080-min.png?alt=media&token=0ca15e3e-a32d-42d3-a60d-9e53a5c9c747',
+        desktop: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/product%20pages%2FHealth%20Category%20%20Banner%20-%20desktop.webp?alt=media&token=d879e1ff-a41a-45a6-a67f-f53e039983f8',
+        mobile: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/product%20pages%2FHealth%20Category%20%20Banner%20mobile.webp?alt=media&token=4788795a-1297-46ff-8b74-7de34f4c2d77',
         hint: 'health wellness' 
     },
     'Mens-Intimacy': { 
-        desktop: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Category%20Hero%20Banner%20Desktop%2FMen\'s%20%20Category%20%20Banner.png?alt=media&token=7a3946df-3071-47b0-9212-aedfb03c2c23',
-        mobile: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Category%20Hero%20Image%20Mobile%20view%2FMen\'s%20%20Category%20%20Banner%201080%20_1080-min.png?alt=media&token=9399586b-9c29-4163-8458-00b84ece045e',
+        desktop: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/product%20pages%2FMen\'s%20%20Category%20%20Banner%20desktop.webp?alt=media&token=e6dbd2fc-ff98-4bf3-a843-36bf277e7883',
+        mobile: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/product%20pages%2FMen\'s%20%20Category%20%20Banner%20mobile.webp?alt=media&token=6d4deb0e-c7d7-4d8a-8caf-2557758c96a6',
         hint: 'mens intimacy' 
     },
     'Womens-Wellness': { 
-        desktop: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Category%20Hero%20Banner%20Desktop%2FWomen\'s%20%20Category%20%20Banner.png?alt=media&token=662c997f-aca5-4f38-902a-810829c21b2e',
-        mobile: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Category%20Hero%20Image%20Mobile%20view%2FWomen\'s%20%20Category%20%20Banner%201080%20_1080-min.png?alt=media&token=ca8a7b64-71ef-4d49-960a-5375c361c691',
+        desktop: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/product%20pages%2FWomen\'s%20%20Category%20%20Banner%20desktop.webp?alt=media&token=e9576612-10a9-450b-93c9-a549befbcb92',
+        mobile: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/product%20pages%2FWomen\'s%20%20Category%20%20Banner%20mobile.webp?alt=media&token=05c40f41-5af9-4610-998b-7be049f5f216',
         hint: 'womens wellness' 
     },
     'Kids-Care': { 
-        desktop: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Category%20Hero%20Banner%20Desktop%2FKid\'s%20%20Category%20%20Banner.png?alt=media&token=16e2f07d-9614-4593-996e-bc0ab7858e38',
-        mobile: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Category%20Hero%20Image%20Mobile%20view%2FKid\'s%20%20Category%20%20Banner%201080%20_1080-min.png?alt=media&token=5cf8a19a-2ac3-4712-b9b4-41ec6c9f1f2e',
+        desktop: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/product%20pages%2FKid\'s%20%20Category%20%20Banner%20desktop.webp?alt=media&token=a2f1b060-9f23-49b4-a6b5-574e8a3da603',
+        mobile: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/product%20pages%2FKid\'s%20%20Category%20%20Banner%20mobile.webp?alt=media&token=82b32a13-6d22-4be4-8b85-02ab9aeafcdc',
         hint: 'kids care'
      },
     'Hair-Care': { 
-        desktop: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Category%20Hero%20Banner%20Desktop%2FHair%20care%20%20Category%20%20Banner.png?alt=media&token=8bf4626f-8890-4011-81c7-09312487fc95',
-        mobile: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Category%20Hero%20Image%20Mobile%20view%2FHair%20care%20%20Category%20%20Banner%201080%20_1080-min.png?alt=media&token=1fd97e1b-5f90-419c-ada9-50d8cc807a44',
+        desktop: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/product%20pages%2FHair%20care%20%20Category%20%20Banner%20Desktop.webp?alt=media&token=18cd4543-395b-41dc-a27f-6bd9ec961060',
+        mobile: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/product%20pages%2FHair%20care%20%20Category%20%20Banner%20mobile.webp?alt=media&token=ce32db38-e203-4677-a5ab-f45a8a36cc7c',
         hint: 'hair care' 
     },
     'Skin-Care': { 
-        desktop: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Category%20Hero%20Banner%20Desktop%2FSkin%20Care%20%20Category%20%20Banner.png?alt=media&token=de736d8f-f768-4ba6-b036-0f2e366b49a5',
-        mobile: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Category%20Hero%20Image%20Mobile%20view%2FSkin%20Care%20%20Category%20%20Banner%201080%20_1080-min.png?alt=media&token=89e90dcd-bce5-4b6c-a98e-d77ef94e543e',
+        desktop: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/product%20pages%2FSkin%20Care%20%20Category%20%20Banner%20desktop.webp?alt=media&token=127990e6-3216-4dd4-96eb-e97fb9ff6d97',
+        mobile: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/product%20pages%2FSkin%20Care%20%20Category%20%20Banner%20mobile.webp?alt=media&token=c8979bb2-6e6b-4656-bba7-18868e75a344',
         hint: 'skin care' 
     },
 };

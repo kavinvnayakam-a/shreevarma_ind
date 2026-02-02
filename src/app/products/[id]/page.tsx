@@ -26,7 +26,6 @@ type Review = {
 export default function ProductDetailPage() {
   const params = useParams();
   
-  // FIX 1: Persistence of ID during refresh
   const productId = useMemo(() => {
     const id = params?.id;
     return typeof id === 'string' ? decodeURIComponent(id) : '';
@@ -40,7 +39,6 @@ export default function ProductDetailPage() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isBuyNowModalOpen, setIsBuyNowModalOpen] = useState(false);
   
-  // FIX 2: Memoized Ref for Firestore stability
   const productRef = useMemo(
     () => (firestore && productId ? doc(firestore, 'products', productId) : null),
     [firestore, productId]
@@ -48,7 +46,6 @@ export default function ProductDetailPage() {
 
   const { data: product, isLoading: isProductLoading } = useDoc<Product>(productRef);
 
-  // Reviews and Related Products fetching
   const reviewsQuery = useMemo(() => {
     if (!firestore || !productId) return null;
     return query(collection(firestore, `products/${productId}/reviews`));
@@ -90,7 +87,6 @@ export default function ProductDetailPage() {
     }
   };
 
-  // FIX 3: Robust Loading Guard
   if (isProductLoading || !productId) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background">
@@ -100,7 +96,6 @@ export default function ProductDetailPage() {
     );
   }
 
-  // Handle case where product really doesn't exist after loading is finished
   if (!product && !isProductLoading) {
     notFound();
     return null;
@@ -113,26 +108,26 @@ export default function ProductDetailPage() {
     <div className="bg-background min-h-screen">
       {product && <BuyNowModal product={{...product, id: productId}} open={isBuyNowModalOpen} onOpenChange={setIsBuyNowModalOpen} />}
       
-      <div className="container mx-auto px-6 py-8 pb-32 md:pb-16">
-        {/* Breadcrumbs */}
-        <nav className="mb-8">
-            <ol className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted-foreground/60">
+      <div className="container mx-auto px-4 md:px-6 py-6 md:py-8 pb-32 md:pb-16">
+        {/* Breadcrumbs - Responsive text size and scrollable on small screens */}
+        <nav className="mb-6 md:mb-8 overflow-hidden">
+            <ol className="flex items-center gap-2 text-[10px] md:text-xs font-black uppercase tracking-widest text-muted-foreground/60 whitespace-nowrap overflow-x-auto scrollbar-hide">
                 <li><Link href="/" className="hover:text-primary transition-colors">Home</Link></li>
-                <ChevronRight className="w-3 h-3 opacity-30"/>
+                <ChevronRight className="w-3 h-3 opacity-30 shrink-0"/>
                 <li><Link href="/products" className="hover:text-primary transition-colors">Products</Link></li>
                 {product?.category && (
                     <>
-                        <ChevronRight className="w-3 h-3 opacity-30"/>
-                        <li className="text-primary font-black">{product.category}</li>
+                        <ChevronRight className="w-3 h-3 opacity-30 shrink-0"/>
+                        <li className="text-primary font-black truncate">{product.category}</li>
                     </>
                 )}
             </ol>
         </nav>
 
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
-          {/* Gallery */}
-          <div className="flex flex-col gap-6 md:sticky top-28">
-            <div className="aspect-square w-full relative overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white shadow-sm">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-20 items-start">
+          {/* Gallery - Adjusted rounded corners for mobile */}
+          <div className="flex flex-col gap-4 md:gap-6 md:sticky top-28">
+            <div className="aspect-square w-full relative overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] border border-slate-100 bg-white shadow-sm">
               <Image
                 src={images[selectedImage]}
                 alt={product?.name || 'Product'}
@@ -144,9 +139,9 @@ export default function ProductDetailPage() {
               />
             </div>
             {images.length > 1 && (
-              <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+              <div className="flex gap-3 md:gap-4 overflow-x-auto pb-2 scrollbar-hide">
                 {images.map((img, index) => (
-                  <button key={index} onClick={() => setSelectedImage(index)} className={cn("aspect-square w-20 shrink-0 relative rounded-2xl overflow-hidden border-2 bg-white transition-all", selectedImage === index ? 'border-primary shadow-md' : 'border-transparent opacity-50')}>
+                  <button key={index} onClick={() => setSelectedImage(index)} className={cn("aspect-square w-16 md:w-20 shrink-0 relative rounded-xl md:rounded-2xl overflow-hidden border-2 bg-white transition-all", selectedImage === index ? 'border-primary shadow-md' : 'border-transparent opacity-50')}>
                     <Image src={img} alt="thumb" fill className="object-cover" sizes="80px" />
                   </button>
                 ))}
@@ -155,10 +150,12 @@ export default function ProductDetailPage() {
           </div>
 
           {/* Product Info */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-5 md:gap-6">
             <div className="flex justify-between items-start gap-4">
-                <h1 className="text-4xl md:text-6xl font-black text-primary uppercase tracking-tighter leading-none">{product?.name}</h1>
-                <Button variant="outline" size="icon" className="rounded-full border-slate-100 shrink-0 bg-white shadow-sm" onClick={handleShare}>
+                <h1 className="text-3xl md:text-6xl font-black text-primary uppercase tracking-tighter leading-[0.9] md:leading-none">
+                  {product?.name}
+                </h1>
+                <Button variant="outline" size="icon" className="rounded-full border-slate-100 shrink-0 bg-white shadow-sm h-10 w-10 md:h-12 md:w-12" onClick={handleShare}>
                     <Share2 className="h-4 w-4 text-primary"/>
                 </Button>
             </div>
@@ -166,14 +163,15 @@ export default function ProductDetailPage() {
             <div className="flex items-center gap-3">
                <div className="flex items-center gap-0.5">
                     {[...Array(5)].map((_, i) => (
-                        <Star key={i} className={cn("w-4 h-4", i < Math.round(overallRating) ? "text-yellow-400 fill-yellow-400" : "text-slate-200")} />
+                        <Star key={i} className={cn("w-3 h-3 md:w-4 md:h-4", i < Math.round(overallRating) ? "text-yellow-400 fill-yellow-400" : "text-slate-200")} />
                     ))}
                 </div>
-              <span className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest">({reviews?.length || 0} reviews)</span>
+              <span className="text-[10px] md:text-xs font-bold text-muted-foreground/60 uppercase tracking-widest">({reviews?.length || 0} reviews)</span>
             </div>
 
-            <p className="text-4xl font-black text-primary">₹{Math.round(product?.sellingPrice || 0)}</p>
+            <p className="text-3xl md:text-4xl font-black text-primary">₹{Math.round(product?.sellingPrice || 0)}</p>
             
+            {/* Desktop-only Buttons */}
             {!isSoldOut && (
                 <div className="hidden md:flex flex-col gap-4">
                     <div className="flex gap-4">
@@ -200,29 +198,35 @@ export default function ProductDetailPage() {
                 </div>
             )}
 
-            {/* Accordion */}
-            <div className="mt-8">
-              <Accordion type="single" collapsible defaultValue="item-0" className="w-full bg-white rounded-[2rem] border border-slate-100 overflow-hidden shadow-sm">
+            {/* Accordion - Optimized internal spacing for mobile */}
+            <div className="mt-4 md:mt-8">
+              <Accordion type="single" collapsible defaultValue="item-0" className="w-full bg-white rounded-[1.5rem] md:rounded-[2rem] border border-slate-100 overflow-hidden shadow-sm">
                 <AccordionItem value="item-0" className="border-slate-100">
-                    <AccordionTrigger className="px-8 font-black uppercase text-xs tracking-widest hover:no-underline text-primary">
+                    <AccordionTrigger className="px-5 md:px-8 py-4 font-black uppercase text-[10px] md:text-xs tracking-widest hover:no-underline text-primary">
                         <div className="flex items-center gap-3"><Info className="w-4 h-4"/> Product Story</div>
                     </AccordionTrigger>
-                    <AccordionContent className="px-8 pb-6 text-muted-foreground leading-relaxed">{product?.description}</AccordionContent>
+                    <AccordionContent className="px-5 md:px-8 pb-6 text-sm md:text-base text-muted-foreground leading-relaxed">
+                      {product?.description}
+                    </AccordionContent>
                 </AccordionItem>
                 {product?.ingredients && (
                   <AccordionItem value="item-1" className="border-slate-100">
-                    <AccordionTrigger className="px-8 font-black uppercase text-xs tracking-widest hover:no-underline text-primary">
+                    <AccordionTrigger className="px-5 md:px-8 py-4 font-black uppercase text-[10px] md:text-xs tracking-widest hover:no-underline text-primary">
                         <div className="flex items-center gap-3"><Leaf className="w-4 h-4"/> Ingredients</div>
                     </AccordionTrigger>
-                    <AccordionContent className="px-8 pb-6 text-muted-foreground leading-relaxed">{product.ingredients}</AccordionContent>
+                    <AccordionContent className="px-5 md:px-8 pb-6 text-sm md:text-base text-muted-foreground leading-relaxed">
+                      {product.ingredients}
+                    </AccordionContent>
                   </AccordionItem>
                 )}
                 {product?.directionOfUse && (
                   <AccordionItem value="item-2" className="border-none">
-                    <AccordionTrigger className="px-8 font-black uppercase text-xs tracking-widest hover:no-underline text-primary">
+                    <AccordionTrigger className="px-5 md:px-8 py-4 font-black uppercase text-[10px] md:text-xs tracking-widest hover:no-underline text-primary">
                         <div className="flex items-center gap-3"><ShieldCheck className="w-4 h-4"/> Usage Ritual</div>
                     </AccordionTrigger>
-                    <AccordionContent className="px-8 pb-6 text-muted-foreground leading-relaxed">{product.directionOfUse}</AccordionContent>
+                    <AccordionContent className="px-5 md:px-8 pb-6 text-sm md:text-base text-muted-foreground leading-relaxed">
+                      {product.directionOfUse}
+                    </AccordionContent>
                   </AccordionItem>
                 )}
               </Accordion>
@@ -230,30 +234,35 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Banners */}
-        <div className="mt-24 space-y-0">
+        {/* Banners - aspect ratio fixes for mobile scaling */}
+        <div className="mt-16 md:mt-24 space-y-0">
             {[product?.bannerImageUrl1, product?.bannerImageUrl2, product?.bannerImageUrl3].map((url, i) => url && (
-                <div key={i} className="relative w-full aspect-[4000/1044]">
+                <div key={i} className="relative w-full aspect-[4/1.5] md:aspect-[4000/1044]">
                     <Image src={url} alt="Benefit Banner" fill className="object-cover" sizes="100vw" />
                 </div>
             ))}
         </div>
 
-        <Separator className="my-24 opacity-30"/>
-        <ProductReviews productId={productId} />
+        <Separator className="my-16 md:my-24 opacity-30"/>
+        
+        <div className="px-1">
+          <ProductReviews productId={productId} />
+        </div>
 
-        {/* Related Products */}
+        {/* Related Products - grid-cols-2 for mobile seek section */}
         {relatedProducts && relatedProducts.length > 0 && (
-          <div className="mt-32">
-            <h2 className="text-3xl font-black text-primary text-center mb-12 uppercase tracking-tighter">You May Also Seek</h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="mt-20 md:mt-32">
+            <h2 className="text-2xl md:text-3xl font-black text-primary text-center mb-8 md:mb-12 uppercase tracking-tighter">
+              You May Also Seek
+            </h2>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
                 {relatedProducts.map((p: any) => <ProductCard key={p.__docId} product={{...p, id: p.__docId}} />)}
             </div>
           </div>
         )}
       </div>
 
-       {/* Mobile Floating CTA */}
+       {/* Mobile Floating CTA - Full width adjustments for small phones */}
        <div className={cn(
            "fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-lg border-t border-border/40 p-4 md:hidden z-50 transition-all duration-500 ease-in-out shadow-[0_-10px_40px_rgba(0,0,0,0.08)]", 
            isScrolled ? "translate-y-full opacity-0" : "translate-y-0 opacity-100"
@@ -261,18 +270,18 @@ export default function ProductDetailPage() {
         {isSoldOut ? (
             <Button size="lg" disabled className="w-full h-14 rounded-2xl font-black uppercase tracking-widest">Sold Out</Button>
         ) : (
-            <div className="flex items-center gap-3 max-w-lg mx-auto">
+            <div className="flex items-center gap-2 w-full max-w-lg mx-auto">
                 <Button 
                     onClick={() => addToCart({ ...product!, id: productId, quantity })} 
                     size="lg" 
-                    className="flex-1 bg-white text-primary border-2 border-primary h-14 rounded-2xl font-black uppercase tracking-tighter text-[11px]"
+                    className="flex-1 bg-white text-primary border-2 border-primary h-12 rounded-xl font-black uppercase tracking-tighter text-[10px] px-2"
                 >
                     Add to Cart
                 </Button>
                 <Button 
                     onClick={() => setIsBuyNowModalOpen(true)} 
                     size="lg" 
-                    className="flex-[2] bg-[#6f3a2f] text-white h-14 rounded-2xl font-black uppercase tracking-widest shadow-lg active:scale-95 transition-transform"
+                    className="flex-[2] bg-[#6f3a2f] text-white h-12 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-lg active:scale-95 transition-transform"
                 >
                     Buy Now
                 </Button>
