@@ -2,19 +2,51 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import * as admin from 'firebase-admin';
+import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
+import { firebaseConfig } from '@/firebase/config';
 
 // --- Standard Firebase Admin Initialization ---
 if (!admin.apps.length) {
   try {
-    // This uses Application Default Credentials automatically in App Hosting
     admin.initializeApp();
   } catch (error: any) {
-    // Log error but don't crash if it's already initialized
     console.error('Firebase Admin init error:', error.message);
   }
 }
 
 const db = admin.firestore();
+
+// --- NEW: Function to fetch secrets directly from Secret Manager ---
+async function getSecrets(): Promise<{ appId: string; secretKey: string }> {
+  const client = new SecretManagerServiceClient();
+  const projectId = firebaseConfig.projectId;
+
+  if (!projectId) {
+    throw new Error('Firebase project ID is not configured. Cannot fetch secrets.');
+  }
+
+  try {
+    const [appIdVersion] = await client.accessSecretVersion({
+      name: `projects/${projectId}/secrets/CASHFREE_APP_ID/versions/latest`,
+    });
+    const [secretKeyVersion] = await client.accessSecretVersion({
+      name: `projects/${projectId}/secrets/CASHFREE_SECRET_KEY/versions/latest`,
+    });
+
+    const appId = appIdVersion.payload?.data?.toString();
+    const secretKey = secretKeyVersion.payload?.data?.toString();
+
+    if (!appId || !secretKey) {
+      throw new Error('One or more secrets were empty or could not be decoded.');
+    }
+
+    return { appId, secretKey };
+  } catch (error: any) {
+      console.error("Failed to access secrets from Secret Manager:", error.message);
+      throw new Error(`Failed to fetch secrets from Google Secret Manager. Ensure the service account has the 'Secret Manager Secret Accessor' role and the secrets 'CASHFREE_APP_ID' and 'CASHFREE_SECRET_KEY' exist in project '${projectId}'.`);
+  }
+}
+
 
 const getCashfreeApiUrl = () =>
   process.env.NEXT_PUBLIC_CASHFREE_ENV === 'production'
@@ -22,17 +54,7 @@ const getCashfreeApiUrl = () =>
     : 'https://sandbox.cashfree.com/pg';
 
 async function getCashfreeApiHeaders() {
-  const appId = process.env.CASHFREE_APP_ID;
-  const secretKey = process.env.CASHFREE_SECRET_KEY;
-  
-  const missing = [];
-  if (!appId) missing.push('CASHFREE_APP_ID');
-  if (!secretKey) missing.push('CASHFREE_SECRET_KEY');
-
-  if (missing.length > 0) {
-    const specificErrorMessage = `Configuration Error: The server could not access payment secrets (${missing.join(', ')}). In your Google Cloud project, find the IAM Principal ending in '@gcp-sa-apphosting.iam.gserviceaccount.com' and ensure it has the 'Secret Manager Secret Accessor' role for the required secrets.`;
-    throw new Error(specificErrorMessage);
-  }
+  const { appId, secretKey } = await getSecrets();
 
   return {
     'Content-Type': 'application/json',
