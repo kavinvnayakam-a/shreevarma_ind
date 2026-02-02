@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import * as admin from 'firebase-admin';
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
-import { firebaseConfig } from '@/firebase/config';
+import { Cashfree } from 'cashfree-pg';
 
 // --- Standard Firebase Admin Initialization ---
 if (!admin.apps.length) {
@@ -16,25 +16,18 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
+// --- Hardcoded Project ID to fix environment detection issue ---
+const GCP_PROJECT_ID = 'shreevarma-india-location';
+
 async function getSecrets(): Promise<{ appId: string; secretKey: string }> {
   const client = new SecretManagerServiceClient();
-  let projectId: string | undefined | null;
-
-  try {
-    // Attempt to get project ID automatically from the client's authenticated context.
-    [projectId] = await client.getProjectId();
-  } catch (e: any) {
-    console.error("Could not automatically determine Project ID.", e.message);
-    // Fallback to the config if auto-detection fails.
-    projectId = firebaseConfig.projectId;
-  }
   
-  if (!projectId) {
-    throw new Error('FATAL: Firebase project ID is not configured and could not be auto-detected. Cannot fetch secrets.');
+  if (!GCP_PROJECT_ID) {
+    throw new Error('FATAL: Google Cloud Project ID is not configured.');
   }
 
-  const appIdSecretName = `projects/${projectId}/secrets/CASHFREE_APP_ID/versions/latest`;
-  const secretKeySecretName = `projects/${projectId}/secrets/CASHFREE_SECRET_KEY/versions/latest`;
+  const appIdSecretName = `projects/${GCP_PROJECT_ID}/secrets/CASHFREE_APP_ID/versions/latest`;
+  const secretKeySecretName = `projects/${GCP_PROJECT_ID}/secrets/CASHFREE_SECRET_KEY/versions/latest`;
 
   try {
     const [appIdVersion] = await client.accessSecretVersion({ name: appIdSecretName });
@@ -44,44 +37,30 @@ async function getSecrets(): Promise<{ appId: string; secretKey: string }> {
     const secretKey = secretKeyVersion.payload?.data?.toString();
 
     if (!appId || !secretKey) {
-      throw new Error('One or more secrets were fetched but found to be empty. Please check the values in Secret Manager.');
+      throw new Error('One or more Cashfree secrets were fetched but found to be empty.');
     }
 
     return { appId, secretKey };
   } catch (error: any) {
-      console.error("Full Secret Manager Access Error:", error);
-      
       const detailedError = `Configuration Error: The server could not access payment secrets from Google Secret Manager. This is an infrastructure issue.
       
-      Project ID Used: '${projectId}'
+      Project ID Used: '${GCP_PROJECT_ID}'
       Secret Path 1: '${appIdSecretName}'
       Secret Path 2: '${secretKeySecretName}'
 
       Please verify the following in your Google Cloud project:
       1. The 'Secret Manager API' is enabled.
-      2. The secrets 'CASHFREE_APP_ID' and 'CASHFREE_SECRET_KEY' exist in the project '${projectId}'.
+      2. The secrets 'CASHFREE_APP_ID' and 'CASHFREE_SECRET_KEY' exist in the project '${GCP_PROJECT_ID}'.
       3. The App Hosting service account (ending in '@gcp-sa-apphosting.iam.gserviceaccount.com') has the 'Secret Manager Secret Accessor' IAM role.`;
       
       throw new Error(detailedError);
   }
 }
 
-
-const getCashfreeApiUrl = () =>
-  process.env.NEXT_PUBLIC_CASHFREE_ENV === 'production'
-    ? 'https://api.cashfree.com/pg'
-    : 'https://sandbox.cashfree.com/pg';
-
-async function getCashfreeApiHeaders() {
-  const { appId, secretKey } = await getSecrets();
-
-  return {
-    'Content-Type': 'application/json',
-    'x-api-version': '2023-08-01',
-    'x-client-id': appId,
-    'x-client-secret': secretKey,
-  };
-}
+// Configure Cashfree SDK
+Cashfree.XEnvironment = process.env.NEXT_PUBLIC_CASHFREE_ENV === 'production' 
+    ? Cashfree.Environment.PRODUCTION 
+    : Cashfree.Environment.SANDBOX;
 
 export async function POST(req: NextRequest) {
   const orderDocId = uuidv4();
@@ -102,6 +81,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Incomplete order data.' }, { status: 400 });
     }
 
+    // Set credentials for the SDK
+    const secrets = await getSecrets();
+    Cashfree.XClientId = secrets.appId;
+    Cashfree.XClientSecret = secrets.secretKey;
+
     const cleanPhone = customerPhone.replace(/\D/g, '').slice(-10);
     let appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.shreevarma.org';
     appUrl = appUrl.endsWith('/') ? appUrl.slice(0, -1) : appUrl;
@@ -121,16 +105,13 @@ export async function POST(req: NextRequest) {
       internalId: orderDocId,
     };
 
+    // Store pending order details in Firestore
     await Promise.all([
       pendingOrderRef.set(orderData),
       userOrderRef.set(orderData)
     ]);
-
-    const headers = await getCashfreeApiHeaders();
-    const response = await fetch(`${getCashfreeApiUrl()}/orders`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
+    
+    const request = {
         order_id: orderDocId,
         order_amount: Number(cartTotal.toFixed(2)),
         order_currency: 'INR',
@@ -141,29 +122,30 @@ export async function POST(req: NextRequest) {
           customer_phone: cleanPhone,
         },
         order_meta: {
-          return_url: `${appUrl}/order/success/${orderDocId}?order_id={order_id}`,
-          notify_url: "https://cashfreewebhook-iklfboedvq-uc.a.run.app",
+          return_url: `${appUrl}/order/success/{order_id}`,
+          notify_url: "https://cashfreewebhook-iklfboedvq-uc.a.run.app", // Keep your existing webhook
         },
-        order_note: 'Ayurvedic Products Purchase',
-      }),
-    });
+        order_note: 'Shreevarma Wellness Order',
+    };
 
-    const data = await response.json();
+    const response = await Cashfree.PGCreateOrder("2023-08-01", request);
+    const orderResponseData = response.data;
 
-    if (!response.ok || !data.payment_session_id) {
-      console.error('Cashfree API Error Response:', data);
-      await Promise.all([pendingOrderRef.delete(), userOrderRef.delete()]);
-      return NextResponse.json({ success: false, error: data.message || 'Payment gateway rejection.' }, { status: 500 });
+    if (!orderResponseData.payment_session_id) {
+       console.error('Cashfree SDK Error:', response);
+       await Promise.all([pendingRef.delete(), userOrderRef.delete()]);
+       return NextResponse.json({ success: false, error: 'Payment gateway rejection.' }, { status: 500 });
     }
 
     return NextResponse.json({
       success: true,
-      payment_session_id: data.payment_session_id,
+      payment_session_id: orderResponseData.payment_session_id,
       orderDocId,
     });
 
   } catch (err: any) {
     console.error('[SERVER_ORDER_ERROR_CRITICAL]', err);
+    // The error from getSecrets() is now more descriptive
     return NextResponse.json({ success: false, error: err.message || 'Internal Server Error' }, { status: 500 });
   }
 }
