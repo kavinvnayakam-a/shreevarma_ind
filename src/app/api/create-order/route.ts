@@ -7,7 +7,11 @@ import * as admin from 'firebase-admin';
 // This safely initializes the Admin SDK using Application Default Credentials,
 // which are automatically available in the App Hosting environment.
 if (!admin.apps.length) {
-  admin.initializeApp();
+  try {
+    admin.initializeApp();
+  } catch (error: any) {
+    console.error('Firebase Admin init error:', error.message);
+  }
 }
 
 const db = admin.firestore();
@@ -19,17 +23,26 @@ const getCashfreeApiUrl = () =>
     : 'https://sandbox.cashfree.com/pg';
 
 async function getCashfreeApiHeaders() {
-  // Try to get the app ID from either the runtime-only or public variable for resilience.
+  // --- Enhanced Debugging for Secret Manager ---
   const appId = process.env.CASHFREE_APP_ID || process.env.NEXT_PUBLIC_CASHFREE_APP_ID;
   const secretKey = process.env.CASHFREE_SECRET_KEY;
 
-  // Improved error checking to provide more specific feedback.
+  // Log the status of each secret to help diagnose runtime issues.
+  console.log('[DEBUG] Cashfree Secret Check:');
+  console.log(`- CASHFREE_APP_ID found: ${!!appId}`);
+  console.log(`- NEXT_PUBLIC_CASHFREE_APP_ID found: ${!!process.env.NEXT_PUBLIC_CASHFREE_APP_ID}`);
+  console.log(`- CASHFREE_SECRET_KEY found: ${!!secretKey}`);
+
   if (!appId || !secretKey) {
     const missing = [];
     if (!appId) missing.push('CASHFREE_APP_ID');
     if (!secretKey) missing.push('CASHFREE_SECRET_KEY');
-    console.error(`Missing Cashfree secrets at runtime: ${missing.join(', ')}`);
-    throw new Error(`Server configuration error: Required payment secrets (${missing.join(', ')}) are missing. Please verify your Secret Manager setup.`);
+    
+    // Detailed error for server logs
+    console.error(`FATAL: Missing Cashfree secrets at runtime. App ID Present: ${!!appId}, Secret Key Present: ${!!secretKey}. Missing: ${missing.join(', ')}.`);
+    
+    // User-facing error
+    throw new Error(`Server configuration error: Required payment secrets (${missing.join(', ')}) are missing. Please contact support and reference this error.`);
   }
 
   return {
