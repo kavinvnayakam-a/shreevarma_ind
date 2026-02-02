@@ -2,7 +2,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import * as admin from 'firebase-admin';
-import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
 import { Cashfree } from 'cashfree-pg';
 
 // --- Standard Firebase Admin Initialization ---
@@ -15,47 +14,6 @@ if (!admin.apps.length) {
 }
 
 const db = admin.firestore();
-
-// --- Hardcoded Project ID to fix environment detection issue ---
-const GCP_PROJECT_ID = 'shreevarma-india-location';
-
-async function getSecrets(): Promise<{ appId: string; secretKey: string }> {
-  const client = new SecretManagerServiceClient();
-  
-  if (!GCP_PROJECT_ID) {
-    throw new Error('FATAL: Google Cloud Project ID is not configured.');
-  }
-
-  const appIdSecretName = `projects/${GCP_PROJECT_ID}/secrets/CASHFREE_APP_ID/versions/latest`;
-  const secretKeySecretName = `projects/${GCP_PROJECT_ID}/secrets/CASHFREE_SECRET_KEY/versions/latest`;
-
-  try {
-    const [appIdVersion] = await client.accessSecretVersion({ name: appIdSecretName });
-    const [secretKeyVersion] = await client.accessSecretVersion({ name: secretKeySecretName });
-
-    const appId = appIdVersion.payload?.data?.toString();
-    const secretKey = secretKeyVersion.payload?.data?.toString();
-
-    if (!appId || !secretKey) {
-      throw new Error('One or more Cashfree secrets were fetched but found to be empty.');
-    }
-
-    return { appId, secretKey };
-  } catch (error: any) {
-      const detailedError = `Configuration Error: The server could not access payment secrets from Google Secret Manager. This is an infrastructure issue.
-      
-      Project ID Used: '${GCP_PROJECT_ID}'
-      Secret Path 1: '${appIdSecretName}'
-      Secret Path 2: '${secretKeySecretName}'
-
-      Please verify the following in your Google Cloud project:
-      1. The 'Secret Manager API' is enabled.
-      2. The secrets 'CASHFREE_APP_ID' and 'CASHFREE_SECRET_KEY' exist in the project '${GCP_PROJECT_ID}'.
-      3. The App Hosting service account (ending in '@gcp-sa-apphosting.iam.gserviceaccount.com') has the 'Secret Manager Secret Accessor' IAM role.`;
-      
-      throw new Error(detailedError);
-  }
-}
 
 export async function POST(req: NextRequest) {
   const orderDocId = uuidv4();
@@ -75,13 +33,20 @@ export async function POST(req: NextRequest) {
     if (!userId || !cartItems?.length || !cartTotal) {
       return NextResponse.json({ success: false, error: 'Incomplete order data.' }, { status: 400 });
     }
+    
+    const appId = process.env.CASHFREE_APP_ID;
+    const secretKey = process.env.CASHFREE_SECRET_KEY;
+
+    if (!appId || !secretKey) {
+        throw new Error("Cashfree credentials are not configured in the environment. Please check your .env.local file or deployment variables.");
+    }
+
 
     // --- Modern Cashfree SDK v4 Initialization ---
-    const secrets = await getSecrets();
     const cashfree = new Cashfree({
         env: process.env.NEXT_PUBLIC_CASHFREE_ENV === 'production' ? 'PRODUCTION' : 'SANDBOX',
-        appId: secrets.appId,
-        secretKey: secrets.secretKey,
+        appId: appId,
+        secretKey: secretKey,
     });
 
     const cleanPhone = customerPhone.replace(/\D/g, '').slice(-10);
@@ -143,7 +108,6 @@ export async function POST(req: NextRequest) {
 
   } catch (err: any) {
     console.error('[SERVER_ORDER_ERROR_CRITICAL]', err);
-    // The error from getSecrets() is now more descriptive
     const errorMessage = err.response?.data?.message || err.message || 'Internal Server Error';
     return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
   }
