@@ -19,7 +19,7 @@ const getCashfreeApiUrl = () =>
     : 'https://sandbox.cashfree.com/pg';
 
 async function getCashfreeApiHeaders() {
-  const appId = process.env.CASHFREE_APP_ID;
+  const appId = process.env.NEXT_PUBLIC_CASHFREE_APP_ID; // Using the NEXT_PUBLIC_ variable
   const secretKey = process.env.CASHFREE_SECRET_KEY;
 
   if (!appId || !secretKey) {
