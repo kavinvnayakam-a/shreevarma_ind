@@ -57,11 +57,6 @@ async function getSecrets(): Promise<{ appId: string; secretKey: string }> {
   }
 }
 
-// Configure Cashfree SDK
-Cashfree.XEnvironment = process.env.NEXT_PUBLIC_CASHFREE_ENV === 'production' 
-    ? Cashfree.Environment.PRODUCTION 
-    : Cashfree.Environment.SANDBOX;
-
 export async function POST(req: NextRequest) {
   const orderDocId = uuidv4();
   
@@ -81,10 +76,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Incomplete order data.' }, { status: 400 });
     }
 
-    // Set credentials for the SDK
+    // --- Modern Cashfree SDK v4 Initialization ---
     const secrets = await getSecrets();
-    Cashfree.XClientId = secrets.appId;
-    Cashfree.XClientSecret = secrets.secretKey;
+    const cashfree = new Cashfree({
+        env: process.env.NEXT_PUBLIC_CASHFREE_ENV === 'production' ? 'PRODUCTION' : 'SANDBOX',
+        appId: secrets.appId,
+        secretKey: secrets.secretKey,
+    });
 
     const cleanPhone = customerPhone.replace(/\D/g, '').slice(-10);
     let appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.shreevarma.org';
@@ -128,12 +126,12 @@ export async function POST(req: NextRequest) {
         order_note: 'Shreevarma Wellness Order',
     };
 
-    const response = await Cashfree.PGCreateOrder("2023-08-01", request);
+    const response = await cashfree.orders.create(request);
     const orderResponseData = response.data;
 
     if (!orderResponseData.payment_session_id) {
        console.error('Cashfree SDK Error:', response);
-       await Promise.all([pendingRef.delete(), userOrderRef.delete()]);
+       await Promise.all([pendingOrderRef.delete(), userOrderRef.delete()]);
        return NextResponse.json({ success: false, error: 'Payment gateway rejection.' }, { status: 500 });
     }
 
@@ -146,6 +144,7 @@ export async function POST(req: NextRequest) {
   } catch (err: any) {
     console.error('[SERVER_ORDER_ERROR_CRITICAL]', err);
     // The error from getSecrets() is now more descriptive
-    return NextResponse.json({ success: false, error: err.message || 'Internal Server Error' }, { status: 500 });
+    const errorMessage = err.response?.data?.message || err.message || 'Internal Server Error';
+    return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
   }
 }
