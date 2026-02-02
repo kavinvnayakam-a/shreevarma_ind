@@ -1,22 +1,13 @@
+
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import * as admin from 'firebase-admin';
 
-// --- ROBUST FIREBASE ADMIN INITIALIZATION ---
-// This prevents the '5 NOT_FOUND' error by using explicit Service Account keys
+// --- Standard Firebase Admin Initialization ---
+// This safely initializes the Admin SDK using Application Default Credentials,
+// which are automatically available in the App Hosting environment.
 if (!admin.apps.length) {
-  try {
-    admin.initializeApp({
-      credential: admin.credential.cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        // Critical: The replace() ensures the private key is formatted correctly in production
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      }),
-    });
-  } catch (error: any) {
-    console.error('Firebase admin initialization error:', error.message);
-  }
+  admin.initializeApp();
 }
 
 const db = admin.firestore();
@@ -72,7 +63,6 @@ export async function POST(req: NextRequest) {
     appUrl = appUrl.endsWith('/') ? appUrl.slice(0, -1) : appUrl;
 
     // 1. SAVE TO FIRESTORE 
-    // This is where '5 NOT_FOUND' happens if Firebase Admin is misconfigured
     await pendingOrderRef.set({
       userId,
       orderStatus: 'pending',
