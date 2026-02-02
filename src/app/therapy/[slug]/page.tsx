@@ -127,5 +127,3 @@ export default function TherapyDetailPage({ params }: { params: { slug: string }
     </div>
   );
 }
-
-    
