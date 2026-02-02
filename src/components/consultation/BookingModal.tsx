@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -7,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ShieldCheck, Zap } from 'lucide-react';
 import { useUser, useFirebase, useDoc } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -20,7 +19,8 @@ interface BookingModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-function generateAppointmentConfirmationEmail(apptData: any, userEmail: string): string {
+// Optimized Email Template Logic (Brown Theme #72392F)
+function generateAppointmentConfirmationEmail(apptData: any): string {
     const consultationDate = new Date(apptData.consultationDate);
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://shreevarma.org';
     const profileUrl = `${appUrl}/profile?tab=appointments`;
@@ -30,45 +30,24 @@ function generateAppointmentConfirmationEmail(apptData: any, userEmail: string):
       <html>
       <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Appointment Confirmation</title>
         <style>
-          @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
-          body { font-family: 'Montserrat', sans-serif; margin: 0; padding: 0; background-color: #f9f5f1; }
-          .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #e0e0e0; }
-          .header { background-color: #72392F; padding: 30px; text-align: center; }
-          .header img { max-width: 180px; }
-          .content { padding: 30px; }
-          .footer { background-color: #f1f1f1; padding: 20px; text-align: center; font-size: 12px; color: #888; }
-          p { line-height: 1.6; }
-          .button { display: inline-block; padding: 12px 25px; background-color: #72392F; color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: bold; }
-          .details-box { background-color: #f9f9f9; border: 1px solid #eee; padding: 20px; border-radius: 8px; margin-top: 20px; }
+          body { font-family: sans-serif; background-color: #f9f5f1; padding: 20px; }
+          .card { max-width: 500px; margin: auto; background: white; border-radius: 12px; padding: 30px; border: 1px solid #eee; }
+          .header { text-align: center; margin-bottom: 20px; }
+          .btn { display: block; text-align: center; background: #72392F; color: white !important; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 20px; }
+          .detail { margin-bottom: 10px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px; }
         </style>
       </head>
       <body>
-        <div class="container">
+        <div class="card">
           <div class="header">
-            <img src="https://firebasestorage.googleapis.com/v0/b/studio-7312981180-d37fd.firebasestorage.app/o/Icons%20%26%20Logos%2FLOGO.png?alt=media&token=7193bfde-a319-49ee-8a77-2bcf1af97553" alt="Shreevarma's Wellness">
+            <h1 style="color: #72392F;">Appointment Confirmed!</h1>
+            <p>Your instant video consultation is ready.</p>
           </div>
-          <div class="content">
-            <h1 style="color: #72392F; text-align: center; font-size: 24px;">Appointment Confirmed!</h1>
-            <p style="text-align: center; color: #555;">Hi ${apptData.patient.name}, your consultation is booked.</p>
-            
-            <div class="details-box">
-                <h2 style="color: #333; font-size: 18px; margin-top: 0;">Appointment Details</h2>
-                <p style="color: #555;"><strong>Date:</strong> ${consultationDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                <p style="color: #555;"><strong>Time:</strong> Just Now (Please join the call shortly)</p>
-                <p style="color: #555;"><strong>Type:</strong> ${apptData.type}</p>
-                ${apptData.healthIssue ? `<p style="color: #555;"><strong>Health Concern:</strong> ${apptData.healthIssue}</p>` : ''}
-            </div>
-
-            <div style="text-align: center; margin-top: 30px;">
-              <a href="${profileUrl}" class="button">View My Appointments</a>
-            </div>
-          </div>
-          <div class="footer">
-            <p>&copy; ${new Date().getFullYear()} Shreevarma's Wellness. All Rights Reserved.</p>
-          </div>
+          <div class="detail"><strong>Patient:</strong> ${apptData.patient.name}</div>
+          <div class="detail"><strong>Date:</strong> ${consultationDate.toLocaleDateString()}</div>
+          <div class="detail"><strong>Type:</strong> Instant Video Call</div>
+          <a href="${profileUrl}" class="btn">Join Consultation Now</a>
         </div>
       </body>
       </html>
@@ -100,7 +79,6 @@ export function BookingModal({ open, onOpenChange }: BookingModalProps) {
         setPatientPhone(user.phoneNumber || userProfile?.phone || '');
     }
   }, [user, userProfile, open]);
-  
   
   const handleBooking = async () => {
     if (!user || !firestore || !user.email) {
@@ -138,22 +116,23 @@ export function BookingModal({ open, onOpenChange }: BookingModalProps) {
         
         await setDoc(consultationRef, consultationData);
         
-        const emailHtml = generateAppointmentConfirmationEmail(consultationData, user.email);
+        // Use optimized email logic
+        const emailHtml = generateAppointmentConfirmationEmail(consultationData);
         await setDoc(doc(collection(firestore, 'mail')), {
             to: [user.email],
             message: {
-                subject: "Appointment Confirmed - Shreevarma's Wellness",
+                subject: "Instant Consultation Confirmed - Shreevarma",
                 html: emailHtml,
             },
         });
 
-        toast({ title: 'Appointment Booked!', description: "You can join the call from your profile." });
+        toast({ title: 'Successfully Booked!', description: "Redirecting to your consultation..." });
         onOpenChange(false);
         router.push('/profile?tab=appointments');
       
     } catch (error: any) {
         console.error("Booking Error:", error);
-        toast({ variant: 'destructive', title: 'Booking Failed', description: 'Could not complete the booking. Please try again.' });
+        toast({ variant: 'destructive', title: 'Booking Failed', description: 'Please try again.' });
     } finally {
         setIsProcessing(false);
     }
@@ -161,30 +140,71 @@ export function BookingModal({ open, onOpenChange }: BookingModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md w-[90vw] flex flex-col p-0">
-        <DialogHeader className="p-6 pb-4">
-          <DialogTitle className="font-headline text-2xl">Book an Instant Consultation</DialogTitle>
-          <DialogDescription>
-            Confirm your details to join the video call queue.
-          </DialogDescription>
-        </DialogHeader>
-        <ScrollArea className="flex-1 px-6">
-            <div className="space-y-4">
-                <div className="space-y-2"><Label>Name</Label><Input value={patientName} onChange={e => setPatientName(e.target.value)} /></div>
-                <div className="space-y-2"><Label>Phone</Label><Input value={patientPhone} onChange={e => setPatientPhone(e.target.value)} /></div>
-                <div className="space-y-2"><Label>Health Issue (Optional)</Label><Textarea value={healthIssue} onChange={e => setHealthIssue(e.target.value)} /></div>
+      <DialogContent className="max-w-md w-[95vw] rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+        {/* Decorative Header */}
+        <div className="bg-[#6f3a2f] p-8 text-white">
+          <div className="flex items-center gap-2 mb-2">
+            <Zap className="w-5 h-5 fill-amber-400 text-amber-400" />
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-80">Instant Access</span>
+          </div>
+          <DialogTitle className="font-headline text-3xl leading-tight">Quick Consultation</DialogTitle>
+          <p className="text-white/60 text-sm mt-2 italic">Join the next available specialist in minutes.</p>
+        </div>
+
+        <ScrollArea className="max-h-[60vh] px-8 pt-8">
+            <div className="space-y-6">
+                <div className="space-y-2">
+                    <Label className="text-[11px] font-black uppercase tracking-widest text-[#6f3a2f]">Patient Name</Label>
+                    <Input 
+                      value={patientName} 
+                      onChange={e => setPatientName(e.target.value)} 
+                      className="rounded-xl border-slate-100 focus:border-[#6f3a2f] focus:ring-[#6f3a2f]/10 h-12 font-bold"
+                      placeholder="Enter full name"
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label className="text-[11px] font-black uppercase tracking-widest text-[#6f3a2f]">Contact Number</Label>
+                    <Input 
+                      value={patientPhone} 
+                      onChange={e => setPatientPhone(e.target.value)} 
+                      className="rounded-xl border-slate-100 focus:border-[#6f3a2f] focus:ring-[#6f3a2f]/10 h-12 font-bold"
+                      placeholder="+91 00000 00000"
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label className="text-[11px] font-black uppercase tracking-widest text-[#6f3a2f]">Health Concern (Optional)</Label>
+                    <Textarea 
+                      value={healthIssue} 
+                      onChange={e => setHealthIssue(e.target.value)} 
+                      className="rounded-xl border-slate-100 focus:border-[#6f3a2f] focus:ring-[#6f3a2f]/10 min-h-[100px] font-medium"
+                      placeholder="Tell us briefly about your issue..."
+                    />
+                </div>
             </div>
-            <div className="py-4">
-                <div className="flex space-x-2 items-start">
-                    <Checkbox id="terms" checked={agreedToTerms} onCheckedChange={(c) => setAgreedToTerms(c as boolean)} className="mt-1"/>
-                    <Label htmlFor="terms" className="text-xs text-muted-foreground">I consent to the session being recorded for quality and training purposes and agree to the no-refund policy for instant consultations.</Label>
+
+            <div className="mt-8 mb-6 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <div className="flex space-x-3 items-start">
+                    <Checkbox 
+                      id="terms" 
+                      checked={agreedToTerms} 
+                      onCheckedChange={(c) => setAgreedToTerms(c as boolean)} 
+                      className="mt-1 data-[state=checked]:bg-[#6f3a2f] data-[state=checked]:border-[#6f3a2f]"
+                    />
+                    <Label htmlFor="terms" className="text-[11px] leading-relaxed text-slate-500 font-medium cursor-pointer">
+                      I agree to the <span className="text-[#6f3a2f] font-bold underline">No-Refund Policy</span> for instant calls and consent to recording for quality purposes.
+                    </Label>
                 </div>
             </div>
         </ScrollArea>
-        <DialogFooter className="p-6 pt-4 border-t mt-auto">
-          <Button onClick={handleBooking} className="w-full" disabled={isProcessing || !agreedToTerms}>
-            {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Confirm & Book Now
+
+        <DialogFooter className="p-8 pt-4">
+          <Button 
+            onClick={handleBooking} 
+            className="w-full h-14 rounded-full bg-[#6f3a2f] hover:bg-[#5a2e25] text-white font-black uppercase tracking-widest text-xs shadow-xl transition-all active:scale-95 disabled:opacity-50" 
+            disabled={isProcessing || !agreedToTerms}
+          >
+            {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
+            Confirm & Start Call
           </Button>
         </DialogFooter>
       </DialogContent>

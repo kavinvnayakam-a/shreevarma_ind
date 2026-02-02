@@ -1,24 +1,43 @@
-
 'use client';
 
 import CheckoutPageClient from './CheckoutPageClient';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import Script from 'next/script';
+import { Loader2 } from 'lucide-react';
 
 export default function CheckoutPage() {
-  // The Cashfree SDK is loaded globally in layout.tsx.
-  // This check ensures the window.Cashfree object is available before rendering the client component,
-  // but we no longer need to call the `load` function from the `cashfree-pg` npm package here.
+  const [isSDKReady, setIsSDKReady] = useState(false);
+
   useEffect(() => {
-    if (typeof window.Cashfree === 'undefined' && !window.cashfreeSDKLoaded) {
-      const script = document.createElement('script');
-      script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
-      script.onload = () => {
-        window.cashfreeSDKLoaded = true;
-        // You might need to trigger a re-render here if CheckoutPageClient depends on it
-      };
-      document.body.appendChild(script);
+    // Check if script is already present in the window from layout.tsx
+    if (typeof window !== 'undefined' && window.Cashfree) {
+      setIsSDKReady(true);
     }
   }, []);
-  
-  return <CheckoutPageClient />;
+
+  return (
+    <>
+      {/* Using Next.js Script component is safer than document.createElement.
+          It handles deduplication automatically if it's also in layout.tsx.
+      */}
+      <Script 
+        src="https://sdk.cashfree.com/js/v3/cashfree.js" 
+        strategy="afterInteractive"
+        onLoad={() => setIsSDKReady(true)}
+      />
+
+      {isSDKReady ? (
+        <CheckoutPageClient />
+      ) : (
+        <div className="flex h-screen w-full items-center justify-center bg-[#F9F5F1]">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-10 w-10 animate-spin text-[#6f3a2f]" />
+            <p className="text-xs font-black uppercase tracking-widest text-slate-400">
+              Securing Payment Gateway...
+            </p>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }

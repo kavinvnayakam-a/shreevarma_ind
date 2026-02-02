@@ -1,27 +1,38 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import * as admin from 'firebase-admin';
 
-// Initialize Firebase Admin SDK
+// --- ROBUST FIREBASE ADMIN INITIALIZATION ---
+// This prevents the '5 NOT_FOUND' error by using explicit Service Account keys
 if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.applicationDefault(),
-  });
+  try {
+    admin.initializeApp({
+      credential: admin.credential.cert({
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        // Critical: The replace() ensures the private key is formatted correctly in production
+        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      }),
+    });
+  } catch (error: any) {
+    console.error('Firebase admin initialization error:', error.message);
+  }
 }
+
 const db = admin.firestore();
 
+// Forces Production API if CASHFREE_ENV is set to 'production'
 const getCashfreeApiUrl = () =>
-  process.env.CASHFREE_ENV === 'sandbox'
-    ? 'https://sandbox.cashfree.com/pg'
-    : 'https://api.cashfree.com/pg';
+  process.env.CASHFREE_ENV === 'production'
+    ? 'https://api.cashfree.com/pg'
+    : 'https://sandbox.cashfree.com/pg';
 
 async function getCashfreeApiHeaders() {
   const appId = process.env.CASHFREE_APP_ID;
   const secretKey = process.env.CASHFREE_SECRET_KEY;
 
   if (!appId || !secretKey) {
-    throw new Error('Cashfree credentials not configured.');
+    throw new Error('Production Cashfree credentials (APP_ID/SECRET_KEY) are missing.');
   }
 
   return {
@@ -33,7 +44,12 @@ async function getCashfreeApiHeaders() {
 }
 
 export async function POST(req: NextRequest) {
+  // Generate ID early so we can clean up if Cashfree fails
+  const orderDocId = uuidv4();
+  const pendingOrderRef = db.collection('pending_orders').doc(orderDocId);
+
   try {
+    const body = await req.json();
     const {
       userId,
       cartItems,
@@ -42,18 +58,21 @@ export async function POST(req: NextRequest) {
       customerEmail,
       customerPhone,
       shippingAddress,
-    } = await req.json();
+    } = body;
 
+    // Validation
     if (!userId || !cartItems?.length || !cartTotal) {
-      return NextResponse.json({ success: false, error: 'Missing order data.' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Incomplete order data.' }, { status: 400 });
     }
 
-    let appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.shreevarma.org/';
+    // Cashfree Production requires a clean 10-digit phone number
+    const cleanPhone = customerPhone.replace(/\D/g, '').slice(-10);
+
+    let appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://shreevarma.org';
     appUrl = appUrl.endsWith('/') ? appUrl.slice(0, -1) : appUrl;
 
-    const orderDocId = uuidv4();
-    const pendingOrderRef = db.collection('pending_orders').doc(orderDocId);
-
+    // 1. SAVE TO FIRESTORE 
+    // This is where '5 NOT_FOUND' happens if Firebase Admin is misconfigured
     await pendingOrderRef.set({
       userId,
       orderStatus: 'pending',
@@ -62,7 +81,7 @@ export async function POST(req: NextRequest) {
       customer: {
         name: customerName,
         email: customerEmail,
-        phone: customerPhone,
+        phone: cleanPhone,
       },
       shippingAddress,
       items: cartItems,
@@ -70,9 +89,10 @@ export async function POST(req: NextRequest) {
       internalId: orderDocId,
     });
 
-    const returnUrl = `${appUrl}/order/success/${orderDocId}`;
+    const returnUrl = `${appUrl}/order/success/${orderDocId}?order_id={order_id}`;
     const notifyUrl = "https://cashfreewebhook-iklfboedvq-uc.a.run.app";
 
+    // 2. INITIATE CASHFREE ORDER
     const response = await fetch(`${getCashfreeApiUrl()}/orders`, {
       method: 'POST',
       headers: await getCashfreeApiHeaders(),
@@ -84,13 +104,13 @@ export async function POST(req: NextRequest) {
           customer_id: userId,
           customer_name: customerName,
           customer_email: customerEmail,
-          customer_phone: customerPhone,
+          customer_phone: cleanPhone,
         },
         order_meta: {
           return_url: returnUrl,
           notify_url: notifyUrl,
         },
-        order_note: 'SVW Online Store Purchase',
+        order_note: 'Ayurvedic Products Purchase',
       }),
     });
 
@@ -98,17 +118,26 @@ export async function POST(req: NextRequest) {
 
     if (!response.ok || !data.payment_session_id) {
       console.error('Cashfree API Error:', data);
+      // Delete the pending order if the gateway fails
       await pendingOrderRef.delete();
-      return NextResponse.json({ success: false, error: data.message || 'Failed to contact payment gateway.' }, { status: 500 });
+      return NextResponse.json({ 
+        success: false, 
+        error: data.message || 'Payment gateway rejection.' 
+      }, { status: 500 });
     }
 
+    // 3. RETURN SESSION TO CLIENT
     return NextResponse.json({
       success: true,
       payment_session_id: data.payment_session_id,
       orderDocId,
     });
+
   } catch (err: any) {
-    console.error('[CREATE ORDER API ERROR]', err);
-    return NextResponse.json({ success: false, error: err.message || 'Internal Server Error' }, { status: 500 });
+    console.error('[SERVER_ORDER_ERROR]', err);
+    return NextResponse.json({ 
+      success: false, 
+      error: err.message || 'Internal Server Error' 
+    }, { status: 500 });
   }
 }
