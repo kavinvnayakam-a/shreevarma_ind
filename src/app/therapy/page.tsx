@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -7,7 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Search, Sparkles, MapPin, ShoppingBag, Video } from 'lucide-react';
+import { Search, Sparkles, MapPin, ShoppingBag, Video, CheckCircle2 } from 'lucide-react';
 import { therapiesData } from './therapy-data';
 
 
