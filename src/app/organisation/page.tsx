@@ -2,7 +2,6 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/products/product-card';
-import { products as placeholderProducts } from '@/lib/placeholder-data';
 import PlaceholderImages from '@/lib/placeholder-images.json';
 import { ArrowRight, PlayCircle, Star, Heart, Leaf, Shield, UserCheck, Loader2 } from 'lucide-react';
 import Image from 'next/image';
@@ -10,13 +9,21 @@ import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Counter } from '@/components/home/counter';
-import { HealthProblemsCarousel } from '@/components/home/health-problems-carousel';
 import { SpecialistsCarousel } from '@/components/home/specialists-carousel';
-import { SubHeader } from '@/components/layout/sub-header';
 import { useCollection, useFirebase } from '@/firebase';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
 import type { Product } from '@/lib/placeholder-data';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
+import Autoplay from "embla-carousel-autoplay";
+import { healthConditionsData } from '../diseases/health-conditions-data';
+
 
 const services = [
   { name: 'Online Consultation', subheading: 'Instant video calls with certified doctors', imageId: 'service-1', hint: 'online consultation' },
@@ -53,6 +60,16 @@ export default function OrganisationPage() {
     [firestore]
   );
   const { data: products, isLoading: isLoadingProducts } = useCollection<Product>(productsQuery);
+  const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
+  
+  const allHealthConditions = healthConditionsData.map(condition => {
+    const img = PlaceholderImages.placeholderImages.find(p => p.id === `health-${condition.id}`);
+    return {
+        ...condition,
+        imageUrl: img?.imageUrl || '',
+        imageHint: img?.imageHint || '',
+    };
+  });
 
   return (
     <div className="flex flex-col bg-[#F9F5F1]">
@@ -130,13 +147,49 @@ export default function OrganisationPage() {
       </section>
 
       {/* Ayurvedic Care Section */}
-      <section className="py-16 text-center">
+      <section className="py-16 text-center bg-white">
         <div className="container mx-auto px-6">
-            <h2 className="text-3xl font-bold font-headline mb-2 text-primary">Ayurvedic Care for Your Health</h2>
-            <p className="text-lg text-muted-foreground mb-8">We are having a wide range of Ayurvedic treatments for your health problems</p>
+          <h2 className="text-3xl font-bold font-headline mb-2 text-primary">Ayurvedic Care for Your Health</h2>
+          <p className="text-lg text-muted-foreground mb-12">We are having a wide range of Ayurvedic treatments for your health problems</p>
+          <Carousel
+            opts={{ align: 'start', loop: true }}
+            plugins={[plugin.current]}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-4">
+              {allHealthConditions.map((condition) => (
+                <CarouselItem key={condition.id} className="basis-1/2 md:basis-1/4 lg:basis-1/5 pl-4">
+                  <div className="text-center group">
+                    <Card className="overflow-hidden rounded-lg shadow-sm group-hover:shadow-lg transition-shadow">
+                      <Link href={`/diseases/${condition.slug}`} className="block">
+                        <div className="relative aspect-[5/4]">
+                          <Image
+                            src={condition.imageUrl}
+                            alt={condition.name}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform"
+                            data-ai-hint={condition.imageHint}
+                            sizes="(max-width: 768px) 50vw, 20vw"
+                            loading="lazy"
+                          />
+                        </div>
+                      </Link>
+                    </Card>
+                    <Button asChild variant="link" className="mt-2 text-primary font-semibold px-1 h-auto text-center block">
+                      <Link href={`/diseases/${condition.slug}`}>{condition.name}</Link>
+                    </Button>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="hidden md:flex" />
+            <CarouselNext className="hidden md:flex" />
+          </Carousel>
+          <div className="mt-12">
             <Button asChild variant="outline">
-                <Link href="/diseases">Explore Health Conditions</Link>
+                <Link href="/diseases">Explore All Health Conditions</Link>
             </Button>
+          </div>
         </div>
       </section>
 
