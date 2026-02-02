@@ -178,8 +178,8 @@ export const therapiesData: Therapy[] = [
   },
   {
     id: 't4',
-    name: 'Kati Vasti',
-    slug: 'kati-vasti',
+    name: 'Kati Basti',
+    slug: 'kati-basti',
     imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fkati-vasti.webp?alt=media&token=faa9c3e3-bf2f-4eb9-95a3-4ebe030f9808',
     what: 'Kati Vasti is an Ayurvedic therapy that involves pouring and retaining warm medicated oil over the lower back (lumbar region) in a specially made dough ring. The warm oil penetrates deep into the muscles, joints, and nerves of the lower back, providing targeted relief and nourishment to the affected area.',
     why: 'Kati Vasti is performed to relieve lower back pain, stiffness, and inflammation. The warm medicated oil helps relax tight muscles, improves blood circulation in the lumbar region, reduces inflammation, and supports spinal health. It is considered highly effective for chronic back issues.',
@@ -198,8 +198,8 @@ export const therapiesData: Therapy[] = [
   },
   {
     id: 't3',
-    name: 'Greeva Vasti',
-    slug: 'greeva-vasti',
+    name: 'Greeva Basti',
+    slug: 'greeva-basti',
     imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fgreeva-basti.webp?alt=media&token=7aa1ffa6-6210-44a9-8735-5a477b72e999',
     what: 'Greeva Vasti is an Ayurvedic therapy that involves retaining warm medicated oil on the neck area using a specially prepared dough ring. The oil is gently poured and allowed to stay over the cervical region to penetrate the muscles, joints, and nerves of the neck. This therapy is highly effective in relieving stiffness and promoting flexibility in the neck and shoulder region.',
     why: 'Greeva Vasti is performed to alleviate neck pain, stiffness, and tension. The warm herbal oils soothe muscles, reduce inflammation, improve blood circulation, and help relax the nervous system. It also supports spinal health and enhances mobility in the cervical region.',
@@ -216,8 +216,8 @@ export const therapiesData: Therapy[] = [
   },
   {
     id: 't7',
-    name: 'Janu Vasti',
-    slug: 'janu-vasti',
+    name: 'Janu Basti',
+    slug: 'janu-basti',
     imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fjanu-basti.webp?alt=media&token=6adc1450-86c0-4e1b-80df-e08fbb10bc92',
     what: 'Janu Vasti is an Ayurvedic therapy that involves retaining warm medicated oil over the knee joint using a specially prepared dough ring. The therapy focuses on allowing the herbal oils to penetrate deeply into the knee joint, muscles, and surrounding tissues, providing nourishment and relieving stiffness. It is considered highly effective for knee-related problems and joint rejuvenation.',
     why: 'Janu Vasti is performed to relieve knee pain, stiffness, and inflammation. The warm herbal oils improve circulation, relax the muscles, reduce swelling, and help in the lubrication of joints. It also supports cartilage health and enhances overall mobility of the knee.',
@@ -538,3 +538,5 @@ export const therapiesData: Therapy[] = [
     duration: '20–30 minutes per session, often done weekly or as advised.',
   },
 ];
+
+    
