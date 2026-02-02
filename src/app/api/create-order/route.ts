@@ -23,13 +23,13 @@ async function getCashfreeApiHeaders() {
   const secretKey = process.env.CASHFREE_SECRET_KEY;
 
   if (!appId || !secretKey) {
-    console.error('[SERVER_ORDER_ERROR_CRITICAL] Cashfree credentials are not available in the environment.');
+    console.error('[SERVER_ORDER_ERROR_CRITICAL] Cashfree secrets are not available in the environment.');
     throw new Error('Configuration Error: The server could not access payment secrets.');
   }
 
   return {
     'Content-Type': 'application/json',
-    'x-api-version': '2023-8-01',
+    'x-api-version': '2023-08-01',
     'x-client-id': appId,
     'x-client-secret': secretKey,
   };
@@ -74,7 +74,6 @@ export async function POST(req: NextRequest) {
       internalId: orderDocId,
     };
 
-    // Store pending order details in both locations
     await Promise.all([
       pendingOrderRef.set(orderData),
       userOrderRef.set(orderData)
