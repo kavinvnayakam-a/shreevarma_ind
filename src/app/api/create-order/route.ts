@@ -23,8 +23,8 @@ async function getCashfreeApiHeaders() {
   // This is not a security best practice, but it bypasses the failing
   // environment variable injection.
   // REPLACE these placeholder values with your actual keys.
-  const appId = "YOUR_CASHFREE_APP_ID_HERE";
-  const secretKey = "YOUR_CASHFREE_SECRET_KEY_HERE";
+  const appId = "11453855a5d2bcd1a0eb23642425835411";
+  const secretKey = "cfsk_ma_prod_ba950a209036e253e797dfb4a1506526_2b75b67a";
   // -----------------------------------------
 
   if (!appId || !secretKey || appId.includes("YOUR_")) {
