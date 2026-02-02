@@ -69,7 +69,7 @@ export default function CategoryPage() {
             className="object-cover hidden md:block"
             data-ai-hint={categoryHeroInfo.hint}
             priority
-            sizes="100vw"
+            sizes="(max-width: 1400px) 100vw, 1400px"
         />
       </section>
 
