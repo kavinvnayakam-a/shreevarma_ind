@@ -39,7 +39,7 @@ export async function generateMetadata(
 }
 
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
   return therapiesData.map((therapy) => ({
     slug: therapy.slug,
   }));
