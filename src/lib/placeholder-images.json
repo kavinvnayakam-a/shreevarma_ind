@@ -62,27 +62,27 @@
     },
     {
       "id": "service-1",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/online-consulation.png?alt=media&token=5dcd215b-3b5f-47d9-bdf2-81f536201cf1",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/organisationpaeg%2Fonline-consulation%20(1).webp?alt=media&token=2a644286-2a68-4429-88b5-90fd09afa363",
       "hint": "online consultation"
     },
     {
       "id": "service-2",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/clinic-visit.png?alt=media&token=8d06d4c1-8777-4425-a358-6bda7d4e14ab",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/organisationpaeg%2Fclinic-visit%20(1).webp?alt=media&token=ed6cf2bb-13ae-4c1e-97ed-1fa910b39296",
       "hint": "clinic consultation"
     },
     {
       "id": "service-3",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/speacialist-Doctors.png?alt=media&token=cdabd6a4-68f2-4754-bf46-dff671313895",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/organisationpaeg%2Fspeacialist-Doctors%20(1).webp?alt=media&token=96641c38-f898-44bc-8586-a01490996993",
       "hint": "medicine delivery"
     },
     {
       "id": "service-4",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Buy-products.png?alt=media&token=bfe2bc74-0385-4205-8eac-24832385994b",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/organisationpaeg%2FBuy-products%20(1).webp?alt=media&token=b861dfc4-7942-43c2-ace6-d206e0b9755b",
       "hint": "ayurveda therapy"
     },
     {
       "id": "service-5",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Theraphy.png?alt=media&token=d360ab9f-81c4-49a1-bda5-2ffe505b6c83",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/organisationpaeg%2FTheraphy%20(1).webp?alt=media&token=db080ece-34d1-4491-9e00-e6a5328e6d68",
       "hint": "wellness products"
     },
     {
@@ -92,12 +92,12 @@
     },
     {
       "id": "why-choose-2",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Group%201000001862.png?alt=media&token=a652b76b-4d59-4021-9677-183bc0586c51",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/organisationpaeg%2Fwhy%20choose%20us%20disease%20page.webp?alt=media&token=6051e26c-ec1b-4817-95f8-c98c3181cc69",
       "imageHint": "ayurvedic elements"
     },
     {
       "id": "video-thumbnail-1",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Shreevarma%20Sir.jpg?alt=media&token=6aff5e39-4609-4a6c-96fa-4e9eaa424389",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/organisationpaeg%2FShreevarma%20Sir%20image%20landscape.webp?alt=media&token=ce60fa48-80ba-481c-b36f-d4f9ebdda245",
       "imageHint": "man portrait"
     },
     {

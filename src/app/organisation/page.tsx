@@ -43,16 +43,10 @@ const GoogleLogo = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#4285F4" d="M21.35 11.1H12.18v2.8h5.13c-.22 1.84-1.6 3.1-3.43 3.1-2.05 0-3.72-1.67-3.72-3.72s1.67-3.72 3.72-3.72c1.1 0 2.05.47 2.65 1.03l2.2-2.2C16.02 6.03 14.21 5 12.18 5c-3.87 0-7 3.13-7 7s3.13 7 7 7c4.08 0 6.7-2.84 6.7-6.82 0-.45-.05-.88-.13-1.28z"/></svg>
 )
 
-const baseUrl = `https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}/o/`;
-const urlSuffix = `?alt=media`;
-
-const getImageUrl = (path: string) => `${baseUrl}${encodeURIComponent(path)}${urlSuffix}`;
-
-
 export default function OrganisationPage() {
-  const whyChooseImage = PlaceholderImages.placeholderImages.find((img) => img.id === 'why-choose-2');
-  const videoThumbnail = PlaceholderImages.placeholderImages.find((img) => img.id === 'video-thumbnail-1');
-  const discoveryImage1 = { imageUrl: getImageUrl('site_assets/organisation/discovery.png'), imageHint: 'ayurveda therapy' };
+  const whyChooseImage = { imageUrl: "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/organisationpaeg%2Fwhy%20choose%20us%20disease%20page.webp?alt=media&token=6051e26c-ec1b-4817-95f8-c98c3181cc69", imageHint: "ayurvedic elements" };
+  const videoThumbnail = { imageUrl: "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/organisationpaeg%2FShreevarma%20Sir%20image%20landscape.webp?alt=media&token=ce60fa48-80ba-481c-b36f-d4f9ebdda245", imageHint: "man portrait" };
+  const discoveryImage1 = { imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/organisationpaeg%2Forganisation%20page-.webp?alt=media&token=44f21963-e146-4a8b-ad66-4622a1b43dff', imageHint: 'ayurveda therapy' };
 
   const { firestore } = useFirebase();
   const productsQuery = useMemo(
@@ -76,10 +70,10 @@ export default function OrganisationPage() {
        <section>
           <div className="relative w-full aspect-square md:aspect-[1400/368]">
             <picture>
-              <source media="(max-width: 767px)" srcSet={getImageUrl('site_assets/organisation/hero_mobile.png')} />
-              <source media="(min-width: 768px)" srcSet={getImageUrl('site_assets/organisation/hero_desktop.png')} />
+              <source media="(max-width: 767px)" srcSet={'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/organisationpaeg%2FOrganisation%20Mobile%20.webp?alt=media&token=555924e8-7d64-4d93-a7a4-9d2e85a037de'} />
+              <source media="(min-width: 768px)" srcSet={'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/organisationpaeg%2Foraganisation%20desktop%20hero.webp?alt=media&token=d6e471ce-e107-42cc-a554-417ddbbc36be'} />
               <Image
-                  src={getImageUrl('site_assets/organisation/hero_desktop.png')}
+                  src={'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/organisationpaeg%2Foraganisation%20desktop%20hero.webp?alt=media&token=d6e471ce-e107-42cc-a554-417ddbbc36be'}
                   alt="Site-wide offer banner"
                   fill
                   className="object-cover"
@@ -162,7 +156,7 @@ export default function OrganisationPage() {
                   <div className="text-center group">
                     <Card className="overflow-hidden rounded-lg shadow-sm group-hover:shadow-lg transition-shadow">
                       <Link href={`/diseases/${condition.slug}`} className="block">
-                        <div className="relative aspect-[5/4]">
+                        <div className="relative aspect-[1112/888]">
                           <Image
                             src={condition.imageUrl}
                             alt={condition.name}
@@ -175,7 +169,7 @@ export default function OrganisationPage() {
                         </div>
                       </Link>
                     </Card>
-                    <Button asChild className="mt-4 w-full" size="sm">
+                    <Button asChild className="mt-4 w-full bg-primary text-primary-foreground hover:bg-primary/90" size="sm">
                       <Link href={`/diseases/${condition.slug}`}>{condition.name}</Link>
                     </Button>
                   </div>
