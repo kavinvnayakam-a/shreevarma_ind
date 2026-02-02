@@ -93,7 +93,7 @@ export default function ClinicsPage() {
                 <div className="container mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
                     <div className="relative">
                          <div className="relative max-w-sm mx-auto">
-                            <Image src="https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/Organisation%20Page%2FOrganisation%20Mobile.png?alt=media&token=728806e9-1a40-4d5a-a978-81ad80aa1a2b"
+                            <Image src="https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/logos%2FJournery%20Today.webp?alt=media&token=fcf565f8-d3eb-4e0e-9086-9cc93e6b1251"
                                 alt="Get Started" width={500} height={500} className="object-contain"/>
                         </div>
                     </div>
