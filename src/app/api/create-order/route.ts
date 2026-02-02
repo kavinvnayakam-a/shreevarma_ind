@@ -24,31 +24,12 @@ const getCashfreeApiUrl = () =>
 async function getCashfreeApiHeaders() {
   const appId = process.env.CASHFREE_APP_ID;
   const secretKey = process.env.CASHFREE_SECRET_KEY;
-
-  // --- Start of my diagnostic block ---
-  console.log('--- [DIAGNOSTIC] Cashfree Runtime Secret Check ---');
-  if (appId) {
-    console.log('[DIAGNOSTIC] CASHFREE_APP_ID: FOUND (length: ' + appId.length + ')');
-  } else {
-    console.log('[DIAGNOSTIC] CASHFREE_APP_ID: MISSING');
-  }
-
-  if (secretKey) {
-    console.log('[DIAGNOSTIC] CASHFREE_SECRET_KEY: FOUND (length: ' + secretKey.length + ')');
-  } else {
-    console.log('[DIAGNOSTIC] CASHFREE_SECRET_KEY: MISSING');
-  }
-  // --- End of diagnostic block ---
   
   const missing = [];
   if (!appId) missing.push('CASHFREE_APP_ID');
   if (!secretKey) missing.push('CASHFREE_SECRET_KEY');
 
   if (missing.length > 0) {
-    // This is a critical diagnostic log.
-    console.error('[DIAGNOSTIC] One or more secrets are missing. This is a configuration issue between Secret Manager and App Hosting.');
-    console.log('[DIAGNOSTIC] All available environment keys:', Object.keys(process.env).join(', '));
-
     const specificErrorMessage = `Configuration Error: The server could not access payment secrets (${missing.join(', ')}). In your Google Cloud project, find the IAM Principal ending in '@gcp-sa-apphosting.iam.gserviceaccount.com' and ensure it has the 'Secret Manager Secret Accessor' role for the required secrets.`;
     throw new Error(specificErrorMessage);
   }

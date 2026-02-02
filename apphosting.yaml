@@ -42,7 +42,7 @@ runConfig:
       availability: [BUILD, RUNTIME]
     - variable: CASHFREE_SECRET_KEY
       secret: CASHFREE_SECRET_KEY
-      availability: [RUNTIME]
+      availability: [BUILD, RUNTIME]
 
     # --- Video & AI Secrets ---
     - variable: ZEGO_APP_ID
