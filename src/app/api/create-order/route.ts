@@ -16,34 +16,53 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
-// --- NEW: Function to fetch secrets directly from Secret Manager ---
 async function getSecrets(): Promise<{ appId: string; secretKey: string }> {
   const client = new SecretManagerServiceClient();
-  const projectId = firebaseConfig.projectId;
-
-  if (!projectId) {
-    throw new Error('Firebase project ID is not configured. Cannot fetch secrets.');
-  }
+  let projectId: string | undefined | null;
 
   try {
-    const [appIdVersion] = await client.accessSecretVersion({
-      name: `projects/${projectId}/secrets/CASHFREE_APP_ID/versions/latest`,
-    });
-    const [secretKeyVersion] = await client.accessSecretVersion({
-      name: `projects/${projectId}/secrets/CASHFREE_SECRET_KEY/versions/latest`,
-    });
+    // Attempt to get project ID automatically from the client's authenticated context.
+    [projectId] = await client.getProjectId();
+  } catch (e: any) {
+    console.error("Could not automatically determine Project ID.", e.message);
+    // Fallback to the config if auto-detection fails.
+    projectId = firebaseConfig.projectId;
+  }
+  
+  if (!projectId) {
+    throw new Error('FATAL: Firebase project ID is not configured and could not be auto-detected. Cannot fetch secrets.');
+  }
+
+  const appIdSecretName = `projects/${projectId}/secrets/CASHFREE_APP_ID/versions/latest`;
+  const secretKeySecretName = `projects/${projectId}/secrets/CASHFREE_SECRET_KEY/versions/latest`;
+
+  try {
+    const [appIdVersion] = await client.accessSecretVersion({ name: appIdSecretName });
+    const [secretKeyVersion] = await client.accessSecretVersion({ name: secretKeySecretName });
 
     const appId = appIdVersion.payload?.data?.toString();
     const secretKey = secretKeyVersion.payload?.data?.toString();
 
     if (!appId || !secretKey) {
-      throw new Error('One or more secrets were empty or could not be decoded.');
+      throw new Error('One or more secrets were fetched but found to be empty. Please check the values in Secret Manager.');
     }
 
     return { appId, secretKey };
   } catch (error: any) {
-      console.error("Failed to access secrets from Secret Manager:", error.message);
-      throw new Error(`Failed to fetch secrets from Google Secret Manager. Ensure the service account has the 'Secret Manager Secret Accessor' role and the secrets 'CASHFREE_APP_ID' and 'CASHFREE_SECRET_KEY' exist in project '${projectId}'.`);
+      console.error("Full Secret Manager Access Error:", error);
+      
+      const detailedError = `Configuration Error: The server could not access payment secrets from Google Secret Manager. This is an infrastructure issue.
+      
+      Project ID Used: '${projectId}'
+      Secret Path 1: '${appIdSecretName}'
+      Secret Path 2: '${secretKeySecretName}'
+
+      Please verify the following in your Google Cloud project:
+      1. The 'Secret Manager API' is enabled.
+      2. The secrets 'CASHFREE_APP_ID' and 'CASHFREE_SECRET_KEY' exist in the project '${projectId}'.
+      3. The App Hosting service account (ending in '@gcp-sa-apphosting.iam.gserviceaccount.com') has the 'Secret Manager Secret Accessor' IAM role.`;
+      
+      throw new Error(detailedError);
   }
 }
 
