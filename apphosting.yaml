@@ -46,3 +46,11 @@ runConfig:
     - variable: GEMINI_API_KEY
       secret: GEMINI_API_KEY
       availability: [RUNTIME]
+
+    # --- Payment Gateway Secrets ---
+    - variable: CASHFREE_APP_ID
+      secret: CASHFREE_APP_ID
+      availability: [RUNTIME]
+    - variable: CASHFREE_SECRET_KEY
+      secret: CASHFREE_SECRET_KEY
+      availability: [RUNTIME]

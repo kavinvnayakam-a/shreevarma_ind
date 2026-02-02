@@ -19,21 +19,17 @@ const getCashfreeApiUrl = () =>
     : 'https://api.cashfree.com/pg';
 
 async function getCashfreeApiHeaders() {
-  // --- LAST RESORT: HARDCODING SECRETS ---
-  // This is not a security best practice, but it bypasses the failing
-  // environment variable injection.
-  // REPLACE these placeholder values with your actual keys.
-  const appId = "11453855a5d2bcd1a0eb23642425835411";
-  const secretKey = "cfsk_ma_prod_ba950a209036e253e797dfb4a1506526_2b75b67a";
-  // -----------------------------------------
+  const appId = process.env.CASHFREE_APP_ID;
+  const secretKey = process.env.CASHFREE_SECRET_KEY;
 
-  if (!appId || !secretKey || appId.includes("YOUR_")) {
-    throw new Error('Cashfree credentials are not configured in the code. Please replace the placeholder values.');
+  if (!appId || !secretKey) {
+    console.error('[SERVER_ORDER_ERROR_CRITICAL] Cashfree credentials are not available in the environment.');
+    throw new Error('Configuration Error: The server could not access payment secrets.');
   }
 
   return {
     'Content-Type': 'application/json',
-    'x-api-version': '2023-08-01',
+    'x-api-version': '2023-8-01',
     'x-client-id': appId,
     'x-client-secret': secretKey,
   };
