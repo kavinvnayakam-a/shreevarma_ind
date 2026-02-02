@@ -5,8 +5,10 @@ import * as admin from 'firebase-admin';
 // --- Standard Firebase Admin Initialization ---
 if (!admin.apps.length) {
   try {
+    // This uses Application Default Credentials automatically in App Hosting
     admin.initializeApp();
   } catch (error: any) {
+    // Log error but don't crash if it's already initialized
     console.error('Firebase Admin init error:', error.message);
   }
 }
@@ -19,25 +21,18 @@ const getCashfreeApiUrl = () =>
     : 'https://sandbox.cashfree.com/pg';
 
 async function getCashfreeApiHeaders() {
-  // --- Enhanced Debugging for Secret Manager ---
   const appId = process.env.CASHFREE_APP_ID;
   const secretKey = process.env.CASHFREE_SECRET_KEY;
 
-  // Log the status of each secret to help diagnose runtime issues.
-  // These will appear in Firebase Console > App Hosting > [Your Backend] > Logs tab
-  console.log('[DEBUG] --- Cashfree Runtime Secret Check ---');
-  console.log(`- CASHFREE_APP_ID: ${appId ? '✅ FOUND (Length: ' + appId.length + ')' : '❌ MISSING'}`);
-  console.log(`- CASHFREE_SECRET_KEY: ${secretKey ? '✅ FOUND (Length: ' + secretKey.length + ')' : '❌ MISSING'}`);
-  console.log(`- ENV MODE: ${process.env.NEXT_PUBLIC_CASHFREE_ENV || 'not set'}`);
-  console.log('-------------------------------------------');
+  const missing = [];
+  if (!appId) missing.push('CASHFREE_APP_ID');
+  if (!secretKey) missing.push('CASHFREE_SECRET_KEY');
 
-  if (!appId || !secretKey) {
-    const missing = [];
-    if (!appId) missing.push('CASHFREE_APP_ID');
-    if (!secretKey) missing.push('CASHFREE_SECRET_KEY');
-    
-    console.error(`FATAL: Missing secrets. Ensure apphosting.yaml mappings and IAM Secret Manager Secret Accessor roles are correct.`);
-    
+  if (missing.length > 0) {
+    // This is a critical diagnostic log.
+    console.error('[DIAGNOSTIC] One or more secrets are missing.');
+    console.log('[DIAGNOSTIC] All available environment keys:', Object.keys(process.env));
+
     throw new Error(`Server configuration error: Required payment secrets (${missing.join(', ')}) are missing.`);
   }
 
@@ -63,11 +58,7 @@ export async function POST(req: NextRequest) {
       customerPhone,
       shippingAddress,
     } = body;
-
-    // Debug order details
-    console.log(`[DEBUG] Incoming Order: ${orderDocId} for User: ${userId}`);
-    if (cartItems) console.table(cartItems.map((i: any) => ({ name: i.name, qty: i.quantity, price: i.sellingPrice })));
-
+    
     if (!userId || !cartItems?.length || !cartTotal) {
       return NextResponse.json({ success: false, error: 'Incomplete order data.' }, { status: 400 });
     }
@@ -76,8 +67,6 @@ export async function POST(req: NextRequest) {
     let appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.shreevarma.org';
     appUrl = appUrl.endsWith('/') ? appUrl.slice(0, -1) : appUrl;
 
-    // 1. SAVE TO FIRESTORE
-    // Write to both top-level and nested per your requirement
     const pendingOrderRef = db.collection('pending_orders').doc(orderDocId);
     const userOrderRef = db.collection('users').doc(userId).collection('orders').doc(orderDocId);
 
@@ -98,7 +87,6 @@ export async function POST(req: NextRequest) {
       userOrderRef.set(orderData)
     ]);
 
-    // 2. INITIATE CASHFREE ORDER
     const headers = await getCashfreeApiHeaders();
     const response = await fetch(`${getCashfreeApiUrl()}/orders`, {
       method: 'POST',

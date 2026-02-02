@@ -39,10 +39,10 @@ runConfig:
     # --- Payment Secrets (Simplified Mapping) ---
     - variable: CASHFREE_APP_ID
       secret: CASHFREE_APP_ID
-      availability: [RUNTIME]
+      availability: [BUILD, RUNTIME]
     - variable: CASHFREE_SECRET_KEY
       secret: CASHFREE_SECRET_KEY
-      availability: [RUNTIME]
+      availability: [BUILD, RUNTIME]
 
     # --- Video & AI Secrets ---
     - variable: ZEGO_APP_ID
