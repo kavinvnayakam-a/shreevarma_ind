@@ -14,16 +14,22 @@ const db = admin.firestore();
 
 // Forces Production API if CASHFREE_ENV is set to 'production'
 const getCashfreeApiUrl = () =>
-  process.env.CASHFREE_ENV === 'production'
+  process.env.NEXT_PUBLIC_CASHFREE_ENV === 'production'
     ? 'https://api.cashfree.com/pg'
     : 'https://sandbox.cashfree.com/pg';
 
 async function getCashfreeApiHeaders() {
-  const appId = process.env.NEXT_PUBLIC_CASHFREE_APP_ID; // Using the NEXT_PUBLIC_ variable
+  // Try to get the app ID from either the runtime-only or public variable for resilience.
+  const appId = process.env.CASHFREE_APP_ID || process.env.NEXT_PUBLIC_CASHFREE_APP_ID;
   const secretKey = process.env.CASHFREE_SECRET_KEY;
 
+  // Improved error checking to provide more specific feedback.
   if (!appId || !secretKey) {
-    throw new Error('Production Cashfree credentials (APP_ID/SECRET_KEY) are missing.');
+    const missing = [];
+    if (!appId) missing.push('CASHFREE_APP_ID');
+    if (!secretKey) missing.push('CASHFREE_SECRET_KEY');
+    console.error(`Missing Cashfree secrets at runtime: ${missing.join(', ')}`);
+    throw new Error(`Server configuration error: Required payment secrets (${missing.join(', ')}) are missing. Please verify your Secret Manager setup.`);
   }
 
   return {
