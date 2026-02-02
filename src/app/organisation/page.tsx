@@ -175,7 +175,7 @@ export default function OrganisationPage() {
                         </div>
                       </Link>
                     </Card>
-                    <Button asChild variant="link" className="mt-2 text-primary font-semibold px-1 h-auto text-center block">
+                    <Button asChild className="mt-4 w-full" size="sm">
                       <Link href={`/diseases/${condition.slug}`}>{condition.name}</Link>
                     </Button>
                   </div>
