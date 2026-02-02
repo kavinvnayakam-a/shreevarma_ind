@@ -10,6 +10,13 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
+  // NEW: Increased limit for image uploads via Server Actions
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '4mb',
+    },
+  },
+
   async headers() {
     return [
       {
@@ -70,7 +77,6 @@ const nextConfig = {
         hostname: 'firebasestorage.googleapis.com',
         pathname: '/**',
       },
-      // Added the new Firebase Storage domain format
       {
         protocol: 'https',
         hostname: 'shreevarma-india-location.firebasestorage.app',

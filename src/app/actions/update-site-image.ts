@@ -1,69 +1,63 @@
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
 import * as admin from 'firebase-admin';
 
-// Initialize Admin SDK safely
+// 1. Exact bucket name without gs://
+const BUCKET_NAME = "shreevarma-india-location.firebasestorage.app";
+
 if (!admin.apps.length) {
   try {
-    admin.initializeApp();
+    admin.initializeApp({
+      storageBucket: BUCKET_NAME,
+    });
   } catch (error: any) {
-    console.error('Firebase Admin initialization error:', error.message);
+    console.error('Firebase Admin init error:', error.message);
   }
 }
-
-// FIX: Use the modern .firebasestorage.app domain or an environment variable
-const BUCKET_NAME = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "shreevarma-india-location.firebasestorage.app";
 
 export async function updateSiteImage(formData: FormData) {
   const file = formData.get('file') as File;
   const storagePath = formData.get('storagePath') as string;
 
-  if (!file || !storagePath) {
-    return { success: false, error: 'Missing file or storage path.' };
-  }
+  if (!file || !storagePath) return { success: false, error: 'Missing data' };
 
   try {
     const bucket = admin.storage().bucket(BUCKET_NAME);
     const blob = bucket.file(storagePath);
-
+    
+    // Convert File to Buffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
+    // CRITICAL FIX: resumable: false prevents the "Could not refresh access token" 500 error.
+    // validation: false reduces the metadata overhead.
     await blob.save(buffer, {
-      metadata: {
+      metadata: { 
         contentType: file.type,
-        // Ensure the browser caches the new image correctly
-        cacheControl: 'public, max-age=31536000',
+        cacheControl: 'no-cache, no-store, must-revalidate'
       },
-      resumable: false,
+      resumable: false, 
+      validation: false,
     });
 
-    // Optional: If you want the image to be publicly accessible via storage.googleapis.com
+    // Attempt to make public. If this fails, the upload is still successful.
     try {
         await blob.makePublic();
     } catch (e) {
-        console.warn("Could not make blob public, check fine-grained access settings.");
+        console.warn("Public access could not be set automatically.");
     }
 
+    // Force revalidation of all pages to show the new image
     revalidatePath('/', 'layout');
-
-    return {
-      success: true,
-      message: 'Image updated successfully.',
-      url: `https://storage.googleapis.com/${bucket.name}/${storagePath}`
-    };
-
+    
+    return { success: true };
   } catch (error: any) {
-    console.error('Detailed Storage Error:', error);
-    
-    let message = 'Server upload failed.';
-    if (error.code === 404 || error.message.includes("does not exist")) {
-      message = `Bucket '${BUCKET_NAME}' not found. Verify the bucket name in Firebase Console > Storage.`;
-    } else if (error.code === 403) {
-        message = 'Permission Denied. Ensure the App Hosting service account has "Storage Admin" role.';
-    }
-    
-    return { success: false, error: `${message} (${error.message})` };
+    console.error('Upload fail:', error);
+    return { 
+      success: false, 
+      error: error.message || 'Server Error' 
+    };
   }
 }
