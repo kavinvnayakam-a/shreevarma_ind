@@ -1,11 +1,8 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import * as admin from 'firebase-admin';
 
 // --- Standard Firebase Admin Initialization ---
-// This safely initializes the Admin SDK using Application Default Credentials,
-// which are automatically available in the App Hosting environment.
 if (!admin.apps.length) {
   try {
     admin.initializeApp();
@@ -16,7 +13,6 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
-// Forces Production API if CASHFREE_ENV is set to 'production'
 const getCashfreeApiUrl = () =>
   process.env.NEXT_PUBLIC_CASHFREE_ENV === 'production'
     ? 'https://api.cashfree.com/pg'
@@ -28,21 +24,21 @@ async function getCashfreeApiHeaders() {
   const secretKey = process.env.CASHFREE_SECRET_KEY;
 
   // Log the status of each secret to help diagnose runtime issues.
-  console.log('[DEBUG] Cashfree Secret Check:');
-  console.log(`- CASHFREE_APP_ID found: ${!!appId}`);
-  console.log(`- NEXT_PUBLIC_CASHFREE_APP_ID found: ${!!process.env.NEXT_PUBLIC_CASHFREE_APP_ID}`);
-  console.log(`- CASHFREE_SECRET_KEY found: ${!!secretKey}`);
+  // These will appear in Firebase Console > App Hosting > [Your Backend] > Logs tab
+  console.log('[DEBUG] --- Cashfree Runtime Secret Check ---');
+  console.log(`- CASHFREE_APP_ID: ${appId ? '✅ FOUND (Length: ' + appId.length + ')' : '❌ MISSING'}`);
+  console.log(`- CASHFREE_SECRET_KEY: ${secretKey ? '✅ FOUND (Length: ' + secretKey.length + ')' : '❌ MISSING'}`);
+  console.log(`- ENV MODE: ${process.env.NEXT_PUBLIC_CASHFREE_ENV || 'not set'}`);
+  console.log('-------------------------------------------');
 
   if (!appId || !secretKey) {
     const missing = [];
     if (!appId) missing.push('CASHFREE_APP_ID');
     if (!secretKey) missing.push('CASHFREE_SECRET_KEY');
     
-    // Detailed error for server logs
-    console.error(`FATAL: Missing Cashfree secrets at runtime. App ID Present: ${!!appId}, Secret Key Present: ${!!secretKey}. Missing: ${missing.join(', ')}.`);
+    console.error(`FATAL: Missing secrets. Ensure apphosting.yaml mappings and IAM Secret Manager Secret Accessor roles are correct.`);
     
-    // User-facing error
-    throw new Error(`Server configuration error: Required payment secrets (${missing.join(', ')}) are missing. Please contact support and reference this error.`);
+    throw new Error(`Server configuration error: Required payment secrets (${missing.join(', ')}) are missing.`);
   }
 
   return {
@@ -54,10 +50,8 @@ async function getCashfreeApiHeaders() {
 }
 
 export async function POST(req: NextRequest) {
-  // Generate ID early so we can clean up if Cashfree fails
   const orderDocId = uuidv4();
-  const pendingOrderRef = db.collection('pending_orders').doc(orderDocId);
-
+  
   try {
     const body = await req.json();
     const {
@@ -70,41 +64,45 @@ export async function POST(req: NextRequest) {
       shippingAddress,
     } = body;
 
-    // Validation
+    // Debug order details
+    console.log(`[DEBUG] Incoming Order: ${orderDocId} for User: ${userId}`);
+    if (cartItems) console.table(cartItems.map((i: any) => ({ name: i.name, qty: i.quantity, price: i.sellingPrice })));
+
     if (!userId || !cartItems?.length || !cartTotal) {
       return NextResponse.json({ success: false, error: 'Incomplete order data.' }, { status: 400 });
     }
 
-    // Cashfree Production requires a clean 10-digit phone number
     const cleanPhone = customerPhone.replace(/\D/g, '').slice(-10);
-
-    let appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://shreevarma.org';
+    let appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.shreevarma.org';
     appUrl = appUrl.endsWith('/') ? appUrl.slice(0, -1) : appUrl;
 
-    // 1. SAVE TO FIRESTORE 
-    await pendingOrderRef.set({
+    // 1. SAVE TO FIRESTORE
+    // Write to both top-level and nested per your requirement
+    const pendingOrderRef = db.collection('pending_orders').doc(orderDocId);
+    const userOrderRef = db.collection('users').doc(userId).collection('orders').doc(orderDocId);
+
+    const orderData = {
       userId,
       orderStatus: 'pending',
       paymentStatus: 'PENDING',
       totalAmount: cartTotal,
-      customer: {
-        name: customerName,
-        email: customerEmail,
-        phone: cleanPhone,
-      },
+      customer: { name: customerName, email: customerEmail, phone: cleanPhone },
       shippingAddress,
       items: cartItems,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       internalId: orderDocId,
-    });
+    };
 
-    const returnUrl = `${appUrl}/order/success/${orderDocId}?order_id={order_id}`;
-    const notifyUrl = "https://cashfreewebhook-iklfboedvq-uc.a.run.app";
+    await Promise.all([
+      pendingOrderRef.set(orderData),
+      userOrderRef.set(orderData)
+    ]);
 
     // 2. INITIATE CASHFREE ORDER
+    const headers = await getCashfreeApiHeaders();
     const response = await fetch(`${getCashfreeApiUrl()}/orders`, {
       method: 'POST',
-      headers: await getCashfreeApiHeaders(),
+      headers,
       body: JSON.stringify({
         order_id: orderDocId,
         order_amount: Number(cartTotal.toFixed(2)),
@@ -116,8 +114,8 @@ export async function POST(req: NextRequest) {
           customer_phone: cleanPhone,
         },
         order_meta: {
-          return_url: returnUrl,
-          notify_url: notifyUrl,
+          return_url: `${appUrl}/order/success/${orderDocId}?order_id={order_id}`,
+          notify_url: "https://cashfreewebhook-iklfboedvq-uc.a.run.app",
         },
         order_note: 'Ayurvedic Products Purchase',
       }),
@@ -126,16 +124,11 @@ export async function POST(req: NextRequest) {
     const data = await response.json();
 
     if (!response.ok || !data.payment_session_id) {
-      console.error('Cashfree API Error:', data);
-      // Delete the pending order if the gateway fails
-      await pendingOrderRef.delete();
-      return NextResponse.json({ 
-        success: false, 
-        error: data.message || 'Payment gateway rejection.' 
-      }, { status: 500 });
+      console.error('Cashfree API Error Response:', data);
+      await Promise.all([pendingOrderRef.delete(), userOrderRef.delete()]);
+      return NextResponse.json({ success: false, error: data.message || 'Payment gateway rejection.' }, { status: 500 });
     }
 
-    // 3. RETURN SESSION TO CLIENT
     return NextResponse.json({
       success: true,
       payment_session_id: data.payment_session_id,
@@ -143,10 +136,7 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (err: any) {
-    console.error('[SERVER_ORDER_ERROR]', err);
-    return NextResponse.json({ 
-      success: false, 
-      error: err.message || 'Internal Server Error' 
-    }, { status: 500 });
+    console.error('[SERVER_ORDER_ERROR_CRITICAL]', err);
+    return NextResponse.json({ success: false, error: err.message || 'Internal Server Error' }, { status: 500 });
   }
 }

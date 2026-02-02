@@ -35,16 +35,21 @@ runConfig:
       secret: NEXT_PUBLIC_FIREBASE_APP_ID
       availability: [BUILD, RUNTIME]
 
-    # --- Payment & Video Secrets ---
+    # --- Payment Secrets (Fixed Mapping) ---
+    # Used by the server-side API (route.ts)
     - variable: CASHFREE_APP_ID
       secret: CASHFREE_APP_ID
       availability: [RUNTIME]
-    - variable: NEXT_PUBLIC_CASHFREE_APP_ID
-      secret: CASHFREE_APP_ID
-      availability: [BUILD, RUNTIME]
     - variable: CASHFREE_SECRET_KEY
       secret: CASHFREE_SECRET_KEY
       availability: [RUNTIME]
+      
+    # Used by the client-side SDK (CheckoutPageClient.tsx)
+    - variable: NEXT_PUBLIC_CASHFREE_APP_ID
+      secret: CASHFREE_APP_ID
+      availability: [BUILD, RUNTIME]
+
+    # --- Video & AI Secrets ---
     - variable: ZEGO_APP_ID
       secret: ZEGO_APP_ID
       availability: [RUNTIME]
