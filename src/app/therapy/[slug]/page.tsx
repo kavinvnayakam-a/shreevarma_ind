@@ -1,4 +1,3 @@
-
 import { notFound } from 'next/navigation';
 import { therapiesData } from '../therapy-data';
 import Image from 'next/image';
@@ -36,13 +35,6 @@ export async function generateMetadata(
       images: [therapy.imageUrl, ...previousImages],
     },
   };
-}
-
-
-export async function generateStaticParams() {
-  return therapiesData.map((therapy) => ({
-    slug: therapy.slug,
-  }));
 }
 
 function Section({ title, content, icon }: { title: string, content: string, icon: React.ReactNode }) {
