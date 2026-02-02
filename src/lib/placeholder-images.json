@@ -202,115 +202,115 @@
     },
     {
       "id": "health-1",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fdigestive.png?alt=media&token=0c7351d3-01be-4bad-bc81-8f9b38e5ab3a",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/diseasespage%2Fdigestive.webp?alt=media&token=0397b2ce-52f5-4513-9b9a-de75a2a64484",
       "description": "Image for Digestive Care",
       "imageHint": "digestive system"
     },
     {
       "id": "health-2",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fblood-disorders.png?alt=media&token=c504834d-e8d7-4e66-bb88-d09457bef53c",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/diseasespage%2Fblood-disorders.webp?alt=media&token=f835bbe0-251b-4b15-b4c4-c5bb29b05d40",
       "description": "Image for Blood Disorders",
       "imageHint": "blood cells"
     },
     {
       "id": "health-3",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fobesity.png?alt=media&token=ef49b60c-5058-4b5f-97c6-887a164ccb3c",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/diseasespage%2Fobesity.webp?alt=media&token=4df3abfd-fe3c-4342-83e9-5732cae717c1",
       "description": "Image for Obesity",
       "imageHint": "obesity concept"
     },
     {
       "id": "health-4",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fskin-diseases.png?alt=media&token=fa3865ce-597f-4e11-b868-a1c799f4d42c",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/diseasespage%2Fskin%20disease.webp?alt=media&token=0a391bfb-8e00-42b5-a3af-d09a00c30edb",
       "description": "Image for Skin Diseases",
       "imageHint": "skin problems"
     },
     {
       "id": "health-5",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fbone-and-joint.png?alt=media&token=a2afd5d5-83d4-4cfe-a199-0469beb7902d",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/diseasespage%2Fbone%20and%20joint.webp?alt=media&token=02307707-7f81-4b3c-bc02-bb8d8157dac6",
       "description": "Image for Bone and Joint",
       "imageHint": "bone joint"
     },
     {
       "id": "health-6",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fnervous-disorders.png?alt=media&token=36ee1576-8a3c-45df-a8da-ec56eb9e4a9a",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/diseasespage%2Fnervous%20disorders.webp?alt=media&token=b456b5e7-e5a5-4fc9-8bf6-2b1b47e74abe",
       "description": "Image for Nervous Disorders",
       "imageHint": "nervous system"
     },
     {
       "id": "health-7",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fimmunity.png?alt=media&token=920474ff-c1b3-4a43-9907-f25d42167f2a",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/diseasespage%2Fimmunity.webp?alt=media&token=c2ffe34e-7c11-4cfd-9565-1ce5b1f7639b",
       "description": "Image for Immunity",
       "imageHint": "immune system"
     },
     {
       "id": "health-8",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fpiles-fissure-fistula.png?alt=media&token=f9bad20e-cbc1-47eb-b490-4bec8575841b",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/diseasespage%2Ffistula.webp?alt=media&token=8759b4f6-c2e0-455b-9129-3f3d192e402f",
       "description": "Image for Piles, Fissure, Fistula",
       "imageHint": "digestive system"
     },
     {
       "id": "health-9",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fmale-health.png?alt=media&token=8349590a-6cd2-4fd3-92c4-40e7334065b0",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/diseasespage%2Fmale%20health.webp?alt=media&token=186ca724-fade-4cc4-a8f9-c5e8c269d77a",
       "description": "Image for Male Health",
       "imageHint": "male health"
     },
     {
       "id": "health-10",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fwomen-health.png?alt=media&token=7a29218d-fc57-4b89-a7ea-3edac2c138de",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/diseasespage%2Fwomen%20health.webp?alt=media&token=8fea0e74-f8f8-4363-a7a4-713763c38e87",
       "description": "Image for Women Health",
       "imageHint": "women health"
     },
     {
       "id": "health-11",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fkidney-disease.png?alt=media&token=dc3aa69e-b9b2-4168-903c-b0403c570d43",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/diseasespage%2Fkidnry%20disease.webp?alt=media&token=cfa11c07-21c7-47c3-b49a-f36add38da30",
       "description": "Image for Kidney Disease",
       "imageHint": "kidney anatomy"
     },
     {
       "id": "health-12",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fdiabetes.png?alt=media&token=154e3350-33f0-435e-b4eb-c69b07242d6b",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/diseasespage%2Fdiabetes.webp?alt=media&token=38a60ab1-979a-4bfd-8475-74813d265a6f",
       "description": "Image for Diabetes",
       "imageHint": "glucose meter"
     },
     {
       "id": "health-13",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Frespiratory-care.png?alt=media&token=fd265b39-d121-4f6f-9e4f-a27cf6a55cf5",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/diseasespage%2Frespiratory%20care.webp?alt=media&token=3b64cb3d-9148-4b8b-bc22-b11ad046104d",
       "description": "Image for Respiratory Care",
       "imageHint": "respiratory system"
     },
     {
       "id": "health-14",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fliver-disease.png?alt=media&token=59b65c8c-3105-4e08-952c-bad573df6bf6",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/diseasespage%2Fliver%20disease.webp?alt=media&token=95889057-5008-40ed-91ba-08b71c307cbd",
       "description": "Image for Liver Disease",
       "imageHint": "liver anatomy"
     },
     {
       "id": "health-15",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fheart-disease.png?alt=media&token=28b566f0-150c-40d5-bfc6-6a31ae09474d",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/diseasespage%2Fheart%20disease.webp?alt=media&token=c66ceeb3-68c3-4025-b1fc-5c8be765c3a7",
       "description": "Image for Heart Disease",
       "imageHint": "heart anatomy"
     },
     {
       "id": "health-16",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Flung-disorders.png?alt=media&token=b3f979e2-32b9-4cb8-83cd-58cd878cfee4",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/diseasespage%2Flung%20disorders.webp?alt=media&token=5a2a44d7-d5fb-4084-94c2-1e43c5f54bc0",
       "description": "Image for Lung Disorders",
       "imageHint": "lung anatomy"
     },
     {
       "id": "health-17",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fthyroid.png?alt=media&token=213fc560-25e2-4c76-89d1-52fa6cc3c8b8",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/diseasespage%2Fthyroid.webp?alt=media&token=02e17fb7-ff02-4a56-bf97-daf5c340b556",
       "description": "Image for Thyroid",
       "imageHint": "thyroid gland"
     },
     {
       "id": "health-18",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2FENT.png?alt=media&token=2bcd5995-56ed-4e92-86d4-3a98f75ac525",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/diseasespage%2FENT.webp?alt=media&token=89f89446-331a-48e3-b991-cc921a583450",
       "description": "Image for ENT",
       "imageHint": "ear nose throat"
     },
     {
       "id": "health-19",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/ShreeVarma%2FDieses%20Photos%20for%20slider%2Fmental-health.png?alt=media&token=fd14487a-9e55-47be-980f-c828abcf07d2",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/diseasespage%2Fmental%20health.webp?alt=media&token=bd33cde2-6ee4-411b-8686-fa22ae3c13e5",
       "description": "Image for Mental Health",
       "imageHint": "mental health"
     },

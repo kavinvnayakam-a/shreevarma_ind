@@ -134,7 +134,9 @@ export default function OrganisationPage() {
         <div className="container mx-auto px-6">
             <h2 className="text-3xl font-bold font-headline mb-2 text-primary">Ayurvedic Care for Your Health</h2>
             <p className="text-lg text-muted-foreground mb-8">We are having a wide range of Ayurvedic treatments for your health problems</p>
-            <HealthProblemsCarousel showArrows={false} />
+            <Button asChild variant="outline">
+                <Link href="/diseases">Explore Health Conditions</Link>
+            </Button>
         </div>
       </section>
 

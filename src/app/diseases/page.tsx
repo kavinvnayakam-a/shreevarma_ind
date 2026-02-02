@@ -162,13 +162,13 @@ export default function DiseasesPage() {
                         {displayedHealthConditions.map((condition) => (
                             <Link key={condition.id} href={`/diseases/${condition.slug}`} id={condition.slug} className="block">
                                 <Card className="overflow-hidden transition-shadow duration-300 hover:shadow-xl group h-full">
-                                    <div className="relative aspect-square w-full overflow-hidden">
+                                    <div className="relative aspect-[5/4] w-full overflow-hidden">
                                         <Image
                                             src={condition.imageUrl}
                                             alt={condition.name}
                                             width={400}
                                             height={400}
-                                            className="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105"
+                                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                                             data-ai-hint={condition.imageHint}
                                         />
                                     </div>

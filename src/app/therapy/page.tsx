@@ -61,7 +61,7 @@ export default function TherapyPage() {
                 </div>
             </section>
 
-            {/* 2. SEARCH & LIST (No Gradients) */}
+            {/* 2. SEARCH & LIST */}
             <section className="py-20">
                 <div className="container mx-auto px-6">
                     <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
@@ -82,7 +82,7 @@ export default function TherapyPage() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
                         {filteredTherapies.map((therapy) => (
-                            <Card key={therapy.id} className="border-none bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 group">
+                            <Card key={therapy.id} className="flex flex-col border-none bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 group">
                                 <div className="relative aspect-[16/11] w-full overflow-hidden bg-muted">
                                     <Image 
                                         src={therapy.imageUrl} 
@@ -95,9 +95,17 @@ export default function TherapyPage() {
                                 <CardHeader className="pt-8">
                                     <CardTitle className="font-black text-2xl text-primary uppercase tracking-tight">{therapy.name}</CardTitle>
                                 </CardHeader>
-                                <CardContent className="min-h-[80px]">
-                                    <p className="text-muted-foreground text-sm leading-relaxed">{therapy.what.split('.').slice(0, 2).join('.') + '.'}</p>
+                                
+                                {/* EDITED SECTION: 
+                                    - Fixed height min-h-[4.5rem] to keep cards aligned
+                                    - line-clamp-3 for the 3-line limit with ...
+                                */}
+                                <CardContent className="flex-grow">
+                                    <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
+                                        {therapy.what}
+                                    </p>
                                 </CardContent>
+
                                 <CardFooter className="pb-8">
                                     <Button asChild className="w-full rounded-2xl py-6 font-bold uppercase tracking-widest border-primary text-primary hover:bg-primary hover:text-white transition-colors" variant="outline">
                                         <Link href={`/therapy/${therapy.slug}`}>View Details</Link>
