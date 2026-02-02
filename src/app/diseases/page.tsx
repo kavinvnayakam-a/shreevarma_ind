@@ -22,20 +22,19 @@ const allHealthConditions = healthConditionsData.map(condition => {
     };
 });
 
-const whyChooseImage = PlaceholderImages.placeholderImages.find((img) => img.id === 'why-choose-2');
-
-const baseUrl = `https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}/o/`;
-const urlSuffix = `?alt=media`;
-
-const getImageUrl = (path: string) => `${baseUrl}${encodeURIComponent(path)}${urlSuffix}`;
-
 
 export default function DiseasesPage() {
     const heroImage = {
-        imageUrl: getImageUrl("site_assets/diseases/hero.png"),
+        imageUrl: "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/diseasepageheader%2FDisease%20Hero.webp?alt=media&token=95a9ca63-409e-4f07-b18d-c0dfe16420cf",
         description: "A doctor and a nurse with a mortar and pestle with herbs.",
         imageHint: "doctor herbs"
     };
+
+    const whyChooseImage = {
+        imageUrl: "https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/diseasepageheader%2Fwhy%20choose%20us%20disease%20page.webp?alt=media&token=abba2cb1-8ad2-48f2-bd47-bb5115effc47",
+        imageHint: "doctor with patient"
+    };
+    
     const [searchQuery, setSearchQuery] = useState('');
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -111,6 +110,7 @@ export default function DiseasesPage() {
                                     width={500}
                                     height={384}
                                     className="object-contain w-full h-auto"
+                                    data-ai-hint={heroImage.imageHint}
                                 />
                             )}
                         </div>
@@ -162,14 +162,14 @@ export default function DiseasesPage() {
                         {displayedHealthConditions.map((condition) => (
                             <Link key={condition.id} href={`/diseases/${condition.slug}`} id={condition.slug} className="block">
                                 <Card className="overflow-hidden transition-shadow duration-300 hover:shadow-xl group h-full">
-                                    <div className="relative aspect-[5/4] w-full overflow-hidden">
+                                    <div className="relative aspect-[1112/888] w-full overflow-hidden">
                                         <Image
                                             src={condition.imageUrl}
                                             alt={condition.name}
-                                            width={400}
-                                            height={400}
+                                            fill
                                             className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                                             data-ai-hint={condition.imageHint}
+                                            sizes="(max-width: 768px) 50vw, (max-width: 1024px) 25vw, 20vw"
                                         />
                                     </div>
                                     <CardHeader>
