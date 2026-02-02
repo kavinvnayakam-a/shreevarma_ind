@@ -19,12 +19,16 @@ const getCashfreeApiUrl = () =>
     : 'https://api.cashfree.com/pg';
 
 async function getCashfreeApiHeaders() {
-  const appId = process.env.CASHFREE_APP_ID;
-  const secretKey = process.env.CASHFREE_SECRET_KEY;
+  // --- LAST RESORT: HARDCODING SECRETS ---
+  // This is not a security best practice, but it bypasses the failing
+  // environment variable injection.
+  // REPLACE these placeholder values with your actual keys.
+  const appId = "YOUR_CASHFREE_APP_ID_HERE";
+  const secretKey = "YOUR_CASHFREE_SECRET_KEY_HERE";
+  // -----------------------------------------
 
-  if (!appId || !secretKey) {
-    console.error('CRITICAL: Cashfree credentials (CASHFREE_APP_ID, CASHFREE_SECRET_KEY) are not set in the App Hosting environment.');
-    throw new Error('Cashfree credentials not configured.');
+  if (!appId || !secretKey || appId.includes("YOUR_")) {
+    throw new Error('Cashfree credentials are not configured in the code. Please replace the placeholder values.');
   }
 
   return {
@@ -57,7 +61,6 @@ export async function POST(req: NextRequest) {
     const orderDocId = uuidv4();
     const pendingOrderRef = db.collection('pending_orders').doc(orderDocId);
     const userOrderRef = db.collection('users').doc(userId).collection('orders').doc(orderDocId);
-
 
     const orderData = {
       userId,
