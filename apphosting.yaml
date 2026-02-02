@@ -35,6 +35,14 @@ runConfig:
     - variable: NEXT_PUBLIC_FIREBASE_APP_ID
       secret: NEXT_PUBLIC_FIREBASE_APP_ID
       availability: [BUILD, RUNTIME]
+      
+    # --- Cashfree Secrets (via Secret Manager) ---
+    - variable: CASHFREE_APP_ID
+      secret: CASHFREE_APP_ID
+      availability: [RUNTIME]
+    - variable: CASHFREE_SECRET_KEY
+      secret: CASHFREE_SECRET_KEY
+      availability: [RUNTIME]
 
     # --- Video & AI Secrets ---
     - variable: ZEGO_APP_ID
