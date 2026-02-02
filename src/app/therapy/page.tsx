@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -26,7 +25,7 @@ const therapies = [
     { id: 't12', name: 'Netra Tarpanam', slug: 'netra-tarpanam', description: 'Nourishing oil pooling for eye health and strain.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fnetra-tarpanam.webp?alt=media&token=01e02346-f68a-425a-9e6f-cec65bf5239e' },
     { id: 't25', name: 'Pada Abhyangam', slug: 'pada-abhyangam', description: 'Soothing Ayurvedic foot massage to balance doshas.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fpada-abhyangam.webp?alt=media&token=14b27e01-7a86-45c1-adc7-b99990aeeb13' },
     { id: 't14', name: 'Pichu', slug: 'pichu', description: 'Medicated oil padding for localized inflammation.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fpichu.webp?alt=media&token=e75d6674-5b2c-49f5-91b6-3a7f95d09ff8' },
-    { id: 't8', name: 'Pizhichil', slug: 'pizhichil', description: 'Royal oil bath combining massage and heat therapy.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fpizhichil.webp?alt=media&token=89bc2874-5427-4bff-a78d-a647d176f14a' },
+    { id: 't8', name: 'Pizhichil', slug: 'pizhichil', description: 'Royal oil bath combining massage and heat therapy.', imageUrl: 'http://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fpizhichil.webp?alt=media&token=89bc2874-5427-4bff-a78d-a647d176f14a' },
     { id: 't1', name: 'Podikizhi', slug: 'podikizhi', description: 'Herbal powder bolus massage for joint pain and stiffness.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fpodikizhi.webp?alt=media&token=01b91345-f424-4d54-bdea-22b24ddca91f' },
     { id: 't18', name: 'Raktamokshana', slug: 'raktamokshana', description: 'Traditional bloodletting therapy for purification.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fraktamokshana.webp?alt=media&token=71c35cc9-f70e-442d-84ef-0a0ca9a7cbe1' },
     { id: 't26', name: 'Shiro Abhyangam', slug: 'shiro-abhyangam', description: 'Traditional Indian head massage to relieve stress.', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2Fshiro-abhyangam.webp?alt=media&token=7e7d8052-787e-438c-938b-059308b23ceb' },
@@ -84,10 +83,8 @@ export default function TherapyPage() {
                             </div>
                         </div>
                         
-                        <div className="relative aspect-[2800/1656] w-full max-w-lg mx-auto md:ml-auto">
-                            <div className="relative w-full h-full rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white">
-                                <Image src="https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2FTherapy%20Hero%20Image.webp?alt=media&token=ad2c170e-e680-4320-bee8-a98d20881031" alt="Shirodhara Treatment" fill className="object-cover" priority unoptimized />
-                            </div>
+                        <div className="relative aspect-[2800/1656] w-full">
+                            <Image src="https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2FTherapy%20Hero%20Image.webp?alt=media&token=ad2c170e-e680-4320-bee8-a98d20881031" alt="Shirodhara Treatment" fill className="object-cover" priority unoptimized />
                         </div>
                     </div>
                 </div>
@@ -166,11 +163,8 @@ export default function TherapyPage() {
                                 ))}
                             </div>
                         </div>
-                        {/* SINGLE SQUARE IMAGE - Clean (No Shadow/Radius override) */}
                         <div className="relative aspect-square w-full max-w-lg mx-auto md:ml-auto">
-                            <div className="relative aspect-square w-full rounded-[3rem] overflow-hidden shadow-2xl">
-                                <Image src="https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2FJournery%20Today.webp?alt=media&token=e35c3433-44e4-4cce-9356-646b5e8842ff" alt="Shreevarma Excellence" fill className="object-cover" unoptimized />
-                            </div>
+                           <Image src="https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2FJournery%20Today.webp?alt=media&token=e35c3433-44e4-4cce-9356-646b5e8842ff" alt="Shreevarma Excellence" fill className="object-cover rounded-lg" unoptimized />
                         </div>
                     </div>
                 </div>
