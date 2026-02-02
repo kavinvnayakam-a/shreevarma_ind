@@ -84,9 +84,9 @@ export default function TherapyPage() {
                             </div>
                         </div>
                         
-                        <div className="relative aspect-square w-full max-w-lg mx-auto md:ml-auto">
-                            <div className="relative aspect-square w-full rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white">
-                                <Image src={getImageUrl("site_assets/therapy/hero.png")} alt="Shirodhara Treatment" fill className="object-cover" priority unoptimized />
+                        <div className="relative aspect-[2800/1656] w-full max-w-lg mx-auto md:ml-auto">
+                            <div className="relative w-full h-full rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white">
+                                <Image src="https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2FTherapy%20Hero%20Image.webp?alt=media&token=ad2c170e-e680-4320-bee8-a98d20881031" alt="Shirodhara Treatment" fill className="object-cover" priority unoptimized />
                             </div>
                         </div>
                     </div>
@@ -123,7 +123,6 @@ export default function TherapyPage() {
                                         className="object-cover transition-transform duration-700 group-hover:scale-110" 
                                         unoptimized
                                     />
-                                    {/* Gradient Removed as requested */}
                                 </div>
                                 <CardHeader className="pt-8">
                                     <CardTitle className="font-black text-2xl text-primary uppercase tracking-tight">{therapy.name}</CardTitle>
@@ -170,7 +169,7 @@ export default function TherapyPage() {
                         {/* SINGLE SQUARE IMAGE - Clean (No Shadow/Radius override) */}
                         <div className="relative aspect-square w-full max-w-lg mx-auto md:ml-auto">
                             <div className="relative aspect-square w-full rounded-[3rem] overflow-hidden shadow-2xl">
-                                <Image src={getImageUrl('site_assets/therapy/why_choose_main.webp')} alt="Shreevarma Excellence" fill className="object-cover" unoptimized />
+                                <Image src="https://firebasestorage.googleapis.com/v0/b/shreevarma-india-location.firebasestorage.app/o/therapy%20page%2FJournery%20Today.webp?alt=media&token=e35c3433-44e4-4cce-9356-646b5e8842ff" alt="Shreevarma Excellence" fill className="object-cover" unoptimized />
                             </div>
                         </div>
                     </div>
