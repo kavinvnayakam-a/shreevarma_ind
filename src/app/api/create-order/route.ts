@@ -20,7 +20,7 @@ const getCashfreeApiUrl = () =>
 
 async function getCashfreeApiHeaders() {
   // --- Enhanced Debugging for Secret Manager ---
-  const appId = process.env.CASHFREE_APP_ID || process.env.NEXT_PUBLIC_CASHFREE_APP_ID;
+  const appId = process.env.CASHFREE_APP_ID;
   const secretKey = process.env.CASHFREE_SECRET_KEY;
 
   // Log the status of each secret to help diagnose runtime issues.
