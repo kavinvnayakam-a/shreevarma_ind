@@ -35,8 +35,8 @@ export const createCashfreeOrder = functions.https.onCall(async (data, context) 
     }
     
     // --- FORCED SANDBOX/TESTING MODE ---
-    // Use the correct static initialization for cashfree-pg v4
-    // Hardcode public test credentials to ensure local testing works, bypassing environment variable issues.
+    // This uses static initialization for cashfree-pg v4 and hardcodes
+    // public sandbox credentials to ensure local testing always works.
     Cashfree.XClientId = "TEST1015093116527515f4a7c06b2413905101";
     Cashfree.XClientSecret = "TEST_SECRET_KEY15582f34934a3511195663604f3b14068f";
     Cashfree.XEnvironment = CFEnvironment.SANDBOX;
@@ -46,25 +46,23 @@ export const createCashfreeOrder = functions.https.onCall(async (data, context) 
         appUrl = appUrl.endsWith('/') ? appUrl.slice(0, -1) : appUrl;
 
         const orderDocId = uuidv4();
+        
+        // Simplified Logic: Only write to the pending_orders collection.
+        // The webhook will handle creating the final order in the user's subcollection upon success.
         const pendingOrderRef = db.collection('pending_orders').doc(orderDocId);
-        const userOrderRef = db.collection('users').doc(userId).collection('orders').doc(orderDocId);
 
         const orderData = {
           userId,
-          orderStatus: 'pending',
-          paymentStatus: 'PENDING',
           totalAmount: cartTotal,
           customer: { name: customerName, email: customerEmail, phone: customerPhone },
           shippingAddress,
           items: cartItems,
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
-          internalId: orderDocId,
+          internalId: orderDocId, // Used by webhook to find this doc
         };
         
-        await Promise.all([
-          pendingOrderRef.set(orderData),
-          userOrderRef.set(orderData)
-        ]);
+        // Single, simple Firestore write.
+        await pendingOrderRef.set(orderData);
 
         const returnUrl = `${appUrl}/order/success/${orderDocId}`;
         const notifyUrl = "https://cashfreewebhook-iklfboedvq-uc.a.run.app";
@@ -96,7 +94,7 @@ export const createCashfreeOrder = functions.https.onCall(async (data, context) 
         };
 
     } catch (err: any) {
-        console.error("Cashfree Order Creation Error:", err.response?.data || err.message);
+        console.error("[FATAL] Cashfree Order Creation Error:", err.response?.data || err.message);
         throw new functions.https.HttpsError('internal', err.response?.data?.message || 'Failed to create payment order.');
     }
 });
@@ -399,6 +397,5 @@ export const sendOrderConfirmationEmail = functions.firestore
         
         return null;
     });
-
 
     

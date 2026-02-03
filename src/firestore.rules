@@ -22,7 +22,7 @@ service cloud.firestore {
 
     match /products/{productId} {
       allow read: if true;
-      allow write: if isSuperAdmin();
+      allow write: if isSuperAdmin() || isHealthcareAdmin();
 
       match /reviews/{reviewId} {
         allow read: if true;
@@ -42,24 +42,20 @@ service cloud.firestore {
     }
     
     match /consultations/{consultationId} {
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      // Allows Patient to create their own consultation record
+      allow create: if isSignedIn() && request.resource.data.patientId == request.auth.uid;
       
-      // Allows Patient or Doctor to read if their UID is in the root fields
-      allow read: if isSuperAdmin() || isHealthcareAdmin() || (
-          isSignedIn() && (
-              resource.data.userId == request.auth.uid || 
-              resource.data.doctorId == request.auth.uid
-          )
-      );
-
-      allow list, update: if isSuperAdmin() || isHealthcareAdmin() || (
-          isSignedIn() && resource.data.doctorId == request.auth.uid
-      );
+      // Allows Patient, assigned Doctor, or Admins to read details
+      allow read: if isSuperAdmin() || isHealthcareAdmin() || 
+                     (isSignedIn() && (resource.data.patientId == request.auth.uid || resource.data.doctorId == request.auth.uid));
+      
+      // Allows only the assigned Doctor or Admins to update (e.g., claim, add notes)
+      allow update: if isSuperAdmin() || isHealthcareAdmin() || (isSignedIn() && request.auth.uid == resource.data.doctorId);
 
       allow delete: if isSuperAdmin();
     }
     
-    // This allows admins to list all orders across all users.
+    // Collection Group Rule for Admin Dashboards to list all orders
     match /{path=**}/orders/{orderId} {
       allow list: if isSuperAdmin() || isHealthcareAdmin();
     }
@@ -75,8 +71,7 @@ service cloud.firestore {
     }
     
     match /roles_admin/{userId} {
-        allow read: if isSuperAdmin();
-        allow write: if isSuperAdmin();
+        allow read, write: if isSuperAdmin();
     }
 
     match /mail/{mailId} {
@@ -87,12 +82,14 @@ service cloud.firestore {
     match /counters/{counterId} {
         allow read, write: if isSuperAdmin();
     }
-
-    // Allow authenticated users to call the getTwilioVideoToken function
-    match /functions/getTwilioVideoToken {
-        allow call: if isSignedIn();
+    
+    // Rule for the temporary collection used during checkout
+    match /pending_orders/{orderId} {
+      // Only an authenticated user can create a pending order for themselves
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      
+      // Only admins should be able to read/manage these, primarily for debugging.
+      allow read, update, delete: if isSuperAdmin() || isHealthcareAdmin();
     }
   }
 }
-
-    
