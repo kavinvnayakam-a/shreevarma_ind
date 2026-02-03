@@ -19,11 +19,10 @@ const getCashfreeApiUrl = () =>
     : 'https://api.cashfree.com/pg';
 
 async function getCashfreeApiHeaders() {
-  const appId = process.env.CASHFREE_APP_ID;
-  const secretKey = process.env.CASHFREE_SECRET_KEY;
+  const appId = process.env.SVW_CF_APP_ID;
+  const secretKey = process.env.SVW_CF_SECRET_KEY;
 
   if (!appId || !secretKey) {
-    console.error('[SERVER_ORDER_ERROR_CRITICAL] Cashfree credentials not configured. Ensure CASHFREE_APP_ID and CASHFREE_SECRET_KEY are in your .env.local or App Hosting environment variables.');
     throw new Error('Cashfree credentials not configured.');
   }
 

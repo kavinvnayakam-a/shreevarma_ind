@@ -15,6 +15,9 @@ runConfig:
     - variable: NEXT_PUBLIC_CASHFREE_ENV
       value: production
       availability: [BUILD, RUNTIME]
+    - variable: CASHFREE_ENV
+      value: production
+      availability: [RUNTIME]
 
     # --- Firebase Client Config ---
     - variable: NEXT_PUBLIC_FIREBASE_API_KEY
@@ -48,9 +51,9 @@ runConfig:
       availability: [RUNTIME]
 
     # --- Payment Gateway Secrets ---
-    - variable: CASHFREE_APP_ID
+    - variable: SVW_CF_APP_ID
       secret: CASHFREE_APP_ID
       availability: [RUNTIME]
-    - variable: CASHFREE_SECRET_KEY
+    - variable: SVW_CF_SECRET_KEY
       secret: CASHFREE_SECRET_KEY
       availability: [RUNTIME]
