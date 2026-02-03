@@ -32,7 +32,7 @@ import { AddressForm, addressSchema, type AddressFormValues } from '@/components
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -198,9 +198,11 @@ export default function CheckoutPageClient() {
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                   <h1 className="text-3xl font-black font-headline text-primary uppercase tracking-tighter">Shipping Details</h1>
-                  <Button variant="outline" size="sm" className="rounded-full border-[#6f3a2f] text-[#6f3a2f] hover:bg-[#6f3a2f]/5" onClick={() => { setEditingAddress(null); setIsAddressFormOpen(true); }}>
-                    <PlusCircle className="mr-2 h-4 w-4" /> Add New
-                  </Button>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm" className="rounded-full border-[#6f3a2f] text-[#6f3a2f] hover:bg-[#6f3a2f]/5" onClick={() => { setEditingAddress(null); setIsAddressFormOpen(true); }}>
+                      <PlusCircle className="mr-2 h-4 w-4" /> Add New
+                    </Button>
+                  </DialogTrigger>
               </div>
 
               <Card className="border-none shadow-sm rounded-[2rem] overflow-hidden">
@@ -219,7 +221,9 @@ export default function CheckoutPageClient() {
                             <p className="text-xs font-mono mt-2 text-[#6f3a2f] font-bold">{addr.phone}</p>
                           </div>
                           <div className="flex flex-col gap-2">
-                            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full hover:bg-white shadow-sm" onClick={(e) => { e.preventDefault(); setEditingAddress(addr); setIsAddressFormOpen(true); }}><Pencil className="w-4 h-4" /></Button>
+                            <DialogTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full hover:bg-white shadow-sm" onClick={(e) => { e.preventDefault(); setEditingAddress(addr); setIsAddressFormOpen(true); }}><Pencil className="w-4 h-4" /></Button>
+                            </DialogTrigger>
                             <AlertDialogTrigger asChild>
                               <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full text-destructive hover:bg-white shadow-sm" onClick={(e) => { e.preventDefault(); setAddressToDelete(addr); }}><Trash2 className="w-4 h-4" /></Button>
                             </AlertDialogTrigger>
@@ -287,26 +291,24 @@ export default function CheckoutPageClient() {
               </Card>
             </div>
           </div>
-
-          {/* Modal Components */}
+          
           <DialogContent className="sm:max-w-[425px] rounded-[2rem]">
             <DialogHeader><DialogTitle className="font-headline text-2xl text-primary">{editingAddress ? 'Update Address' : 'New Shipping Address'}</DialogTitle></DialogHeader>
             <AddressForm form={form} onSubmit={handleSaveAddress} isProcessing={isProcessing} submitButtonText={editingAddress ? 'Update' : 'Save Address'} />
           </DialogContent>
 
-          <AlertDialogContent className="rounded-[2rem]">
-            <AlertDialogHeader><AlertDialogTitle className="font-headline">Delete this address?</AlertDialogTitle></AlertDialogHeader>
-            <p className="text-sm text-muted-foreground italic">This action cannot be undone.</p>
-            <AlertDialogFooter className="mt-4">
-              <AlertDialogCancel className="rounded-full" onClick={() => setAddressToDelete(null)}>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDeleteAddress} disabled={isProcessing} className="bg-destructive hover:bg-destructive/90 rounded-full">Delete</AlertDialogAction>
-            </AlertDialogFooter>
-          </DialogContent>
         </Dialog>
+        
+        <AlertDialogContent className="rounded-[2rem]">
+          <AlertDialogHeader><AlertDialogTitle className="font-headline">Delete this address?</AlertDialogTitle></AlertDialogHeader>
+          <p className="text-sm text-muted-foreground italic">This action cannot be undone.</p>
+          <AlertDialogFooter className="mt-4">
+            <AlertDialogCancel className="rounded-full" onClick={() => setAddressToDelete(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteAddress} disabled={isProcessing} className="bg-destructive hover:bg-destructive/90 rounded-full">Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+
       </AlertDialog>
     </div>
   );
 }
-
-
-    
