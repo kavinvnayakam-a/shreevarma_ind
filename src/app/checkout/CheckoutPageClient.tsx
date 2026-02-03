@@ -119,16 +119,17 @@ export default function CheckoutPageClient() {
       const response = result.data;
 
       if (!response.success || !response.payment_session_id) {
-        throw new Error(response.error || 'Failed to create payment session via function.');
+        throw new Error(response.message || 'Failed to create payment session via function.');
       }
 
       const cashfree = window.Cashfree({
         mode: "sandbox", // Force sandbox mode for testing
       });
 
-      await cashfree.checkout({
+      // Redirect to Cashfree checkout
+      cashfree.checkout({
         paymentSessionId: response.payment_session_id,
-        redirectTarget: "_modal",
+        redirectTarget: "_self", // Redirect in the same tab
       });
 
     } catch (err: any) {
@@ -300,9 +301,12 @@ export default function CheckoutPageClient() {
               <AlertDialogCancel className="rounded-full" onClick={() => setAddressToDelete(null)}>Cancel</AlertDialogCancel>
               <AlertDialogAction onClick={handleDeleteAddress} disabled={isProcessing} className="bg-destructive hover:bg-destructive/90 rounded-full">Delete</AlertDialogAction>
             </AlertDialogFooter>
-          </AlertDialogContent>
+          </DialogContent>
         </Dialog>
       </AlertDialog>
     </div>
   );
 }
+
+
+    

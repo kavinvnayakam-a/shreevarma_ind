@@ -33,31 +33,15 @@ export const createCashfreeOrder = functions.https.onCall(async (data, context) 
     if (!userId || !cartItems?.length || !cartTotal) {
       throw new functions.https.HttpsError('invalid-argument', 'Missing order data.');
     }
-
-    const isProduction = process.env.CASHFREE_ENV === 'production';
-
-    let appId = process.env.CASHFREE_APP_ID;
-    let secretKey = process.env.CASHFREE_SECRET_KEY;
-
-    // Fallback to public test credentials for local/sandbox development
-    if (!isProduction && (!appId || !secretKey)) {
-        console.log("[DEV_MODE] Using fallback Cashfree sandbox credentials because environment variables were not found for the function.");
-        appId = "TEST1015093116527515f4a7c06b2413905101";
-        secretKey = "TEST_SECRET_KEY15582f34934a3511195663604f3b14068f";
-    }
-
-    if (!appId || !secretKey) {
-        console.error("[CRITICAL] Cashfree credentials (CASHFREE_APP_ID, CASHFREE_SECRET_KEY) are not configured in the function's environment.");
-        throw new functions.https.HttpsError('internal', 'Payment gateway is not configured on the server.');
-    }
     
-    try {
-        const cashfree = new Cashfree({
-            mode: isProduction ? CFEnvironment.PRODUCTION : CFEnvironment.SANDBOX,
-            appId: appId,
-            secretKey: secretKey,
-        });
+    // --- FORCED SANDBOX/TESTING MODE ---
+    // Use the correct static initialization for cashfree-pg v4
+    // Hardcode public test credentials to ensure local testing works, bypassing environment variable issues.
+    Cashfree.XClientId = "TEST1015093116527515f4a7c06b2413905101";
+    Cashfree.XClientSecret = "TEST_SECRET_KEY15582f34934a3511195663604f3b14068f";
+    Cashfree.XEnvironment = CFEnvironment.SANDBOX;
 
+    try {
         let appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.shreevarma.org';
         appUrl = appUrl.endsWith('/') ? appUrl.slice(0, -1) : appUrl;
 
@@ -102,7 +86,8 @@ export const createCashfreeOrder = functions.https.onCall(async (data, context) 
             "order_note": "Shreevarma Wellness Purchase"
         };
         
-        const response = await cashfree.PGCreateOrder(request, { apiVersion: "2023-08-01" });
+        // Use the static method for v4, passing apiVersion as the first argument
+        const response = await Cashfree.PGCreateOrder("2023-08-01", request);
 
         return {
           success: true,
@@ -414,3 +399,6 @@ export const sendOrderConfirmationEmail = functions.firestore
         
         return null;
     });
+
+
+    
