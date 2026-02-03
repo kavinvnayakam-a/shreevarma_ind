@@ -14,7 +14,7 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 
 const getCashfreeApiUrl = () =>
-  process.env.NEXT_PUBLIC_CASHFREE_ENV === 'sandbox'
+  process.env.CASHFREE_ENV === 'sandbox'
     ? 'https://sandbox.cashfree.com/pg'
     : 'https://api.cashfree.com/pg';
 
@@ -23,8 +23,8 @@ async function getCashfreeApiHeaders() {
   const secretKey = process.env.CASHFREE_SECRET_KEY;
 
   if (!appId || !secretKey) {
-    console.error('[SERVER_ORDER_ERROR_CRITICAL] Cashfree secrets are not available in the environment.');
-    throw new Error('Configuration Error: The server could not access payment secrets.');
+    console.error('[SERVER_ORDER_ERROR_CRITICAL] Cashfree credentials not configured. Ensure CASHFREE_APP_ID and CASHFREE_SECRET_KEY are in your .env.local or App Hosting environment variables.');
+    throw new Error('Cashfree credentials not configured.');
   }
 
   return {
@@ -74,6 +74,7 @@ export async function POST(req: NextRequest) {
       internalId: orderDocId,
     };
 
+    // Create records in Firestore for the pending order
     await Promise.all([
       pendingOrderRef.set(orderData),
       userOrderRef.set(orderData)
@@ -107,6 +108,7 @@ export async function POST(req: NextRequest) {
 
     if (!response.ok || !data.payment_session_id) {
       console.error('Cashfree API Error:', data);
+      // Clean up pending order if Cashfree fails
       await Promise.all([pendingOrderRef.delete(), userOrderRef.delete()]);
       return NextResponse.json({ success: false, error: data.message || 'Failed to contact payment gateway.' }, { status: 500 });
     }
