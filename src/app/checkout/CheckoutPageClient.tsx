@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
@@ -7,6 +8,7 @@ import Script from 'next/script';
 import { useCart } from '@/hooks/use-cart';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirebase, useDoc } from '@/firebase';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
 import {
   doc,
@@ -52,7 +54,7 @@ export default function CheckoutPageClient() {
   const { toast } = useToast();
   const { cartItems, cartTotal } = useCart();
   const { user, isUserLoading } = useUser();
-  const { firestore } = useFirebase();
+  const { firestore, firebaseApp } = useFirebase();
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<AddressFormValues | null>(null);
@@ -89,8 +91,8 @@ export default function CheckoutPageClient() {
   }, [profileLoading, savedAddresses, selectedAddress]);
 
   const handlePlaceOrder = async () => {
-    if (!user || !user.email || !selectedAddress || !firestore) {
-      toast({ variant: 'destructive', title: 'Missing Info', description: 'Please select a shipping address.' });
+    if (!user || !user.email || !selectedAddress || !firestore || !firebaseApp) {
+      toast({ variant: 'destructive', title: 'Missing Info', description: 'Please select a shipping address or wait for services to load.' });
       return;
     }
 
@@ -102,24 +104,22 @@ export default function CheckoutPageClient() {
     setIsProcessing(true);
 
     try {
-      const apiResponse = await fetch('/api/create-order', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: user.uid,
-            cartItems,
-            cartTotal,
-            customerName: selectedAddress.name,
-            customerEmail: user.email,
-            customerPhone: selectedAddress.phone,
-            shippingAddress: selectedAddress,
-          })
+      const functions = getFunctions(firebaseApp);
+      const createCashfreeOrder = httpsCallable(functions, 'createCashfreeOrder');
+
+      const result: any = await createCashfreeOrder({
+          cartItems,
+          cartTotal,
+          customerName: selectedAddress.name,
+          customerEmail: user.email,
+          customerPhone: selectedAddress.phone,
+          shippingAddress: selectedAddress,
       });
 
-      const response = await apiResponse.json();
+      const response = result.data;
 
       if (!response.success || !response.payment_session_id) {
-        throw new Error(response.error || 'Credentials not configured on server.');
+        throw new Error(response.error || 'Failed to create payment session via function.');
       }
 
       const cashfree = window.Cashfree({
@@ -136,7 +136,7 @@ export default function CheckoutPageClient() {
       toast({ 
         variant: 'destructive', 
         title: 'Checkout Failed', 
-        description: err.message || "Ensure your API keys are in .env.local" 
+        description: err.message || "Could not connect to payment service." 
       });
     } finally {
       setIsProcessing(false);

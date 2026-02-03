@@ -51,9 +51,9 @@ runConfig:
       availability: [RUNTIME]
 
     # --- Payment Gateway Secrets ---
-    - variable: SVW_CF_APP_ID
+    - variable: CASHFREE_APP_ID
       secret: CASHFREE_APP_ID
       availability: [RUNTIME]
-    - variable: SVW_CF_SECRET_KEY
+    - variable: CASHFREE_SECRET_KEY
       secret: CASHFREE_SECRET_KEY
       availability: [RUNTIME]

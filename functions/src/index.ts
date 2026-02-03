@@ -4,6 +4,8 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import crypto from "crypto";
 import { ZegoTokenBuilder } from "zego-server-assistant";
+import { Cashfree, CFEnvironment } from "cashfree-pg";
+import { v4 as uuidv4 } from 'uuid';
 
 
 if (!admin.apps.length) {
@@ -11,6 +13,101 @@ if (!admin.apps.length) {
 }
 
 const db = admin.firestore();
+
+// CASHFREE ORDER CREATION
+export const createCashfreeOrder = functions.https.onCall(async (data, context) => {
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+    }
+
+    const {
+        cartItems,
+        cartTotal,
+        customerName,
+        customerEmail,
+        customerPhone,
+        shippingAddress,
+    } = data;
+    const userId = context.auth.uid;
+
+    if (!userId || !cartItems?.length || !cartTotal) {
+      throw new functions.https.HttpsError('invalid-argument', 'Missing order data.');
+    }
+
+    const appId = process.env.CASHFREE_APP_ID;
+    const secretKey = process.env.CASHFREE_SECRET_KEY;
+    const isProduction = process.env.CASHFREE_ENV === 'production';
+
+    if (!appId || !secretKey) {
+        console.error("[CRITICAL] Cashfree credentials (CASHFREE_APP_ID, CASHFREE_SECRET_KEY) are not configured in the function's environment.");
+        throw new functions.https.HttpsError('internal', 'Payment gateway is not configured on the server.');
+    }
+    
+    try {
+        const cashfree = new Cashfree({
+            mode: isProduction ? CFEnvironment.PRODUCTION : CFEnvironment.SANDBOX,
+            appId: appId,
+            secretKey: secretKey,
+        });
+
+        let appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.shreevarma.org';
+        appUrl = appUrl.endsWith('/') ? appUrl.slice(0, -1) : appUrl;
+
+        const orderDocId = uuidv4();
+        const pendingOrderRef = db.collection('pending_orders').doc(orderDocId);
+        const userOrderRef = db.collection('users').doc(userId).collection('orders').doc(orderDocId);
+
+        const orderData = {
+          userId,
+          orderStatus: 'pending',
+          paymentStatus: 'PENDING',
+          totalAmount: cartTotal,
+          customer: { name: customerName, email: customerEmail, phone: customerPhone },
+          shippingAddress,
+          items: cartItems,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          internalId: orderDocId,
+        };
+        
+        await Promise.all([
+          pendingOrderRef.set(orderData),
+          userOrderRef.set(orderData)
+        ]);
+
+        const returnUrl = `${appUrl}/order/success/${orderDocId}`;
+        const notifyUrl = "https://cashfreewebhook-iklfboedvq-uc.a.run.app";
+
+        const request = {
+            "order_amount": Number(cartTotal.toFixed(2)),
+            "order_currency": "INR",
+            "order_id": orderDocId,
+            "customer_details": {
+                "customer_id": userId,
+                "customer_phone": customerPhone,
+                "customer_name": customerName,
+                "customer_email": customerEmail
+            },
+            "order_meta": {
+                "return_url": returnUrl,
+                "notify_url": notifyUrl,
+            },
+            "order_note": "Shreevarma Wellness Purchase"
+        };
+        
+        const response = await cashfree.PGCreateOrder(request, { apiVersion: "2023-08-01" });
+
+        return {
+          success: true,
+          payment_session_id: response.data.payment_session_id,
+          orderDocId,
+        };
+
+    } catch (err: any) {
+        console.error("Cashfree Order Creation Error:", err.response?.data || err.message);
+        throw new functions.https.HttpsError('internal', err.response?.data?.message || 'Failed to create payment order.');
+    }
+});
+
 
 // ZEGOCLOUD TOKEN GENERATION
 export const getZegoToken = functions.https.onCall(async (data, context) => {
@@ -156,7 +253,7 @@ function generateOrderConfirmationEmail(orderData: any): string {
             ${orderData.shippingAddress.city}, ${orderData.shippingAddress.state} ${orderData.shippingAddress.zip}
           </p>
           <div style="text-align: center; margin-top: 30px;">
-            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://shreevarma.org/'}/profile/orders/${orderData.internalId}" class="button">View Order Details</a>
+            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://app.shreevarma.org/'}/profile/orders/${orderData.internalId}" class="button">View Order Details</a>
           </div>
         </div>
         <div class="footer">
