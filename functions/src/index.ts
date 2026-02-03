@@ -34,12 +34,33 @@ export const createCashfreeOrder = functions.https.onCall(async (data, context) 
       throw new functions.https.HttpsError('invalid-argument', 'Missing order data.');
     }
     
-    // --- FORCED SANDBOX/TESTING MODE ---
-    // Use the correct static initialization for cashfree-pg v4
-    // Hardcode public test credentials to ensure local testing works, bypassing environment variable issues.
-    Cashfree.XClientId = "TEST1015093116527515f4a7c06b2413905101";
-    Cashfree.XClientSecret = "TEST_SECRET_KEY15582f34934a3511195663604f3b14068f";
-    Cashfree.XEnvironment = CFEnvironment.SANDBOX;
+    // Determine environment. Default to sandbox if not specified.
+    const isProduction = process.env.CASHFREE_ENV === 'production';
+
+    let cashfree;
+    if (isProduction) {
+        const appId = process.env.SVW_CF_APP_ID;
+        const secretKey = process.env.SVW_CF_SECRET_KEY;
+        if (!appId || !secretKey) {
+            console.error("Production Cashfree credentials are not configured.");
+            throw new functions.https.HttpsError('internal', 'Payment gateway is not configured for production.');
+        }
+        cashfree = new Cashfree({
+            env: CFEnvironment.PRODUCTION,
+            appId,
+            secretKey,
+        });
+    } else {
+        // Use hardcoded public test credentials for sandbox mode to ensure local testing works reliably.
+        const testAppId = "TEST1015093116527515f4a7c06b2413905101";
+        const testSecretKey = "TEST_SECRET_KEY15582f34934a3511195663604f3b14068f";
+        
+        cashfree = new Cashfree({
+            env: CFEnvironment.SANDBOX,
+            appId: testAppId,
+            secretKey: testSecretKey,
+        });
+    }
 
     try {
         let appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.shreevarma.org';
@@ -47,6 +68,7 @@ export const createCashfreeOrder = functions.https.onCall(async (data, context) 
 
         const orderDocId = uuidv4();
         const pendingOrderRef = db.collection('pending_orders').doc(orderDocId);
+        const userOrderRef = db.collection('users').doc(userId).collection('orders').doc(orderDocId);
 
         const orderData = {
           userId,
@@ -60,8 +82,10 @@ export const createCashfreeOrder = functions.https.onCall(async (data, context) 
           internalId: orderDocId,
         };
         
-        // Only write to the pending collection. The webhook will handle creating the final order.
-        await pendingOrderRef.set(orderData);
+        await Promise.all([
+          pendingOrderRef.set(orderData),
+          userOrderRef.set(orderData)
+        ]);
 
         const returnUrl = `${appUrl}/order/success/${orderDocId}`;
         const notifyUrl = "https://cashfreewebhook-iklfboedvq-uc.a.run.app";
@@ -83,8 +107,7 @@ export const createCashfreeOrder = functions.https.onCall(async (data, context) 
             "order_note": "Shreevarma Wellness Purchase"
         };
         
-        // Use the static method for v4, passing apiVersion as the first argument
-        const response = await Cashfree.PGCreateOrder("2023-08-01", request);
+        const response = await cashfree.pg.createOrder(request);
 
         return {
           success: true,

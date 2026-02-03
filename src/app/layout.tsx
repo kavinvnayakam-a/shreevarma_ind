@@ -71,7 +71,6 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <meta name="theme-color" media="(prefers-color-scheme: light)" content="#703a2f" />
         <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#703a2f" />
-        <Script id="cashfree-sdk" src="https://sdk.cashfree.com/js/v3/cashfree.js" strategy="beforeInteractive" />
         
         {/* Google Analytics & Google Tag Manager */}
         <Script

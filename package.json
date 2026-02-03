@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@cashfreepayments/cashfree-js": "^1.0.4",
     "@genkit-ai/google-genai": "^1.5.0",
     "@genkit-ai/next": "^1.5.0",
     "@hookform/resolvers": "^3.9.0",

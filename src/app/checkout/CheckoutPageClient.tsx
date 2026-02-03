@@ -4,11 +4,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import Script from 'next/script';
 import { useCart } from '@/hooks/use-cart';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirebase, useDoc } from '@/firebase';
 import { getFunctions, httpsCallable } from 'firebase/functions';
+import { load, Cashfree } from '@cashfreepayments/cashfree-js';
 
 import {
   doc,
@@ -61,10 +61,31 @@ export default function CheckoutPageClient() {
   const [isAddressFormOpen, setIsAddressFormOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<AddressFormValues | null>(null);
   const [addressToDelete, setAddressToDelete] = useState<AddressFormValues | null>(null);
+  const [cashfree, setCashfree] = useState<Cashfree | null>(null);
 
   const form = useForm<AddressFormValues>({
     resolver: zodResolver(addressSchema),
   });
+
+  useEffect(() => {
+    const initializeSDK = async () => {
+        try {
+            const cfInstance = await load({
+                mode: process.env.NEXT_PUBLIC_CASHFREE_ENV === 'production' ? 'production' : 'sandbox',
+            });
+            setCashfree(cfInstance);
+        } catch (error) {
+            console.error("Cashfree SDK failed to load", error);
+            toast({
+                variant: 'destructive',
+                title: 'Payment Error',
+                description: 'Could not load payment gateway. Please refresh.',
+            });
+        }
+    };
+    initializeSDK();
+  }, [toast]);
+
 
   const userRef = useMemo(() => {
     if (!firestore || !user) return null;
@@ -96,8 +117,8 @@ export default function CheckoutPageClient() {
       return;
     }
 
-    if (typeof window.Cashfree === 'undefined') {
-      toast({ variant: 'destructive', title: 'Payment Error', description: 'Payment SDK not loaded. Please refresh.' });
+    if (!cashfree) {
+      toast({ variant: 'destructive', title: 'Payment Error', description: 'Payment SDK is not ready. Please refresh.' });
       return;
     }
 
@@ -122,11 +143,6 @@ export default function CheckoutPageClient() {
         throw new Error(response.message || 'Failed to create payment session via function.');
       }
 
-      const cashfree = window.Cashfree({
-        mode: "sandbox", // Force sandbox mode for testing
-      });
-
-      // Redirect to Cashfree checkout
       cashfree.checkout({
         paymentSessionId: response.payment_session_id,
         redirectTarget: "_self", // Redirect in the same tab
@@ -188,8 +204,6 @@ export default function CheckoutPageClient() {
 
   return (
     <div className="bg-[#F9F5F1] min-h-screen pb-12">
-      <Script src="https://sdk.cashfree.com/js/v3/cashfree.js" strategy="beforeInteractive" />
-      
       <AlertDialog>
         <Dialog open={isAddressFormOpen} onOpenChange={setIsAddressFormOpen}>
           <div className="container mx-auto py-12 grid lg:grid-cols-2 gap-10 px-6">
@@ -275,7 +289,7 @@ export default function CheckoutPageClient() {
 
                   <Button 
                     onClick={handlePlaceOrder} 
-                    disabled={isProcessing || !selectedAddress} 
+                    disabled={isProcessing || !selectedAddress || !cashfree} 
                     className="w-full mt-10 h-16 text-lg font-headline rounded-full bg-[#6f3a2f] hover:bg-[#5a2e25] text-white shadow-xl transition-all active:scale-95 mb-4"
                   >
                     {isProcessing ? (
