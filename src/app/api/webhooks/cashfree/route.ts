@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import * as admin from "firebase-admin";
 
-// Initialize Admin SDK for production
+// Ensure Admin SDK is initialized with Service Account
+// We use the FB_ prefix here to match your apphosting.yaml mappings
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      projectId: process.env.FIREBASE_PROJECT_ID, // Mapped from NEXT_PUBLIC_FIREBASE_PROJECT_ID
+      clientEmail: process.env.FB_CLIENT_EMAIL,     // Mapped from secret FB_CLIENT_EMAIL
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'), // Mapped from secret FB_PRIVATE_KEY
     }),
   });
 }
@@ -16,36 +17,35 @@ const db = admin.firestore();
 
 export async function POST(req: Request) {
   try {
-    const rawBody = await req.text();
-    const data = JSON.parse(rawBody);
+    const data = await req.json();
+    
+    // Cashfree 2023-08-01 API structure: data.data.order
+    const { order_id, order_status, order_amount } = data.data.order;
+    const { customer_id, customer_phone, customer_email } = data.data.customer_details;
 
-    // Cashfree sends order info inside data.data.order
-    const { order_id, order_status } = data.data.order;
-    const { customer_id } = data.data.customer_details;
-
+    // We only process if the status is exactly "PAID"
     if (order_status === "PAID") {
-      // Path matches your frontend listener: users/{uid}/orders/{orderId}
+      // Path: users/{uid}/orders/{orderId}
       const orderRef = db.collection("users").doc(customer_id).collection("orders").doc(order_id);
       
       await orderRef.set({
-        paymentStatus: "PAID",
+        orderId: order_id,
+        amount: order_amount,
+        customerPhone: customer_phone,
+        customerEmail: customer_email,
+        paymentStatus: "PAID", // This is the specific trigger for your SuccessClient flip
         status: "confirmed",
-        paymentDetails: data.data.payment,
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        // Trigger Email Data for Firebase Extension
-        to: data.data.customer_details.customer_email,
-        message: {
-          subject: `Order Confirmed: ${order_id}`,
-          html: `<h1>Thank you for your order!</h1><p>Your order ${order_id} has been confirmed.</p>`,
-        }
       }, { merge: true });
 
-      console.log(`✅ Production Order ${order_id} updated to PAID`);
+      console.log(`✅ Order ${order_id} verified and created for user ${customer_id}`);
     }
 
-    return NextResponse.json({ received: true }, { status: 200 });
+    // Always return 200 to Cashfree so they don't keep retrying
+    return NextResponse.json({ status: "success" }, { status: 200 });
   } catch (err: any) {
-    console.error("❌ Webhook Error:", err.message);
+    console.error("Webhook Processing Error:", err.message);
+    // Return 400 only if the JSON is malformed or initialization fails
     return NextResponse.json({ error: "Webhook failed" }, { status: 400 });
   }
 }

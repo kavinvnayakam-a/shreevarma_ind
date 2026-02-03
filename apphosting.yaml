@@ -1,4 +1,3 @@
-
 runConfig:
   cpu: 1
   memoryMiB: 512
@@ -6,52 +5,63 @@ runConfig:
   env:
     # --- System Config ---
     - variable: FIREBASE_WEBAPP_CONFIG
-      availability: [BUILD, RUNTIME]
+      availability: [ BUILD, RUNTIME ]
 
     # --- Public Environment ---
     - variable: NEXT_PUBLIC_APP_URL
       value: https://app.shreevarma.org
-      availability: [BUILD, RUNTIME]
+      availability: [ BUILD, RUNTIME ]
     - variable: NEXT_PUBLIC_CASHFREE_ENV
       value: production
-      availability: [BUILD, RUNTIME]
+      availability: [ BUILD, RUNTIME ]
 
     # --- Firebase Client Config ---
     - variable: NEXT_PUBLIC_FIREBASE_API_KEY
       secret: NEXT_PUBLIC_FIREBASE_API_KEY
-      availability: [BUILD, RUNTIME]
+      availability: [ BUILD, RUNTIME ]
     - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
       secret: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-      availability: [BUILD, RUNTIME]
+      availability: [ BUILD, RUNTIME ]
     - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
       secret: NEXT_PUBLIC_FIREBASE_PROJECT_ID
-      availability: [BUILD, RUNTIME]
+      availability: [ BUILD, RUNTIME ]
     - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
       value: shreevarma-india-location.firebasestorage.app
-      availability: [BUILD, RUNTIME]
+      availability: [ BUILD, RUNTIME ]
     - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
       secret: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-      availability: [BUILD, RUNTIME]
+      availability: [ BUILD, RUNTIME ]
     - variable: NEXT_PUBLIC_FIREBASE_APP_ID
       secret: NEXT_PUBLIC_FIREBASE_APP_ID
-      availability: [BUILD, RUNTIME]
-      
+      availability: [ BUILD, RUNTIME ]
+
     # --- Video & AI Secrets ---
     - variable: ZEGO_APP_ID
       secret: ZEGO_APP_ID
-      availability: [RUNTIME]
+      availability: [ RUNTIME ]
     - variable: ZEGO_SERVER_SECRET
       secret: ZEGO_SERVER_SECRET
-      availability: [RUNTIME]
+      availability: [ RUNTIME ]
     - variable: GEMINI_API_KEY
       secret: GEMINI_API_KEY
-      availability: [RUNTIME]
+      availability: [ RUNTIME ]
 
     # --- Payment Gateway Secrets ---
     - variable: CASHFREE_APP_ID
       secret: CASHFREE_APP_ID
-      availability: [RUNTIME]
+      availability: [ RUNTIME ]
     - variable: CASHFREE_SECRET_KEY
       secret: CASHFREE_SECRET_KEY
-      availability: [RUNTIME]
+      availability: [ RUNTIME ]
 
+    # --- Admin SDK / Master Keys (Fixed Names) ---
+    # We map the Google Secrets to safe environment variable names
+    - variable: FIREBASE_PROJECT_ID
+      secret: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+      availability: [ RUNTIME ]
+    - variable: FB_CLIENT_EMAIL
+      secret: FIREBASE_CLIENT_EMAIL
+      availability: [ RUNTIME ]
+    - variable: FIREBASE_PRIVATE_KEY
+      secret: FIREBASE_PRIVATE_KEY
+      availability: [ RUNTIME ]

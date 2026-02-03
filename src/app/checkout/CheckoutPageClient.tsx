@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useCart } from '@/hooks/use-cart';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirebase, useDoc } from '@/firebase';
-import { functions } from '@/firebase/config'; // Ensure this exports getFunctions(app, 'asia-south1')
+import { functions } from '@/firebase/config'; 
 import { httpsCallable } from 'firebase/functions';
 import { load, Cashfree } from '@cashfreepayments/cashfree-js';
 
@@ -67,6 +67,7 @@ export default function CheckoutPageClient() {
     resolver: zodResolver(addressSchema),
   });
 
+  // Initialize Cashfree SDK in Production Mode
   useEffect(() => {
     const initializeSDK = async () => {
         try {
@@ -142,25 +143,17 @@ export default function CheckoutPageClient() {
         throw new Error(response.message || 'Failed to create payment session.');
       }
 
+      /**
+       * PRODUCTION SETTING: 
+       * redirectTarget: "_self" ensures the browser redirects to the return_url 
+       * defined in your Cloud Function after payment is completed.
+       */
       const checkoutOptions = {
         paymentSessionId: response.payment_session_id,
-        redirectTarget: "_modal", 
+        redirectTarget: "_self", 
       };
 
-      await cashfree.checkout(checkoutOptions).then((result: any) => {
-        if (result.error) {
-          console.log("Modal Error/Closed:", result.error);
-          toast({ 
-            variant: 'destructive', 
-            title: 'Payment Cancelled', 
-            description: result.error.message || "Payment window was closed." 
-          });
-        }
-        
-        if (result.redirect) {
-          console.log("Payment completed, redirecting...");
-        }
-      });
+      await cashfree.checkout(checkoutOptions);
 
     } catch (err: any) {
       console.error("Checkout Error:", err);
@@ -169,7 +162,6 @@ export default function CheckoutPageClient() {
         title: 'Checkout Failed', 
         description: err.message || "Could not connect to payment service." 
       });
-    } finally {
       setIsProcessing(false);
     }
   };
