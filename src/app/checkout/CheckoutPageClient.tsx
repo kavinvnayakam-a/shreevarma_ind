@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
@@ -7,7 +6,8 @@ import Image from 'next/image';
 import { useCart } from '@/hooks/use-cart';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirebase, useDoc } from '@/firebase';
-import { getFunctions, httpsCallable } from 'firebase/functions';
+import { functions } from '@/firebase/config'; // Ensure this exports getFunctions(app, 'asia-south1')
+import { httpsCallable } from 'firebase/functions';
 import { load, Cashfree } from '@cashfreepayments/cashfree-js';
 
 import {
@@ -54,7 +54,7 @@ export default function CheckoutPageClient() {
   const { toast } = useToast();
   const { cartItems, cartTotal } = useCart();
   const { user, isUserLoading } = useUser();
-  const { firestore, firebaseApp } = useFirebase();
+  const { firestore } = useFirebase();
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<AddressFormValues | null>(null);
@@ -71,7 +71,7 @@ export default function CheckoutPageClient() {
     const initializeSDK = async () => {
         try {
             const cfInstance = await load({
-                mode: "sandbox" // Always use sandbox for testing
+                mode: "production" 
             });
             setCashfree(cfInstance);
         } catch (error) {
@@ -112,8 +112,8 @@ export default function CheckoutPageClient() {
   }, [profileLoading, savedAddresses, selectedAddress]);
 
   const handlePlaceOrder = async () => {
-    if (!user || !user.email || !selectedAddress || !firestore || !firebaseApp) {
-      toast({ variant: 'destructive', title: 'Missing Info', description: 'Please select a shipping address or wait for services to load.' });
+    if (!user || !user.email || !selectedAddress || !firestore) {
+      toast({ variant: 'destructive', title: 'Missing Info', description: 'Please select a shipping address.' });
       return;
     }
 
@@ -125,7 +125,6 @@ export default function CheckoutPageClient() {
     setIsProcessing(true);
 
     try {
-      const functions = getFunctions(firebaseApp);
       const createCashfreeOrder = httpsCallable(functions, 'createCashfreeOrder');
 
       const result: any = await createCashfreeOrder({
@@ -140,12 +139,27 @@ export default function CheckoutPageClient() {
       const response = result.data;
 
       if (!response.success || !response.payment_session_id) {
-        throw new Error(response.message || 'Failed to create payment session via function.');
+        throw new Error(response.message || 'Failed to create payment session.');
       }
 
-      cashfree.checkout({
+      const checkoutOptions = {
         paymentSessionId: response.payment_session_id,
-        redirectTarget: "_self",
+        redirectTarget: "_modal", 
+      };
+
+      await cashfree.checkout(checkoutOptions).then((result: any) => {
+        if (result.error) {
+          console.log("Modal Error/Closed:", result.error);
+          toast({ 
+            variant: 'destructive', 
+            title: 'Payment Cancelled', 
+            description: result.error.message || "Payment window was closed." 
+          });
+        }
+        
+        if (result.redirect) {
+          console.log("Payment completed, redirecting...");
+        }
       });
 
     } catch (err: any) {
@@ -208,7 +222,6 @@ export default function CheckoutPageClient() {
         <Dialog open={isAddressFormOpen} onOpenChange={setIsAddressFormOpen}>
           <div className="container mx-auto py-12 grid lg:grid-cols-2 gap-10 px-6">
             
-            {/* Left: Address Selection */}
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                   <h1 className="text-3xl font-black font-headline text-primary uppercase tracking-tighter">Shipping Details</h1>
@@ -250,7 +263,6 @@ export default function CheckoutPageClient() {
               </Card>
             </div>
 
-            {/* Right: Summary & Payment */}
             <div className="lg:sticky lg:top-24 h-fit">
               <Card className="border-none shadow-xl rounded-[2.5rem] overflow-hidden bg-white">
                 <div className="h-2 bg-[#6f3a2f] w-full" />
@@ -293,13 +305,13 @@ export default function CheckoutPageClient() {
                     className="w-full mt-10 h-16 text-lg font-headline rounded-full bg-[#6f3a2f] hover:bg-[#5a2e25] text-white shadow-xl transition-all active:scale-95 mb-4"
                   >
                     {isProcessing ? (
-                        <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Verifying...</>
+                        <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Preparing Payment...</>
                     ) : (
                         <><ShieldCheck className="mr-2 h-5 w-5" /> Pay & Confirm Order</>
                     )}
                   </Button>
                   <p className="text-[10px] uppercase font-black tracking-widest text-slate-400 text-center">
-                    Secure Modal Checkout
+                    Secure Modal Checkout Enabled
                   </p>
                 </CardContent>
               </Card>
@@ -313,7 +325,9 @@ export default function CheckoutPageClient() {
         </Dialog>
         
         <AlertDialogContent className="rounded-[2rem]">
-          <AlertDialogHeader><AlertDialogTitle className="font-headline">Delete this address?</AlertDialogTitle></AlertDialogHeader>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-headline">Delete this address?</AlertDialogTitle>
+          </AlertDialogHeader>
           <p className="text-sm text-muted-foreground italic">This action cannot be undone.</p>
           <AlertDialogFooter className="mt-4">
             <AlertDialogCancel className="rounded-full" onClick={() => setAddressToDelete(null)}>Cancel</AlertDialogCancel>

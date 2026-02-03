@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { Loader2, CheckCircle, ArrowRight, ShoppingBag, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,38 +17,35 @@ export default function SuccessClient({ orderId }: SuccessClientProps) {
   const { firestore } = initializeFirebase();
   const { user } = useUser();
   const { clearCart } = useCart();
+  const hasCleared = useRef(false); // Prevents multiple cart clears
   
   const [status, setStatus] = useState<"verifying" | "success" | "timeout">("verifying");
 
   useEffect(() => {
-    // Safety check for initialization
     if (!firestore || !user || !orderId || orderId === "undefined") return;
 
-    // Listen to the permanent user order path (populated by the Webhook)
+    // Listener for the path populated by your new Webhook
     const orderRef = doc(firestore, "users", user.uid, "orders", orderId);
     
     const unsubscribe = onSnapshot(orderRef, (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.data();
         
-        // 🔥 Trigger success only when the webhook has updated the status to PAID
         if (data.paymentStatus === "PAID") {
-          setStatus((prevStatus) => {
-            if (prevStatus !== 'success') {
-                clearCart();
-            }
-            return 'success';
-          });
+          if (!hasCleared.current) {
+            clearCart();
+            hasCleared.current = true;
+          }
+          setStatus("success");
         }
       }
     }, (error) => {
-      console.error("Firestore Listener Error:", error);
+      console.error("Production Listener Error:", error);
     });
 
-    // 🕒 30-second safety timeout. Webhooks can occasionally be slow.
     const timer = setTimeout(() => {
       setStatus(prev => (prev === "verifying" ? "timeout" : prev));
-    }, 30000);
+    }, 35000); // 35s for production safety
 
     return () => {
       unsubscribe();
@@ -57,55 +53,52 @@ export default function SuccessClient({ orderId }: SuccessClientProps) {
     };
   }, [firestore, user, orderId, clearCart]);
 
-  // --- 1. VERIFYING STATE ---
   if (status === "verifying") {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh] px-6 text-center">
-        <Loader2 className="h-16 w-16 animate-spin text-primary mb-6" />
-        <h1 className="text-3xl font-bold font-headline mb-2 text-primary">Verifying Payment</h1>
-        <p className="text-muted-foreground max-w-sm">
-          We're confirming your transaction with the bank. This usually takes a few seconds. Please do not refresh.
+        <Loader2 className="h-16 w-16 animate-spin text-[#6f3a2f] mb-6" />
+        <h1 className="text-3xl font-black font-headline mb-2 text-primary uppercase">Securing Payment</h1>
+        <p className="text-muted-foreground max-w-sm italic">
+          Waiting for bank confirmation. Please do not close this window.
         </p>
       </div>
     );
   }
 
-  // --- 2. TIMEOUT STATE (Webhook taking too long) ---
   if (status === "timeout") {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh] px-6 text-center">
         <AlertTriangle className="h-16 w-16 text-yellow-500 mb-6" />
-        <h1 className="text-3xl font-bold font-headline mb-2">Processing Order</h1>
-        <p className="text-muted-foreground mb-8 max-w-md">
-          Confirmation is taking slightly longer than expected. Your order will appear in your profile history once confirmed.
+        <h1 className="text-3xl font-black font-headline mb-2 uppercase">Nearly There!</h1>
+        <p className="text-muted-foreground mb-8 max-w-md italic">
+          Your payment is successful, but our systems are still syncing. Your order will appear in your profile shortly.
         </p>
-        <Button asChild variant="outline" className="rounded-full px-8">
-          <Link href="/profile/orders">Go to My Orders</Link>
+        <Button asChild className="rounded-full px-8 bg-[#6f3a2f]">
+          <Link href="/profile/orders">Check Order History</Link>
         </Button>
       </div>
     );
   }
 
-  // --- 3. SUCCESS STATE ---
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] px-6 text-center animate-in fade-in zoom-in duration-500">
-      <div className="bg-green-100 p-4 rounded-full mb-6">
+      <div className="bg-green-50 p-6 rounded-full mb-6 border-2 border-green-500">
         <CheckCircle className="h-20 w-20 text-green-600" />
       </div>
-      <h1 className="text-4xl font-bold font-headline mb-2 text-green-800">Payment Confirmed!</h1>
-      <p className="text-muted-foreground mb-8 max-w-md">
-        Success! Your order <span className="font-mono font-bold text-primary">#{orderId.slice(0, 8)}</span> has been received and is being processed.
+      <h1 className="text-4xl font-black font-headline mb-2 text-[#6f3a2f] uppercase tracking-tighter">Order Success!</h1>
+      <p className="text-muted-foreground mb-8 max-w-md italic text-lg">
+        Thank you! Order <span className="font-mono font-bold text-primary">#{orderId.slice(0, 8)}</span> has been confirmed. A confirmation email is on its way.
       </p>
       
       <div className="flex flex-col sm:flex-row gap-4">
-        <Button asChild size="lg" className="rounded-full px-8 shadow-md">
+        <Button asChild size="lg" className="rounded-full px-10 shadow-xl bg-[#6f3a2f] hover:bg-[#5a2e25]">
           <Link href={`/profile/orders/${orderId}`}>
-            View Order Details <ArrowRight className="ml-2 h-4 w-4" />
+            Track Order <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </Button>
-        <Button asChild variant="ghost" size="lg" className="rounded-full px-8">
-          <Link href="/products">
-            <ShoppingBag className="mr-2 h-4 w-4" /> Keep Shopping
+        <Button asChild variant="outline" size="lg" className="rounded-full px-10 border-[#6f3a2f] text-[#6f3a2f]">
+          <Link href="/">
+            <ShoppingBag className="mr-2 h-4 w-4" /> Home
           </Link>
         </Button>
       </div>
