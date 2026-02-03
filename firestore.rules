@@ -84,5 +84,10 @@ service cloud.firestore {
     match /counters/{counterId} {
         allow read, write: if isSuperAdmin();
     }
+    
+    match /pending_orders/{orderId} {
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if isSuperAdmin() || isHealthcareAdmin();
+    }
   }
 }

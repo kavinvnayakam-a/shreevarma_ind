@@ -4,6 +4,7 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import crypto from "crypto";
 import { ZegoTokenBuilder } from "zego-server-assistant";
+import { Cashfree, CFEnvironment } from "cashfree-pg";
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -34,10 +35,11 @@ export const createCashfreeOrder = functions.https.onCall(async (data, context) 
     }
     
     // --- FORCED SANDBOX/TESTING MODE ---
-    const cashfreeAppId = "TEST1015093116527515f4a7c06b2413905101";
-    const cashfreeSecretKey = "TEST_SECRET_KEY15582f34934a3511195663604f3b14068f";
-    const cashfreeApiUrl = "https://sandbox.cashfree.com/pg";
-
+    // Use the correct static initialization for cashfree-pg v4
+    // Hardcode public test credentials to ensure local testing works, bypassing environment variable issues.
+    Cashfree.XClientId = "TEST1015093116527515f4a7c06b2413905101";
+    Cashfree.XClientSecret = "TEST_SECRET_KEY15582f34934a3511195663604f3b14068f";
+    Cashfree.XEnvironment = CFEnvironment.SANDBOX;
 
     try {
         let appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.shreevarma.org';
@@ -45,7 +47,6 @@ export const createCashfreeOrder = functions.https.onCall(async (data, context) 
 
         const orderDocId = uuidv4();
         const pendingOrderRef = db.collection('pending_orders').doc(orderDocId);
-        const userOrderRef = db.collection('users').doc(userId).collection('orders').doc(orderDocId);
 
         const orderData = {
           userId,
@@ -59,15 +60,13 @@ export const createCashfreeOrder = functions.https.onCall(async (data, context) 
           internalId: orderDocId,
         };
         
-        await Promise.all([
-          pendingOrderRef.set(orderData),
-          userOrderRef.set(orderData)
-        ]);
+        // Only write to the pending collection. The webhook will handle creating the final order.
+        await pendingOrderRef.set(orderData);
 
         const returnUrl = `${appUrl}/order/success/${orderDocId}`;
         const notifyUrl = "https://cashfreewebhook-iklfboedvq-uc.a.run.app";
-        
-        const requestBody = {
+
+        const request = {
             "order_amount": Number(cartTotal.toFixed(2)),
             "order_currency": "INR",
             "order_id": orderDocId,
@@ -84,38 +83,18 @@ export const createCashfreeOrder = functions.https.onCall(async (data, context) 
             "order_note": "Shreevarma Wellness Purchase"
         };
         
-        const headers = {
-            'Content-Type': 'application/json',
-            'x-api-version': '2023-08-01',
-            'x-client-id': cashfreeAppId,
-            'x-client-secret': cashfreeSecretKey,
-        };
-
-        const cashfreeResponse = await fetch(`${cashfreeApiUrl}/orders`, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(requestBody),
-        });
-
-        const responseData = await cashfreeResponse.json();
-
-        if (!cashfreeResponse.ok || !responseData.payment_session_id) {
-             console.error("Cashfree API Error:", responseData);
-             throw new functions.https.HttpsError('internal', responseData.message || 'Failed to create payment order from Cashfree.');
-        }
+        // Use the static method for v4, passing apiVersion as the first argument
+        const response = await Cashfree.PGCreateOrder("2023-08-01", request);
 
         return {
           success: true,
-          payment_session_id: responseData.payment_session_id,
+          payment_session_id: response.data.payment_session_id,
           orderDocId,
         };
 
     } catch (err: any) {
-        console.error("Cashfree Order Creation Error:", err);
-         if (err instanceof functions.https.HttpsError) {
-            throw err;
-        }
-        throw new functions.https.HttpsError('internal', err.message || 'Failed to create payment order.');
+        console.error("Cashfree Order Creation Error:", err.response?.data || err.message);
+        throw new functions.https.HttpsError('internal', err.response?.data?.message || 'Failed to create payment order.');
     }
 });
 
