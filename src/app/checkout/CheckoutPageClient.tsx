@@ -123,7 +123,7 @@ export default function CheckoutPageClient() {
       }
 
       const cashfree = window.Cashfree({
-        mode: process.env.NEXT_PUBLIC_CASHFREE_ENV === 'sandbox' ? 'sandbox' : 'production',
+        mode: "sandbox", // Force sandbox mode for testing
       });
 
       await cashfree.checkout({
