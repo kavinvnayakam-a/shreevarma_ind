@@ -18,25 +18,37 @@
     }
   ],
   "hosting": {
-    "public": "public",
+    "public": ".next",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ],
+    "cleanUrls": true,
     "headers": [
       {
-        "source": "**",
+        "source": "/:path*",
         "headers": [
           {
             "key": "Permissions-Policy",
-            "value": "payment=(self \"https://sdk.cashfree.com\" \"https://api.cashfree.com\")"
+            "value": "payment=(self \"https://sdk.cashfree.com\" \"https://api.cashfree.com\" \"https://sandbox.cashfree.com\")"
+          },
+          {
+            "key": "Cross-Origin-Opener-Policy",
+            "value": "same-origin-allow-popups"
+          }
+        ]
+      },
+      {
+        "source": "/consultation/session/:path*",
+        "headers": [
+          {
+            "key": "Cross-Origin-Opener-Policy",
+            "value": "same-origin-allow-popups"
+          },
+          {
+            "key": "Cross-Origin-Embedder-Policy",
+            "value": "require-corp"
           }
         ]
       }
