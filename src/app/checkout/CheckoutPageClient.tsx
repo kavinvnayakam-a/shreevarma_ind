@@ -71,7 +71,7 @@ export default function CheckoutPageClient() {
     const initializeSDK = async () => {
         try {
             const cfInstance = await load({
-                mode: process.env.NEXT_PUBLIC_CASHFREE_ENV === 'production' ? 'production' : 'sandbox',
+                mode: "sandbox" // Always use sandbox for testing
             });
             setCashfree(cfInstance);
         } catch (error) {
@@ -145,7 +145,7 @@ export default function CheckoutPageClient() {
 
       cashfree.checkout({
         paymentSessionId: response.payment_session_id,
-        redirectTarget: "_self", // Redirect in the same tab
+        redirectTarget: "_self",
       });
 
     } catch (err: any) {
@@ -310,7 +310,6 @@ export default function CheckoutPageClient() {
             <DialogHeader><DialogTitle className="font-headline text-2xl text-primary">{editingAddress ? 'Update Address' : 'New Shipping Address'}</DialogTitle></DialogHeader>
             <AddressForm form={form} onSubmit={handleSaveAddress} isProcessing={isProcessing} submitButtonText={editingAddress ? 'Update' : 'Save Address'} />
           </DialogContent>
-
         </Dialog>
         
         <AlertDialogContent className="rounded-[2rem]">

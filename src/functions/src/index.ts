@@ -34,12 +34,14 @@ export const createCashfreeOrder = functions.https.onCall(async (data, context) 
       throw new functions.https.HttpsError('invalid-argument', 'Missing order data.');
     }
     
-    // --- FORCED SANDBOX/TESTING MODE ---
-    // This uses static initialization for cashfree-pg v4 and hardcodes
-    // public sandbox credentials to ensure local testing always works.
-    Cashfree.XClientId = "TEST1015093116527515f4a7c06b2413905101";
-    Cashfree.XClientSecret = "TEST_SECRET_KEY15582f34934a3511195663604f3b14068f";
-    Cashfree.XEnvironment = CFEnvironment.SANDBOX;
+    // FORCED SANDBOX/TESTING MODE
+    // This uses a new instance of the Cashfree SDK with hardcoded public sandbox credentials.
+    // This is the correct pattern for v4 and ensures local testing works reliably.
+    const cashfree = new Cashfree({
+        env: CFEnvironment.SANDBOX,
+        appId: "TEST1015093116527515f4a7c06b2413905101",
+        secretKey: "TEST_SECRET_KEY15582f34934a3511195663604f3b14068f",
+    });
 
     try {
         let appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.shreevarma.org';
@@ -47,8 +49,6 @@ export const createCashfreeOrder = functions.https.onCall(async (data, context) 
 
         const orderDocId = uuidv4();
         
-        // Simplified Logic: Only write to the pending_orders collection.
-        // The webhook will handle creating the final order in the user's subcollection upon success.
         const pendingOrderRef = db.collection('pending_orders').doc(orderDocId);
 
         const orderData = {
@@ -58,10 +58,9 @@ export const createCashfreeOrder = functions.https.onCall(async (data, context) 
           shippingAddress,
           items: cartItems,
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
-          internalId: orderDocId, // Used by webhook to find this doc
+          internalId: orderDocId,
         };
         
-        // Single, simple Firestore write.
         await pendingOrderRef.set(orderData);
 
         const returnUrl = `${appUrl}/order/success/${orderDocId}`;
@@ -84,8 +83,8 @@ export const createCashfreeOrder = functions.https.onCall(async (data, context) 
             "order_note": "Shreevarma Wellness Purchase"
         };
         
-        // Use the static method for v4, passing apiVersion as the first argument
-        const response = await Cashfree.PGCreateOrder("2023-08-01", request);
+        // Use the instance-based method to create the order
+        const response = await cashfree.pg.createOrder(request);
 
         return {
           success: true,
