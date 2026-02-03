@@ -4,7 +4,6 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import crypto from "crypto";
 import { ZegoTokenBuilder } from "zego-server-assistant";
-import { Cashfree, CFEnvironment } from "cashfree-pg";
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -35,17 +34,12 @@ export const createCashfreeOrder = functions.https.onCall(async (data, context) 
     }
     
     // --- FORCED SANDBOX/TESTING MODE ---
-    // This uses public sandbox credentials to ensure local and staging tests always work.
-    const appId = "TEST1015093116527515f4a7c06b2413905101";
-    const secretKey = "TEST_SECRET_KEY15582f34934a3511195663604f3b14068f";
+    const cashfreeAppId = "TEST1015093116527515f4a7c06b2413905101";
+    const cashfreeSecretKey = "TEST_SECRET_KEY15582f34934a3511195663604f3b14068f";
+    const cashfreeApiUrl = "https://sandbox.cashfree.com/pg";
+
 
     try {
-        const cashfree = new Cashfree({
-            mode: CFEnvironment.SANDBOX,
-            appId: appId,
-            secretKey: secretKey,
-        });
-
         let appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.shreevarma.org';
         appUrl = appUrl.endsWith('/') ? appUrl.slice(0, -1) : appUrl;
 
@@ -72,8 +66,8 @@ export const createCashfreeOrder = functions.https.onCall(async (data, context) 
 
         const returnUrl = `${appUrl}/order/success/${orderDocId}`;
         const notifyUrl = "https://cashfreewebhook-iklfboedvq-uc.a.run.app";
-
-        const request = {
+        
+        const requestBody = {
             "order_amount": Number(cartTotal.toFixed(2)),
             "order_currency": "INR",
             "order_id": orderDocId,
@@ -90,17 +84,38 @@ export const createCashfreeOrder = functions.https.onCall(async (data, context) 
             "order_note": "Shreevarma Wellness Purchase"
         };
         
-        const response = await cashfree.PGCreateOrder(request, { apiVersion: "2023-08-01" });
+        const headers = {
+            'Content-Type': 'application/json',
+            'x-api-version': '2023-08-01',
+            'x-client-id': cashfreeAppId,
+            'x-client-secret': cashfreeSecretKey,
+        };
+
+        const cashfreeResponse = await fetch(`${cashfreeApiUrl}/orders`, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(requestBody),
+        });
+
+        const responseData = await cashfreeResponse.json();
+
+        if (!cashfreeResponse.ok || !responseData.payment_session_id) {
+             console.error("Cashfree API Error:", responseData);
+             throw new functions.https.HttpsError('internal', responseData.message || 'Failed to create payment order from Cashfree.');
+        }
 
         return {
           success: true,
-          payment_session_id: response.data.payment_session_id,
+          payment_session_id: responseData.payment_session_id,
           orderDocId,
         };
 
     } catch (err: any) {
-        console.error("Cashfree Order Creation Error:", err.response?.data || err.message);
-        throw new functions.https.HttpsError('internal', err.response?.data?.message || 'Failed to create payment order.');
+        console.error("Cashfree Order Creation Error:", err);
+         if (err instanceof functions.https.HttpsError) {
+            throw err;
+        }
+        throw new functions.https.HttpsError('internal', err.message || 'Failed to create payment order.');
     }
 });
 
