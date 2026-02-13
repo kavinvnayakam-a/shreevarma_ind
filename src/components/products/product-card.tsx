@@ -49,7 +49,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
                 />
                 
                 {hasDiscount && !isSoldOut && (
-                  <div className="absolute top-4 left-4 bg-red-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg z-10 uppercase tracking-tighter">
+                  <div className="absolute top-4 left-4 bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg z-10 uppercase tracking-tighter">
                     {discountPercentage}% OFF
                   </div>
                 )}
@@ -57,7 +57,8 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
         </Link>
 
         <div className="flex flex-col items-center gap-1 p-6 pt-4 flex-grow w-full">
-             <h3 className="font-black text-sm h-10 flex items-center justify-center leading-tight text-primary uppercase tracking-tighter">
+             {/* Updated Name Font to match Heading Style */}
+             <h3 className="text-sm font-bold font-headline h-10 flex items-center justify-center leading-tight text-primary uppercase tracking-tight">
                 <Link href={`/products/${productId}`} className="hover:opacity-70 transition-opacity">
                     {product.name}
                 </Link>
@@ -70,7 +71,8 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
             </div>
 
              <div className="flex items-baseline justify-center gap-2 mb-4">
-                <p className="text-xl font-black text-primary">
+                {/* Updated Price Font */}
+                <p className="text-xl font-bold font-headline text-primary tracking-tight">
                     ₹{Math.round(product.sellingPrice)}
                 </p>
                 {hasDiscount && (
@@ -80,10 +82,11 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
                 )}
             </div>
 
+            {/* Updated Button Font */}
             <Button 
               onClick={handleAddToCart} 
               size="lg" 
-              className="w-full rounded-2xl font-black uppercase tracking-widest text-[11px] py-6 shadow-md" 
+              className="w-full rounded-2xl font-bold uppercase tracking-tight text-[11px] py-6 shadow-md" 
               disabled={isSoldOut}
             >
                  {isSoldOut ? 'Sold Out' : 'Add to Cart'}

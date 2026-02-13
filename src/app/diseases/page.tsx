@@ -10,6 +10,7 @@ import PlaceholderImages from '@/lib/placeholder-images.json';
 import { Search, Sparkles } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { healthConditionsData } from './health-conditions-data';
+import { cn } from '@/lib/utils';
 
 const allHealthConditions = healthConditionsData.map(condition => {
     const img = PlaceholderImages.placeholderImages.find(p => p.id === `health-${condition.id}`);
@@ -19,7 +20,6 @@ const allHealthConditions = healthConditionsData.map(condition => {
         imageHint: img?.imageHint || '',
     };
 });
-
 
 export default function DiseasesPage() {
     const heroImage = {
@@ -53,28 +53,31 @@ export default function DiseasesPage() {
         return allHealthConditions.slice(0, 5);
     }, [searchQuery, filteredHealthConditions]);
 
-    return (
-        <div className="flex flex-col bg-white">
+    // Unified Heading Style
+    const HEADING_STYLE = "text-3xl md:text-5xl font-bold font-headline text-primary uppercase tracking-tight";
 
-            {/* Hero Section - Pure White Background */}
-            <section className="relative py-12 md:py-20 bg-white border-b overflow-hidden">
+    return (
+        <div className="flex flex-col bg-white selection:bg-primary/10">
+
+            {/* Hero Section */}
+            <section className="relative py-12 md:py-24 bg-white overflow-hidden">
                 <div className="container mx-auto px-6">
                     <div className="grid md:grid-cols-2 gap-12 items-center">
-                        <div className="space-y-6 relative z-10">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/5 rounded-full text-primary font-bold text-sm tracking-widest uppercase">
+                        <div className="space-y-8 relative z-10 text-center md:text-left">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/5 rounded-full text-primary font-bold text-[10px] md:text-xs tracking-widest uppercase font-headline">
                                 <Sparkles className="w-4 h-4" /> Root-Cause Healing
                             </div>
-                            <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-primary leading-[0.9] uppercase">
+                            <h1 className={cn("leading-[1.1]", HEADING_STYLE)}>
                                 Explore <br/> Health <br/> Conditions
                             </h1>
-                            <p className="text-xl text-muted-foreground max-w-md leading-relaxed">
+                            <p className="text-lg md:text-xl text-muted-foreground max-w-md mx-auto md:mx-0 leading-relaxed font-medium">
                                 Understand common diseases, their symptoms, and holistic Ayurvedic treatment options.
                             </p>
-                            <div className="flex flex-wrap gap-4 pt-4">
-                                <Button asChild size="lg" className="rounded-xl px-8 shadow-lg bg-primary">
+                            <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-4">
+                                <Button asChild size="lg" className="rounded-xl px-10 h-14 bg-primary hover:opacity-90 font-bold font-headline uppercase tracking-tight text-[11px] shadow-lg shadow-primary/20">
                                     <Link href="/consultation">Consult Doctor</Link>
                                 </Button>
-                                <Button asChild size="lg" variant="outline" className="rounded-xl px-8 border-primary text-primary">
+                                <Button asChild size="lg" variant="outline" className="rounded-xl px-10 h-14 border-2 border-primary text-primary hover:bg-primary/5 font-bold font-headline uppercase tracking-tight text-[11px]">
                                     <Link href="/clinics">Find Clinic</Link>
                                 </Button>
                             </div>
@@ -84,49 +87,49 @@ export default function DiseasesPage() {
                                 src={heroImage.imageUrl}
                                 alt={heroImage.description || 'Health conditions'}
                                 fill
-                                className="object-contain drop-shadow-2xl"
-                                // Performance fixes
+                                className="object-contain"
                                 priority={true}
                                 loading="eager"
                                 fetchPriority="high"
                                 sizes="(max-width: 768px) 100vw, 50vw"
+                                unoptimized
                             />
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Explore Conditions Section - Pure White Background */}
-            <section className="py-20 bg-white">
+            {/* Explore Conditions Section */}
+            <section className="py-20 bg-white border-t border-slate-50">
                 <div className="container mx-auto px-6">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
                         <div className="space-y-2">
-                            <h2 className="text-4xl font-black text-primary uppercase tracking-tighter">Common Ailments</h2>
-                            <p className="text-muted-foreground font-medium italic">Holistic insights for your well-being</p>
+                            <h2 className={HEADING_STYLE}>Common Ailments</h2>
+                            <p className="text-muted-foreground text-[11px] font-bold uppercase tracking-[0.2em] font-headline">Holistic insights for your well-being</p>
                         </div>
                         
                         <div className="w-full max-w-md">
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <div className="relative">
-                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/30" />
+                                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/30" />
                                         <Input
                                             placeholder="Search by Disease..."
-                                            className="pl-12 py-7 rounded-2xl border-primary/10 bg-white shadow-sm focus:ring-primary text-lg"
+                                            className="pl-14 h-14 rounded-xl border-none bg-slate-50 font-bold text-xs uppercase tracking-tight focus-visible:ring-primary"
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
                                         />
                                     </div>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-2 rounded-2xl shadow-2xl border-primary/5 bg-white" align="start">
+                                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-2 rounded-xl shadow-2xl border-none bg-white" align="start">
                                     <ul className="space-y-1">
-                                        <li className="px-3 py-2 text-xs font-bold text-primary/40 uppercase tracking-widest">
+                                        <li className="px-4 py-2 text-[10px] font-bold text-primary/40 uppercase tracking-widest font-headline">
                                             {searchQuery ? 'Suggestions' : 'Top Conditions'}
                                         </li>
                                         {searchSuggestions.map((condition) => (
                                             <li key={condition.id}>
                                                 <Link href={`/diseases/${condition.slug}`}
-                                                    className="block px-3 py-3 text-sm font-medium rounded-xl hover:bg-primary/5 hover:text-primary transition-colors"
+                                                    className="block px-4 py-3 text-[11px] font-bold uppercase tracking-tight rounded-lg hover:bg-primary/5 hover:text-primary transition-colors font-headline"
                                                 >
                                                     {condition.name}
                                                 </Link>
@@ -141,30 +144,30 @@ export default function DiseasesPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                         {displayedHealthConditions.map((condition, index) => (
                             <Card key={condition.id} className="flex flex-col border border-slate-100 bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 group">
-                                <div className="relative aspect-[16/12] w-full overflow-hidden bg-white">
+                                <div className="relative aspect-[16/12] w-full overflow-hidden">
                                     <Image
                                         src={condition.imageUrl}
                                         alt={condition.name}
                                         fill
-                                        className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                        // Speed Fix: Eager load top 4 visible cards
+                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
                                         priority={index < 4}
                                         loading={index < 4 ? "eager" : "lazy"}
                                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                                        unoptimized
                                     />
                                 </div>
                                 <CardHeader className="pt-6">
-                                    <CardTitle className="font-black text-xl text-primary uppercase tracking-tight leading-tight">
+                                    <CardTitle className="font-bold text-sm text-primary uppercase tracking-tight leading-tight line-clamp-1 font-headline">
                                         {condition.name}
                                     </CardTitle>
                                 </CardHeader>
-                                <CardContent className="flex-grow">
-                                    <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
+                                <CardContent className="flex-grow pb-4">
+                                    <p className="text-muted-foreground text-xs leading-relaxed line-clamp-3 font-medium">
                                         {condition.description}
                                     </p>
                                 </CardContent>
-                                <CardFooter className="pb-6">
-                                    <Button asChild className="w-full rounded-xl py-5 font-bold uppercase tracking-widest bg-[#72392F] hover:bg-[#5f2f27] text-white border-none transition-colors">
+                                <CardFooter className="pb-8">
+                                    <Button asChild className="w-full rounded-xl h-12 bg-primary hover:opacity-90 text-white font-bold font-headline uppercase tracking-tight text-[10px] transition-all">
                                         <Link href={`/diseases/${condition.slug}`}>Learn More</Link>
                                     </Button>
                                 </CardFooter>
@@ -173,18 +176,17 @@ export default function DiseasesPage() {
                     </div>
 
                     {searchQuery && filteredHealthConditions.length === 0 && (
-                        <div className="text-center py-20 bg-white rounded-[3rem] mt-10">
-                            <p className="text-xl text-muted-foreground italic">No results found for &quot;{searchQuery}&quot;</p>
+                        <div className="text-center py-20 bg-white/50 rounded-[2.5rem] border border-dashed border-primary/10">
+                            <p className="text-xs font-bold uppercase tracking-tight text-muted-foreground/60 font-headline">No results found for &quot;{searchQuery}&quot;</p>
                         </div>
                     )}
 
                     {filteredHealthConditions.length > 8 && !searchQuery && (
                         <div className="text-center mt-16">
                             <Button 
-                                variant="outline" 
-                                size="lg" 
                                 onClick={() => setIsExpanded(!isExpanded)}
-                                className="rounded-full px-12 border-primary text-primary font-bold hover:bg-primary/5"
+                                variant="outline"
+                                className="rounded-full h-14 px-12 border-2 border-primary text-primary font-bold font-headline uppercase tracking-tight hover:bg-primary hover:text-white transition-all text-xs shadow-lg shadow-primary/5"
                             >
                                 {isExpanded ? 'Show Less' : 'Explore All Conditions'}
                             </Button>
@@ -193,40 +195,39 @@ export default function DiseasesPage() {
                 </div>
             </section>
 
-            {/* Why Choose Section - Pure White Background */}
-            <section className="py-24 bg-white">
+            {/* Why Choose Section */}
+            <section className="py-32 bg-white border-t border-slate-50">
                 <div className="container mx-auto px-6">
-                    <div className="grid md:grid-cols-2 gap-16 items-center">
-                        <div className="relative w-full aspect-square max-w-md mx-auto bg-white group">
-                            <div className="absolute inset-0 bg-primary/5 rounded-full scale-110 group-hover:scale-125 transition-transform duration-700" />
+                    <div className="grid lg:grid-cols-2 gap-20 items-center">
+                        <div className="relative w-full aspect-square max-w-lg mx-auto lg:mx-0 overflow-hidden">
                             <Image 
                                 src={whyChooseImage.imageUrl} 
                                 alt="Why Choose Us" 
                                 fill
-                                className="object-contain relative z-10" 
-                                // Priority not needed here as it's further down the page
+                                className="object-cover" 
                                 loading="lazy"
-                                sizes="(max-width: 768px) 100vw, 50vw"
+                                sizes="(max-width: 768px) 100vw, 600px"
+                                unoptimized
                             />
                         </div>
-                        <div className="space-y-8">
-                            <h2 className="text-5xl font-black font-headline text-primary tracking-tighter leading-none uppercase">
+                        <div className="space-y-12">
+                            <h2 className={cn("leading-[1.1]", HEADING_STYLE)}>
                                 Why Choose Our <br/> Specialists?
                             </h2>
-                            <div className="space-y-6">
+                            <div className="space-y-8">
                                 {[
-                                    { t: "Certified Specialists", d: "Expert Vaidyas trained in authentic Ayurvedic and Siddha practices." },
-                                    { t: "Personalized Care", d: "Every treatment protocol is tailored to your unique Prakriti (constitution)." },
-                                    { t: "Trusted Expertise", d: "Decades of clinical experience in treating chronic health conditions." },
-                                    { t: "Holistic Access", d: "Seamless online and offline consultations for your convenience." }
+                                    { t: "CERTIFIED SPECIALISTS", d: "Expert Vaidyas trained in authentic Ayurvedic and Siddha practices." },
+                                    { t: "PERSONALIZED CARE", d: "Every treatment protocol is tailored to your unique Prakriti (constitution)." },
+                                    { t: "TRUSTED EXPERTISE", d: "Decades of clinical experience in treating chronic health conditions." },
+                                    { t: "HOLISTIC ACCESS", d: "Seamless online and offline consultations for your convenience." }
                                 ].map((item, i) => (
-                                    <div key={i} className="flex gap-4 items-start group">
-                                        <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-black text-sm">
+                                    <div key={i} className="flex gap-5 group">
+                                        <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary/5 text-primary flex items-center justify-center font-bold text-xs font-headline">
                                             {i + 1}
                                         </span>
                                         <div>
-                                            <h3 className="font-bold text-xl text-primary">{item.t}</h3>
-                                            <p className="text-muted-foreground text-sm leading-relaxed">{item.d}</p>
+                                            <h4 className="font-bold text-lg text-primary uppercase tracking-tight font-headline">{item.t}</h4>
+                                            <p className="text-muted-foreground text-sm font-medium leading-relaxed mt-1">{item.d}</p>
                                         </div>
                                     </div>
                                 ))}

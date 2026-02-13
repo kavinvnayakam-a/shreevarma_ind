@@ -2,62 +2,22 @@
 import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Video, IndianRupee, Clock, ShieldCheck, Search, CheckCircle2 } from 'lucide-react';
+import { Video, IndianRupee, Clock, ShieldCheck, CheckCircle2, ChevronDown } from 'lucide-react';
 import { specialists } from '@/components/home/specialists-data';
 import { DoctorListItem } from '@/components/consultation/doctor-list-item';
 import { BookingModal } from '@/components/consultation/BookingModal';
-import { cn } from '@/lib/utils';
 
-const BUCKET = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'shreevarma-india-location.firebasestorage.app';
-
-const placeholders = [
-    'Search by Doctor name...',
-    'Search by specialty...',
-    'e.g., Dr. Shreevarma',
-];
+const BUCKET = 'shreevarma-india-location.firebasestorage.app';
 
 export default function ConsultationPage() {
     const [mounted, setMounted] = useState(false);
     const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-    const [visibleDoctors, setVisibleDoctors] = useState(4);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [placeholder, setPlaceholder] = useState(placeholders[0]);
+    
+    const DOCTORS_PER_PAGE = 4;
+    const [visibleDoctors, setVisibleDoctors] = useState(DOCTORS_PER_PAGE);
 
     useEffect(() => {
         setMounted(true);
-    }, []);
-
-    // Typing Animation logic
-    useEffect(() => {
-        let typingTimeout: NodeJS.Timeout;
-        let currentPlaceholderIndex = 0;
-        let currentText = '';
-        let isDeleting = false;
-
-        const type = () => {
-            const fullText = placeholders[currentPlaceholderIndex];
-            let typeSpeed = 100;
-            if (isDeleting) {
-                currentText = fullText.substring(0, currentText.length - 1);
-                typeSpeed = 50;
-            } else {
-                currentText = fullText.substring(0, currentText.length + 1);
-                typeSpeed = 100;
-            }
-            setPlaceholder(currentText);
-            if (!isDeleting && currentText === fullText) {
-                typeSpeed = 2000;
-                isDeleting = true;
-            } else if (isDeleting && currentText === '') {
-                isDeleting = false;
-                currentPlaceholderIndex = (currentPlaceholderIndex + 1) % placeholders.length;
-                typeSpeed = 500;
-            }
-            typingTimeout = setTimeout(type, typeSpeed);
-        };
-        typingTimeout = setTimeout(type, 100);
-        return () => clearTimeout(typingTimeout);
     }, []);
 
     const getImageUrl = (path: string) => {
@@ -65,27 +25,25 @@ export default function ConsultationPage() {
         return mounted ? `${baseUrl}&t=${new Date().getHours()}` : baseUrl;
     };
 
-    const filteredDoctors = useMemo(() => {
-        return specialists.filter(doctor => {
-            const nameMatch = doctor.name.toLowerCase().includes(searchQuery.toLowerCase());
-            const specialtyMatch = doctor.specialty?.toLowerCase().includes(searchQuery.toLowerCase());
-            return nameMatch || specialtyMatch;
-        });
-    }, [searchQuery]);
+    const handleLoadMore = () => {
+        setVisibleDoctors(prev => prev + DOCTORS_PER_PAGE);
+    };
+
+    // Unified Heading Style to match Home & Products
+    const HEADING_STYLE = "text-3xl md:text-5xl font-bold font-headline text-primary uppercase tracking-tight";
 
     return (
-        <div className="relative min-h-screen bg-[#FDFCFB]">
+        <div className="relative min-h-screen bg-[#FDFCFB] font-sans selection:bg-primary/10 pb-32">
             
-            {/* FLOATING ACTION BUTTON */}
-            <div className="fixed top-1/2 -translate-y-1/2 right-0 z-[100]">
+            {/* STICKY BOTTOM ACTION */}
+            <div className="md:hidden fixed bottom-20 left-0 w-full z-[40] px-4 py-3 bg-gradient-to-t from-[#FDFCFB] via-[#FDFCFB]/90 to-transparent">
                 <Button
                     onClick={() => setIsBookingModalOpen(true)}
-                    className="flex flex-row items-center gap-4 h-auto py-7 px-4 animate-shine rounded-l-2xl rounded-r-none shadow-2xl bg-primary hover:bg-primary/90 text-white transition-all group border-y border-l border-white/20"
-                    style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+                    className="w-full h-14 rounded-xl shadow-xl bg-primary hover:bg-primary/90 text-white flex items-center justify-center gap-3 transition-all active:scale-[0.98] border border-white/20 font-bold font-headline uppercase tracking-tight"
                 >
-                    <Video className="w-6 h-6 -rotate-90 group-hover:scale-110 transition-transform" />
-                    <span className="font-bold tracking-widest uppercase text-xs md:text-sm">
-                        Book Consultation
+                    <Video className="w-5 h-5" />
+                    <span className="text-xs">
+                        Book Consultation Now
                     </span>
                 </Button>
             </div>
@@ -97,127 +55,129 @@ export default function ConsultationPage() {
                         src={getImageUrl('site_assets/consultation/hero_mobile.png')} 
                         alt="Consultation Mobile Banner" 
                         fill 
+                        sizes="(max-width: 768px) 100vw, 1400px"
                         className="object-cover md:hidden" 
-                        priority 
+                        priority
+                        loading="eager"
                         unoptimized
                     />
                     <Image 
                         src={getImageUrl('site_assets/consultation/hero_desktop.png')} 
                         alt="Consultation Desktop Banner" 
                         fill 
+                        sizes="100vw"
                         className="object-cover hidden md:block" 
-                        priority 
+                        priority
+                        loading="eager"
                         unoptimized
                     />
                 </div>
             </section>
 
-            {/* SEARCH BOX */}
-            <section className="relative -mt-8 z-20 px-6">
-                <div className="container mx-auto max-w-2xl">
-                    <div className="relative group shadow-lg rounded-2xl overflow-hidden border border-primary/10">
-                        <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
-                            <Search className="h-5 w-5 text-primary/60 group-focus-within:text-primary transition-colors" />
-                        </div>
-                        <input
-                            type="text"
-                            placeholder={placeholder}
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-14 pr-8 py-5 bg-white border-none focus:ring-0 text-lg transition-all outline-none text-primary font-medium"
-                        />
-                    </div>
-                </div>
-            </section>
-
-            {/* NEW ATTRACTIVE INFO SECTION */}
+            {/* INFO SECTION */}
             <section className="py-20 relative overflow-hidden">
                 <div className="container mx-auto px-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        
-                        {/* Fee Card */}
-                        <div className="group p-8 rounded-3xl bg-white border border-primary/5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                            <div className="w-14 h-14 rounded-2xl bg-primary/5 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors">
-                                <IndianRupee className="w-7 h-7" />
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="group p-10 rounded-[2rem] bg-white border border-primary/5 shadow-sm hover:shadow-xl transition-all duration-300">
+                            <div className="w-16 h-16 rounded-2xl bg-primary/5 flex items-center justify-center mb-8 group-hover:bg-primary group-hover:text-white transition-all">
+                                <IndianRupee className="w-8 h-8" />
                             </div>
-                            <h3 className="text-sm uppercase tracking-widest text-muted-foreground font-bold mb-2">Consultation Fee</h3>
-                            <div className="flex items-baseline gap-1">
-                                <span className="text-4xl font-black text-primary">₹500</span>
-                                <span className="text-muted-foreground font-medium">/ session</span>
+                            <h3 className="text-xs uppercase tracking-tight text-muted-foreground font-bold font-headline mb-3">Consultation Fee</h3>
+                            <div className="flex items-baseline gap-2">
+                                <span className="text-5xl font-bold font-headline text-primary tracking-tight">₹500</span>
+                                <span className="text-muted-foreground font-bold text-xs uppercase tracking-tight">/ Session</span>
                             </div>
-                            <p className="mt-4 text-sm text-muted-foreground leading-relaxed">Professional Ayurvedic guidance at an affordable price point.</p>
                         </div>
 
-                        {/* Timing Card */}
-                        <div className="group p-8 rounded-3xl bg-white border border-primary/5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                            <div className="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center mb-6 group-hover:bg-amber-500 group-hover:text-white transition-colors text-amber-600">
-                                <Clock className="w-7 h-7" />
+                        <div className="group p-10 rounded-[2rem] bg-white border border-primary/5 shadow-sm hover:shadow-xl transition-all duration-300">
+                            <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center mb-8 group-hover:bg-amber-500 group-hover:text-white transition-all text-amber-600">
+                                <Clock className="w-8 h-8" />
                             </div>
-                            <h3 className="text-sm uppercase tracking-widest text-muted-foreground font-bold mb-2">Availability</h3>
-                            <div className="text-2xl font-black text-primary">Mon — Sat</div>
-                            <div className="text-lg font-bold text-amber-600/80">10:00 AM - 07:00 PM</div>
-                            <p className="mt-4 text-sm text-muted-foreground leading-relaxed">Flexible booking slots throughout the week to suit your schedule.</p>
+                            <h3 className="text-xs uppercase tracking-tight text-muted-foreground font-bold font-headline mb-3">Availability</h3>
+                            <div className="text-3xl font-bold font-headline text-primary tracking-tight uppercase">Mon — Sat</div>
+                            <div className="text-lg font-bold text-amber-600/80 mt-1 uppercase tracking-tight">10AM - 7PM</div>
                         </div>
 
-                        {/* Privacy Card */}
-                        <div className="group p-8 rounded-3xl bg-white border border-primary/5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                            <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center mb-6 group-hover:bg-emerald-500 group-hover:text-white transition-colors text-emerald-600">
-                                <ShieldCheck className="w-7 h-7" />
+                        <div className="group p-10 rounded-[2rem] bg-white border border-primary/5 shadow-sm hover:shadow-xl transition-all duration-300">
+                            <div className="w-16 h-16 rounded-2xl bg-emerald-50 flex items-center justify-center mb-8 group-hover:bg-emerald-500 group-hover:text-white transition-all text-emerald-600">
+                                <ShieldCheck className="w-8 h-8" />
                             </div>
-                            <h3 className="text-sm uppercase tracking-widest text-muted-foreground font-bold mb-2">Privacy Assurance</h3>
-                            <div className="text-2xl font-black text-primary uppercase">100% Private</div>
-                            <p className="mt-4 text-sm text-muted-foreground leading-relaxed">End-to-end encrypted video consultations ensuring patient confidentiality.</p>
+                            <h3 className="text-xs uppercase tracking-tight text-muted-foreground font-bold font-headline mb-3">Data Security</h3>
+                            <div className="text-3xl font-bold font-headline text-primary tracking-tight uppercase">100% Private</div>
                         </div>
-
                     </div>
                 </div>
             </section>
 
             {/* DOCTORS LIST */}
-            <section className="py-12 bg-[#F9F8F6]">
+            <section className="py-20 bg-[#F9F8F6]">
                 <div className="container mx-auto px-6">
-                    <div className="max-w-5xl mx-auto space-y-6">
-                        <div className="flex items-center justify-between mb-10">
-                            <h2 className="text-2xl font-black text-primary uppercase tracking-tight">Our Specialists</h2>
-                            <div className="h-px flex-1 bg-primary/10 ml-6 hidden md:block" />
+                    <div className="max-w-5xl mx-auto space-y-10">
+                        <div className="flex items-center gap-8 mb-16">
+                            <h2 className={HEADING_STYLE}>Our Specialists</h2>
+                            <div className="h-[2px] w-full bg-primary/10" />
                         </div>
-                        {filteredDoctors.slice(0, visibleDoctors).map((doctor) => (
-                            <DoctorListItem key={doctor.slug} doctor={doctor} onBookNow={() => setIsBookingModalOpen(true)} />
-                        ))}
+                        
+                        <div className="grid gap-6">
+                            {specialists.slice(0, visibleDoctors).map((doctor) => (
+                                <DoctorListItem key={doctor.slug} doctor={doctor} onBookNow={() => setIsBookingModalOpen(true)} />
+                            ))}
+                        </div>
+
+                        {visibleDoctors < specialists.length && (
+                            <div className="flex justify-center pt-16">
+                                <Button 
+                                    onClick={handleLoadMore}
+                                    variant="outline"
+                                    className="px-12 py-8 rounded-full border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold font-headline uppercase tracking-tight flex items-center gap-3 transition-all"
+                                >
+                                    Load More Doctors
+                                    <ChevronDown className="w-5 h-5" />
+                                </Button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </section>
 
-            {/* WHY CHOOSE US - Cleaned up version */}
-            <section className="py-24 bg-white">
+            {/* WHY CHOOSE US */}
+            <section className="py-32 bg-white">
                 <div className="container mx-auto px-6">
-                    <div className="grid md:grid-cols-2 gap-20 items-center">
-                        <div className="relative w-full aspect-[4/5] max-w-md mx-auto">
+                    <div className="grid lg:grid-cols-2 gap-20 items-center">
+                        <div className="relative w-full aspect-square max-w-lg mx-auto lg:mx-0 overflow-hidden">
                             <Image 
                                 src={getImageUrl('site_assets/consultation/why_choose_docs.png')} 
-                                alt="Doctors at Shreevarma" 
+                                alt="Expert Doctors" 
                                 fill 
+                                sizes="(max-width: 768px) 100vw, 600px"
                                 className="object-cover" 
+                                priority
+                                loading="eager"
                                 unoptimized
                             />
                         </div>
-                        <div className="space-y-10">
+
+                        <div className="space-y-12">
                             <div>
-                                <h2 className="text-5xl font-black font-headline text-primary leading-[1.1] tracking-tighter uppercase">Why Choose <br/> Our Doctors?</h2>
-                                <p className="text-muted-foreground text-lg mt-6 font-medium">Shreevarma combines traditional pulse diagnosis with modern digital convenience.</p>
+                                <h2 className={HEADING_STYLE}>
+                                    Why Choose <br/> Our Doctors?
+                                </h2>
+                                <p className="text-muted-foreground text-xl mt-8 font-medium leading-relaxed">
+                                    Shreevarma specialists combine traditional pulse diagnosis with modern digital convenience.
+                                </p>
                             </div>
-                            <div className="grid gap-6">
+                            <div className="grid sm:grid-cols-2 gap-8">
                                 {[
-                                    { title: "25+ Years Experience", desc: "Expertise in complex chronic conditions." },
-                                    { title: "Nadi Pariksha Experts", desc: "Traditional pulse diagnosis via digital medium." },
-                                    { title: "Global Patient Base", desc: "Trusted by thousands across the globe." },
-                                    { title: "Certified Practitioners", desc: "BAMS & MD qualified Ayurvedic specialists." }
+                                    { title: "25+ Years", desc: "CLINICAL EXCELLENCE." },
+                                    { title: "Nadi Pariksha", desc: "TRADITIONAL EXPERTS." },
+                                    { title: "Global Trust", desc: "40+ COUNTRIES SERVED." },
+                                    { title: "Certified", desc: "BAMS & MD QUALIFIED." }
                                 ].map((item, i) => (
-                                    <div key={i} className="flex gap-4 items-start">
+                                    <div key={i} className="flex gap-4 items-start p-6 bg-[#FDFCFB] border border-primary/5">
                                         <CheckCircle2 className="w-6 h-6 text-primary shrink-0 mt-1" />
                                         <div>
-                                            <h4 className="font-bold text-lg text-primary">{item.title}</h4>
-                                            <p className="text-muted-foreground">{item.desc}</p>
+                                            <h4 className="font-bold font-headline text-lg text-primary uppercase tracking-tight leading-tight">{item.title}</h4>
+                                            <p className="text-muted-foreground text-[10px] font-bold mt-1 uppercase tracking-tight">{item.desc}</p>
                                         </div>
                                     </div>
                                 ))}

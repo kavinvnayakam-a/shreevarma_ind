@@ -1,106 +1,85 @@
-import { notFound } from 'next/navigation';
+'use client';
+
+import { notFound, useParams } from 'next/navigation';
 import { therapiesData } from '../therapy-data';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, Clock, Heart, Users, Target, UserCheck } from 'lucide-react';
-import React from 'react';
-import type { Metadata, ResolvingMetadata } from 'next';
+import { CheckCircle, Clock, Heart, Users, Target, UserCheck, ChevronRight } from 'lucide-react';
+import React, { useMemo } from 'react';
+import { cn } from '@/lib/utils';
 
-type Props = {
-  params: Promise<{ slug: string }>;
-};
-
-export async function generateStaticParams() {
-  return therapiesData.map((therapy) => ({
-    slug: therapy.slug,
-  }));
-}
-
-export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata
-): Promise<Metadata> {
-  const { slug } = await params;
-  const therapy = therapiesData.find((t) => t.slug === slug);
-
-  if (!therapy) {
-    return { title: 'Therapy Not Found' };
-  }
-
-  const previousImages = (await parent).openGraph?.images || [];
-
-  return {
-    title: `${therapy.name} Therapy | Shreevarma's Wellness`,
-    description: therapy.what.substring(0, 160),
-    openGraph: {
-      title: `${therapy.name} | Ayurvedic Therapy`,
-      description: therapy.what.substring(0, 160),
-      images: [therapy.imageUrl, ...previousImages],
-    },
-  };
-}
+const HEADING_STYLE = "font-bold font-headline text-primary uppercase tracking-tight";
 
 function Section({ title, content, icon }: { title: string, content: string, icon: React.ReactNode }) {
     if (!content) return null;
     return (
-        <div className="space-y-4">
-            <h2 className="text-2xl font-bold font-headline text-primary flex items-center gap-3">
-                <span className="p-2 rounded-lg bg-primary/10 text-primary">
+        <div className="space-y-6">
+            <h2 className={cn("text-2xl md:text-3xl flex items-center gap-4", HEADING_STYLE)}>
+                <span className="p-2.5 rounded-xl bg-primary/5 text-primary shrink-0">
                     {icon}
                 </span>
                 {title}
             </h2>
-            <div className="prose prose-slate max-w-none text-muted-foreground leading-relaxed whitespace-pre-wrap pl-11">
+            {/* UPDATED CONTENT FONT STYLE */}
+            <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed whitespace-pre-wrap pl-0 md:pl-[4.5rem] text-base md:text-lg font-medium tracking-normal">
                 {content}
             </div>
         </div>
     )
 }
 
-export default async function TherapyDetailPage({ params }: Props) {
-  const { slug } = await params;
-  const therapy = therapiesData.find((t) => t.slug === slug);
+export default function TherapyDetailPage() {
+  const params = useParams();
+  const slug = typeof params?.slug === 'string' ? params.slug : '';
+  
+  const therapy = useMemo(() => 
+    therapiesData.find((t) => t.slug === slug), 
+  [slug]);
 
   if (!therapy) {
     notFound();
+    return null;
   }
 
   return (
-    <div className="bg-background min-h-screen">
-      {/* Hero Section - Optimized for 1712x776 ratio */}
-      <section className="relative w-full aspect-[16/9] md:aspect-[1712/776] max-h-[70vh] overflow-hidden bg-slate-100">
+    <div className="bg-[#FDFCFB] min-h-screen font-sans selection:bg-primary/10">
+      {/* Hero Section */}
+      <section className="relative w-full aspect-[16/9] md:aspect-[1712/776] max-h-[70vh] overflow-hidden bg-white">
         <Image 
           src={therapy.imageUrl} 
           alt={therapy.name} 
           fill 
           className="object-cover object-center" 
-          
-          // --- PERFORMANCE OPTIMIZATIONS ---
-          priority={true}           // Highest priority: Preloads the image
-          loading="eager"           // Tells browser to download immediately
-          fetchPriority="high"      // Hint for modern browsers (LCP optimization)
-          sizes="100vw"             // Ensures proper resolution selection
-          quality={90}              // Slight bump in quality for wide headers
-          // ---------------------------------
+          priority={true}
+          loading="eager"
+          fetchPriority="high"
+          sizes="100vw"
+          quality={90}
+          unoptimized
         />
         
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/20 to-transparent" />
         
-        <div className="absolute bottom-0 left-0 w-full p-6 md:p-12">
+        <div className="absolute bottom-0 left-0 w-full p-8 md:p-16">
             <div className="container mx-auto">
-                <h1 className="text-4xl md:text-7xl font-black text-white uppercase tracking-tighter drop-shadow-sm">
+                <nav className="mb-6 flex items-center gap-2 text-[10px] font-bold uppercase tracking-tight text-white/70 font-headline">
+                    <Link href="/therapy" className="hover:text-white transition-colors">Therapies</Link>
+                    <ChevronRight className="w-3 h-3" />
+                    <span className="text-white">{therapy.name}</span>
+                </nav>
+                <h1 className={cn("text-4xl md:text-7xl leading-none", HEADING_STYLE, "text-white")}>
                     {therapy.name}
                 </h1>
             </div>
         </div>
       </section>
 
-      <main className="container mx-auto px-6 py-16">
-        <div className="grid lg:grid-cols-3 gap-16 items-start">
+      <main className="container mx-auto px-6 py-20">
+        <div className="grid lg:grid-cols-3 gap-20 items-start">
           
-          <div className="lg:col-span-2 space-y-16">
+          <div className="lg:col-span-2 space-y-24">
             <Section 
                 title="What is it?" 
                 content={therapy.what} 
@@ -118,46 +97,46 @@ export default async function TherapyDetailPage({ params }: Props) {
             />
           </div>
           
-          <aside className="lg:sticky top-28">
-            <Card className="shadow-xl border-primary/10 overflow-hidden">
-                <div className="h-2 bg-primary" />
-                <CardHeader>
-                    <CardTitle className="font-headline text-2xl">Therapy Details</CardTitle>
+          <aside className="lg:sticky top-32">
+            <Card className="shadow-2xl border-none bg-white rounded-[2rem] overflow-hidden">
+                <div className="h-2 bg-primary w-full" />
+                <CardHeader className="p-8 pb-4">
+                    <CardTitle className={cn("text-2xl", HEADING_STYLE)}>Therapy Details</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-8">
+                <CardContent className="p-8 pt-4 space-y-10">
                     <div>
-                        <h3 className="font-bold text-primary mb-3 flex items-center gap-2">
-                            <CheckCircle className="w-5 h-5"/> Key Benefits
+                        <h3 className="font-bold font-headline text-primary text-[11px] uppercase tracking-tight mb-5 flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4"/> Key Benefits
                         </h3>
-                        <ul className="grid grid-cols-1 gap-2">
+                        <ul className="space-y-4">
                             {therapy.benefits.map((benefit, i) => (
-                                <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground capitalize">
-                                    <span className="mt-1 w-1.5 h-1.5 rounded-full bg-primary/40 shrink-0" />
-                                    {benefit}
+                                <li key={i} className="flex items-center gap-3 text-sm text-slate-600 font-semibold">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                                    <span className="uppercase tracking-tight text-[10px]">{benefit}</span>
                                 </li>
                             ))}
                         </ul>
                     </div>
 
-                    <div className="space-y-6 pt-4 border-t border-border">
+                    <div className="space-y-8 pt-8 border-t border-slate-50">
                         <div className="flex gap-4">
                             <Target className="w-6 h-6 text-primary shrink-0" />
                             <div>
-                                <h3 className="font-bold text-sm uppercase tracking-wider text-foreground">Target Areas</h3>
-                                <p className="text-sm text-muted-foreground">{therapy.bodyParts}</p>
+                                <h3 className="font-bold text-[11px] uppercase tracking-tight text-primary font-headline">Target Areas</h3>
+                                <p className="text-sm font-semibold text-slate-600 mt-1 uppercase tracking-tight">{therapy.bodyParts}</p>
                             </div>
                         </div>
 
                         <div className="flex gap-4">
                             <Clock className="w-6 h-6 text-primary shrink-0" />
                             <div>
-                                <h3 className="font-bold text-sm uppercase tracking-wider text-foreground">Duration</h3>
-                                <p className="text-sm text-muted-foreground">{therapy.duration}</p>
+                                <h3 className="font-bold text-[11px] uppercase tracking-tight text-primary font-headline">Duration</h3>
+                                <p className="text-sm font-semibold text-slate-600 mt-1 uppercase tracking-tight">{therapy.duration}</p>
                             </div>
                         </div>
                     </div>
 
-                    <Button asChild size="lg" className="w-full text-base font-bold py-6">
+                    <Button asChild size="lg" className="w-full h-14 rounded-xl bg-primary hover:opacity-90 text-white font-bold font-headline uppercase tracking-tight text-[11px] shadow-lg shadow-primary/20">
                         <Link href="/consultation">Book This Session</Link>
                     </Button>
                 </CardContent>
